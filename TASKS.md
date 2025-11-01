@@ -1,6 +1,5 @@
 # Tasks
 
-- include C++ to the project
 - put a song into the micro sd card
 - make the song play when user has clicked at least once at a button
   - if button clicked again while playing stop program and reset
