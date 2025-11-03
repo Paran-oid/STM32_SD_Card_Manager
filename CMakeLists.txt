@@ -52,7 +52,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 
 
     # Added micro sd spi "implementation"
-    FATFS/Target/user_diskio_spi.c
+    FATFS/Target/fatfs_sd.c
 )
 
 # Add include paths

@@ -11,4 +11,7 @@
 - Remote control via Bluetooth
 - USB Mass Storage Mode (user able to store songs directly by plugging stm32 to PC/any other device)
 - DSP effects: Reverb, echo, 3-band equalizer.
+- Introduce testing (unit and integration testing)
 - Ask AI for other ideas!
+- Finish project and put it on github and don't forget to mention the people u borrowed code from.
+- Write a good README.md and end the project
