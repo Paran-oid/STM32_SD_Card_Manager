@@ -1,12 +1,21 @@
+#include "ff.h"
 extern "C"
 {
-#include "main.h"
-
 #include "fatfs.h"
+#include "main.h"
 }
 
+#include <string.h>
+
+extern UART_HandleTypeDef huart2;
+
 FATFS fs;
-DWORD free_clusters, free_sectors, total_sectors;
+FIL   file;
+DWORD free_clusters;
+
+uint32_t total_sectors, freespace;
+
+char buffer[100];
 
 void setup()
 {
@@ -14,29 +23,47 @@ void setup()
 
     // check data about microsd
     // put a file in the microsd
-    // read it's contents
+    // read it's contents (correctly)
 
-    HAL_GPIO_WritePin(MSD_CS_GPIO_Port, MSD_CS_Pin, GPIO_PIN_RESET);
     FRESULT fres = f_mount(&fs, "", 1);
-    HAL_GPIO_WritePin(MSD_CS_GPIO_Port, MSD_CS_Pin, GPIO_PIN_SET);
 
     if (fres != FR_OK)
-    {
         while (1);
-    }
 
-    HAL_GPIO_WritePin(MSD_CS_GPIO_Port, MSD_CS_Pin, GPIO_PIN_RESET);
     FATFS* fsptr = &fs;
     fres         = f_getfree("", &free_clusters, &fsptr);
-    HAL_GPIO_WritePin(MSD_CS_GPIO_Port, MSD_CS_Pin, GPIO_PIN_RESET);
 
     if (fres != FR_OK)
-    {
+
         while (1);
+
+    total_sectors = (uint32_t) ((fsptr->n_fatent - 2) * fsptr->csize * 0.5);
+    freespace     = (uint32_t) (free_clusters * fsptr->csize * 0.5);
+
+    HAL_Delay(500);
+
+    fres = f_open(&file, "write.txt", FA_CREATE_NEW | FA_WRITE | FA_READ);
+    if (fres != FR_OK)
+
+        while (1);
+
+    f_puts("Hello from Aziz", &file);
+
+    fres = f_lseek(&file, 0);
+
+    if (fres != FR_OK)
+        while (1);
+
+    // Reads line by line until the end
+    while (f_gets(buffer, sizeof(buffer), &file))
+    {
+        HAL_UART_Transmit(&huart2, (const uint8_t*) buffer, sizeof(buffer), 100);
+        memset(buffer, 0, sizeof(buffer));
+        // Can use the buffer for something useful
     }
 
-    total_sectors = (fsptr->n_fatent - 2) * fsptr->csize;
-    free_sectors  = free_clusters * fsptr->csize;
+    memset(buffer, 0, sizeof(buffer));
+    f_close(&file);
 }
 
 void loop()

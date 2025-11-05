@@ -50,6 +50,12 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
     Core/Src/main.cpp
 
+    Core/Src/Modules/sd.cpp
+
+    Core/Src/C++/_iwdg.cpp
+    Core/Src/C++/gpio.cpp
+    Core/Src/C++/ptimer.cpp
+
 
     # Added micro sd spi "implementation"
     FATFS/Target/fatfs_sd.c
@@ -58,6 +64,11 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
+    ${CMAKE_SOURCE_DIR}/Core/Inc
+
+    ${CMAKE_SOURCE_DIR}/Core/Inc/Modules
+    ${CMAKE_SOURCE_DIR}/Core/Inc/C++
+
 )
 
 # Add project symbols (macros)
