@@ -37,8 +37,6 @@ class MicroSDReader
 
     ~MicroSDReader() = default;
 
-    MP_RES test();  // checks if communication is set
-
     MP_RES mount();
     MP_RES is_mounted() const;
     MP_RES unmount();

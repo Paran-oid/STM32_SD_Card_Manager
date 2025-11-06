@@ -1,6 +1,6 @@
 #include "ptimer.hpp"
 
-#include <limits>
+#include <etl/limits.h>
 
 #include "gpio.hpp"
 
@@ -65,7 +65,7 @@ void PTimer<T>::delay_us(T timeout_us)
 {
     uint32_t m_freq           = this->get_freq();
     uint64_t calculated_ticks = timeout_us * (m_freq / 1'000'000);
-    if (calculated_ticks > std::numeric_limits<T>::max()) return;  // error encountered
+    if (calculated_ticks > etl::numeric_limits<T>::max()) return;  // error encountered
 
     uint32_t start = __HAL_TIM_GetCounter(&m_htim);
     while ((__HAL_TIM_GetCounter(&m_htim) - start) < calculated_ticks);
@@ -76,14 +76,14 @@ void PTimer<T>::delay_ms(uint16_t timeout_ms)
 {
     uint32_t m_freq           = this->get_freq();
     uint64_t calculated_ticks = timeout_ms * (m_freq / 1'000);
-    if (calculated_ticks > std::numeric_limits<T>::max()) return;  // error encountered
+    if (calculated_ticks > etl::numeric_limits<T>::max()) return;  // error encountered
 
     uint32_t start = __HAL_TIM_GetCounter(&m_htim);
     while ((__HAL_TIM_GetCounter(&m_htim) - start) < calculated_ticks);
 }
 
 template <typename T>
-bool PTimer<T>::delay_until(GPIO& gpio, GPIOState expected_state, T timeout_us)
+bool PTimer<T>::delay_until(GPIO& gpio, GPIO::GPIOState expected_state, T timeout_us)
 {
     this->reset();
 

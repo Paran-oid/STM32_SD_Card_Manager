@@ -34,7 +34,7 @@ class PTimer
     uint32_t get_freq() const;  // returns frequency of timer
 
    public:
-    static_assert(std::is_same<T, uint32_t>::value || std::is_same<T, uint16_t>::value,
+    static_assert(etl::is_same_v<T, uint32_t> || etl::is_same_v<T, uint16_t>,
                   "Timer<T>: T must be uint16_t or uint32_t");
 
     /***********************************************************

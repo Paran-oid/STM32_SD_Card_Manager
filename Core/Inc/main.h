@@ -74,8 +74,8 @@ extern "C"
 #define MSD_CS_Pin         GPIO_PIN_6
 #define MSD_CS_GPIO_Port   GPIOB
 
-    /* USER CODE BEGIN Private defines */
-
+/* USER CODE BEGIN Private defines */
+#define ETL_USING_STL 0
     /* USER CODE END Private defines */
 
 #ifdef __cplusplus

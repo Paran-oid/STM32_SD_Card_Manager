@@ -46,11 +46,11 @@ class GPIO
     /***********************************************************
      * Getters and Setters
      ***********************************************************/
-    void mode_set(GPIOMode mode);
+    void mode_set(GPIO::GPIOMode mode);
 
-    void      set_state(GPIOState state);
-    void      toggle_state();
-    GPIOState get_state() const;
+    void            set_state(GPIO::GPIOState state);
+    void            toggle_state();
+    GPIO::GPIOState get_state() const;
 
     inline uint16_t get_pin() const
     {

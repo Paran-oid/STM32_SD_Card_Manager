@@ -13,7 +13,7 @@
 - DSP effects: Reverb, echo, 3-band equalizer.
 - Introduce testing (unit and integration testing)
 - Ask AI for other ideas!
-- Finish project and put it on github and don't forget to mention the people u borrowed code from.
+- Finish project and put it on github and don't forget to mention the people u borrowed code from/code used (ETL, fatfs microsd ready code, etc)
 - Include low power modes
 - Make sure my code is optimal (consider using design patterns)
 - Make sure everything (functions and methods) returns an MP_RES
