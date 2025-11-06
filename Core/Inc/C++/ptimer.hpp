@@ -5,8 +5,7 @@ extern "C"
 #include "main.h"
 }
 
-#include <type_traits>
-#include <vector>
+#include <etl/type_traits.h>
 
 #include "gpio.hpp"
 
@@ -68,7 +67,7 @@ class PTimer
     void delay_us(T period_us);
     void delay_ms(uint16_t period_ms);
 
-    bool delay_until(GPIO& gpio, GPIOState expected_state, T period_us);
+    bool delay_until(GPIO& gpio, GPIO::GPIOState expected_state, T period_us);
 
     // pulse-width modulation generation
     bool        start_pwm(uint8_t channel);
