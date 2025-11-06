@@ -16,6 +16,7 @@
 - Finish project and put it on github and don't forget to mention the people u borrowed code from/code used (ETL, fatfs microsd ready code, etc)
 - Include low power modes
 - Make sure my code is optimal (consider using design patterns)
+- Consider using >> and << operators for microsd class and other classes (other operators too)
 - Make sure everything (functions and methods) returns an MP_RES
 - Write some error handling
 - Write some tests

@@ -19,79 +19,84 @@ MP_RES MicroSDReader::unmount()
 }
 
 // File and directory management
-MP_RES MicroSDReader::open_file(etl::string_view path, uint8_t mode)
+FIL* MicroSDReader::open_file(etl::string_view path, uint8_t mode)
 {
-    return f_open(&m_fil, path.data(), mode) == FR_OK ? MP_RES::OK : MP_RES::ERR;
+    for (auto& file : m_file_handles)
+    {
+        // TODO: change this in the future
+        if (!file.obj.fs)
+        {
+            if (f_open(&file, path.data(), mode) == FR_OK) return &file;
+        }
+    }
+
+    return nullptr;
 }
 
-MP_RES MicroSDReader::close_file()
+MP_RES MicroSDReader::close_file(FIL* file)
 {
-    return f_close(&m_fil) == FR_OK ? MP_RES::OK : MP_RES::ERR;
+    if (file)
+    {
+        return f_close(file) == FR_OK ? MP_RES::OK : MP_RES::ERR;
+    }
+    return MP_RES::ERR;
 }
 
-MP_RES MicroSDReader::write_file(etl::string_view path, etl::string_view data)
+MP_RES SDFile::write(etl::string_view txt)
 {
-    m_fil.
-    // TODO: implement
+    return f_write(&m_fil, txt.data(), txt.size(), NULL) == FR_OK ? MP_RES::OK : MP_RES::ERR;
 }
 
 template <size_t N>
-MP_RES MicroSDReader::read_file(etl::string_view path, etl::string<N> data)
+MP_RES SDFile::read(etl::string<N> txt)
 {
-    f_puts("Hello from Aziz", &file);
+    return f_read(&m_fil, txt, txt.capacity(), NULL) == FR_OK ? MP_RES::OK : MP_RES::ERR;
 }
 
-MP_RES MicroSDReader::append_file(etl::string_view path, etl::string_view data)
+MP_RES SDFile::append(etl::string_view txt)
 {
-    // TODO: implement
+    f_lseek(&m_fil, this->size());  // TODO: make sure this is correct
+    return f_write(&m_fil, txt.data(), txt.size(), NULL) == FR_OK ? MP_RES::OK : MP_RES::ERR;
 }
 
-MP_RES MicroSDReader::seek(uint32_t offset)
+MP_RES SDFile::seek(uint32_t offset)
 {
-    // TODO: implement
+    return f_lseek(&m_fil, offset) == FR_OK ? MP_RES::OK : MP_RES::ERR;
 }
 
-MP_RES MicroSDReader::truncate(etl::string_view path)
+MP_RES SDFile::truncate(etl::string_view path)
 {
-    // TODO: implement
 }
 
-uint32_t MicroSDReader::file_size(etl::string_view path) const
+uint32_t SDFile::size() const
 {
-    // TODO: implement
+    return f_size(&m_fil);
 }
 
-MP_RES MicroSDReader::rename_file(etl::string_view old_path, etl::string_view new_path)
+MP_RES SDFile::rename(etl::string_view old_path, etl::string_view new_path)
 {
-    // TODO: implement
 }
 
-MP_RES MicroSDReader::delete_file(etl::string_view path)
+MP_RES SDFile::remove()
 {
-    // TODO: implement
 }
 
 MP_RES MicroSDReader::exists(etl::string_view path)
 {
-    // TODO: implement
 }
 
 MP_RES MicroSDReader::mkdir(etl::string_view path)
 {
-    // TODO: implement
 }
 
 MP_RES MicroSDReader::list_files(etl::string_view dir)
 {
-    // TODO: implement
 }
 
 uint64_t MicroSDReader::total_space() const
 {
-    // TODO: implement
 }
 
 uint64_t MicroSDReader::free_space() const
 {
-    // TODO: implement
 }
