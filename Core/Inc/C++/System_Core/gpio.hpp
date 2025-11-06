@@ -6,21 +6,6 @@ extern "C"
 }
 
 /***************************************************************
- * Public GPIO enums for state and mode management
- ***************************************************************/
-enum GPIOMode : uint8_t
-{
-    OUTPUT = GPIO_MODE_OUTPUT_PP,
-    INPUT  = GPIO_MODE_INPUT
-};
-
-enum GPIOState : uint8_t
-{
-    HIGH = GPIO_PIN_SET,
-    LOW  = GPIO_PIN_RESET
-};
-
-/***************************************************************
  * GPIO class for handling general-purpose register interactions
  ***************************************************************/
 class GPIO
@@ -43,21 +28,36 @@ class GPIO
 
     ~GPIO() = default;
 
+    /***************************************************************
+     * Public GPIO enums for state and mode management
+     ***************************************************************/
+    enum class GPIOMode : uint8_t
+    {
+        OUTPUT = GPIO_MODE_OUTPUT_PP,
+        INPUT  = GPIO_MODE_INPUT
+    };
+
+    enum class GPIOState : uint8_t
+    {
+        HIGH = GPIO_PIN_SET,
+        LOW  = GPIO_PIN_RESET
+    };
+
     /***********************************************************
      * Getters and Setters
      ***********************************************************/
     void mode_set(GPIOMode mode);
 
-    void      state_set(GPIOState state);
-    void      state_toggle();
-    GPIOState state_get() const;
+    void      set_state(GPIOState state);
+    void      toggle_state();
+    GPIOState get_state() const;
 
-    inline uint16_t pin_get() const
+    inline uint16_t get_pin() const
     {
         return m_pin;
     }
 
-    inline GPIO_TypeDef* port_get() const
+    inline GPIO_TypeDef* get_port() const
     {
         return m_port;
     }

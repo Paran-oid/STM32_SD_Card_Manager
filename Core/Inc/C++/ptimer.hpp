@@ -32,10 +32,10 @@ class PTimer
     /***********************************************************
      * Private Methods
      ***********************************************************/
-    uint32_t freq_get() const;
+    uint32_t get_freq() const;  // returns frequency of timer
 
    public:
-    static_assert(std::is_same_v<T, uint32_t> || std::is_same_v<T, uint16_t>,
+    static_assert(std::is_same<T, uint32_t>::value || std::is_same<T, uint16_t>::value,
                   "Timer<T>: T must be uint16_t or uint32_t");
 
     /***********************************************************
@@ -48,9 +48,10 @@ class PTimer
 
     ~PTimer()
     {
+        // stop any channel that is still running pwm
         for (uint8_t channel = 0; channel < 8; channel++)
         {
-            if (m_pwm_channels_state & (1 << channel)) this->pwm_stop(channel);
+            if (m_pwm_channels_state & (1 << channel)) this->stop_pwm(channel);
         }
         this->stop();
     };
@@ -70,17 +71,17 @@ class PTimer
     bool delay_until(GPIO& gpio, GPIOState expected_state, T period_us);
 
     // pulse-width modulation generation
-    bool        pwm_start(uint8_t channel);
-    inline void pwm_set(uint16_t val, uint8_t channel)
+    bool        start_pwm(uint8_t channel);
+    inline void set_pwm(uint16_t val, uint8_t channel)
     {
         __HAL_TIM_SET_COMPARE(&m_htim, channel, val);
     }
-    inline T pwm_get(uint8_t channel) const
+    inline T get_pwm(uint8_t channel) const
     {
         return __HAL_TIM_GET_COMPARE(&m_htim, channel);
     }
 
-    bool pwm_stop(uint8_t channel);
+    bool stop_pwm(uint8_t channel);
 
     inline void reset() const
     {

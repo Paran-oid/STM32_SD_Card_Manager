@@ -2,7 +2,6 @@
 
 #include <limits>
 
-#include "error_handler.hpp"
 #include "gpio.hpp"
 
 template class PTimer<uint32_t>;
@@ -11,7 +10,7 @@ template class PTimer<uint16_t>;
 const TIM_TypeDef* ABP2_TIMS[] = {TIM1, TIM8};
 
 template <typename T>
-uint32_t PTimer<T>::freq_get() const
+uint32_t PTimer<T>::get_freq() const
 {
     uint32_t pclk;  // peripheral clock
 
@@ -47,7 +46,7 @@ template <typename T>
 uint32_t PTimer<T>::elapsed_us() const
 {
     uint32_t ticks = __HAL_TIM_GET_COUNTER(&m_htim);
-    uint32_t freq  = this->freq_get();
+    uint32_t freq  = this->get_freq();
 
     return ticks / (freq / 1'000'000);
 }
@@ -56,7 +55,7 @@ template <typename T>
 uint32_t PTimer<T>::elapsed_ms() const
 {
     uint32_t ticks = __HAL_TIM_GET_COUNTER(&m_htim);
-    uint32_t freq  = this->freq_get();
+    uint32_t freq  = this->get_freq();
 
     return ticks / (freq / 1'000);
 }
@@ -64,9 +63,9 @@ uint32_t PTimer<T>::elapsed_ms() const
 template <typename T>
 void PTimer<T>::delay_us(T timeout_us)
 {
-    uint32_t m_freq           = this->freq_get();
+    uint32_t m_freq           = this->get_freq();
     uint64_t calculated_ticks = timeout_us * (m_freq / 1'000'000);
-    if (calculated_ticks > std::numeric_limits<T>::max()) error_handle(critical_error);
+    if (calculated_ticks > std::numeric_limits<T>::max()) return;  // error encountered
 
     uint32_t start = __HAL_TIM_GetCounter(&m_htim);
     while ((__HAL_TIM_GetCounter(&m_htim) - start) < calculated_ticks);
@@ -75,9 +74,9 @@ void PTimer<T>::delay_us(T timeout_us)
 template <typename T>
 void PTimer<T>::delay_ms(uint16_t timeout_ms)
 {
-    uint32_t m_freq           = this->freq_get();
+    uint32_t m_freq           = this->get_freq();
     uint64_t calculated_ticks = timeout_ms * (m_freq / 1'000);
-    if (calculated_ticks > std::numeric_limits<T>::max()) error_handle(critical_error);
+    if (calculated_ticks > std::numeric_limits<T>::max()) return;  // error encountered
 
     uint32_t start = __HAL_TIM_GetCounter(&m_htim);
     while ((__HAL_TIM_GetCounter(&m_htim) - start) < calculated_ticks);
@@ -88,7 +87,7 @@ bool PTimer<T>::delay_until(GPIO& gpio, GPIOState expected_state, T timeout_us)
 {
     this->reset();
 
-    while (gpio.state_get() != expected_state)
+    while (gpio.get_state() != expected_state)
     {
         if (this->elapsed_us() >= timeout_us) return false;
     }
@@ -97,7 +96,7 @@ bool PTimer<T>::delay_until(GPIO& gpio, GPIOState expected_state, T timeout_us)
 }
 
 template <typename T>
-bool PTimer<T>::pwm_start(uint8_t channel)
+bool PTimer<T>::start_pwm(uint8_t channel)
 {
     if (channel >= MAX_PWM_CHANNELS) return false;
 
@@ -107,7 +106,7 @@ bool PTimer<T>::pwm_start(uint8_t channel)
 }
 
 template <typename T>
-bool PTimer<T>::pwm_stop(uint8_t channel)
+bool PTimer<T>::stop_pwm(uint8_t channel)
 {
     if (channel >= MAX_PWM_CHANNELS) return false;
 

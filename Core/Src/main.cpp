@@ -5,9 +5,11 @@ extern "C"
 #include "main.h"
 }
 
+#include <etl/string.h>
 #include <string.h>
 
-extern UART_HandleTypeDef huart2;
+#include "_iwdg.hpp"
+#include "hal_init.hpp"
 
 FATFS fs;
 FIL   file;
@@ -19,6 +21,8 @@ char buffer[100];
 
 void setup()
 {
+    hal_init_all();  // initalizes all peripherals to their respective C++ classes and structs
+
     // test sd card
 
     // check data about microsd
@@ -68,18 +72,6 @@ void setup()
 
 void loop()
 {
-    HAL_Delay(500);
-}
-
-extern "C"
-{
-    void setup_map(void)
-    {
-        setup();
-    }
-
-    void loop_map(void)
-    {
-        loop();
-    }
+    iwdg.refresh();  // time limit 10 seconds
+    HAL_Delay(IWDG_DELAY);
 }

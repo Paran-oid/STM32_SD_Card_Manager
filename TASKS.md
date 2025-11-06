@@ -14,4 +14,10 @@
 - Introduce testing (unit and integration testing)
 - Ask AI for other ideas!
 - Finish project and put it on github and don't forget to mention the people u borrowed code from.
+- Include low power modes
+- Make sure my code is optimal (consider using design patterns)
+- Make sure everything (functions and methods) returns an MP_RES
+- Write some error handling
+- Write some tests
+- Write documentation
 - Write a good README.md and end the project
