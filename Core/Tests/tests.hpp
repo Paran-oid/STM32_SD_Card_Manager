@@ -14,4 +14,4 @@ struct TestResult
 
 void run_tests();
 
-TestResult test_sd_read_write(bool write = true, bool read = true, bool display = true);
+TestResult test_sd_read_write(bool display = false);

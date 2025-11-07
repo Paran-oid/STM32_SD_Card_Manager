@@ -66,8 +66,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Test-related
     ${CMAKE_SOURCE_DIR}/Core/Tests/test_sd.cpp
     ${CMAKE_SOURCE_DIR}/Core/Tests/tests.cpp
-
-
+    
 
     # Added micro sd spi "implementation"
     ${CMAKE_SOURCE_DIR}/FATFS/Target/fatfs_sd.c

@@ -54,7 +54,8 @@ MP_RES MicroSDReader::mkdir(etl::string_view path)
     return f_mkdir(path.data()) == FR_OK ? MP_RES::OK : MP_RES::ERR;
 }
 
-MP_RES list_files(etl::string_view dir_path, uint8_t page, etl::array<FILINFO, PAGE_SIZE>& out)
+MP_RES MicroSDReader::list_files(etl::string_view dir_path, uint8_t page,
+                                 etl::array<FILINFO, PAGE_SIZE>& out)
 {
     (void) page;
     (void) out;
@@ -77,13 +78,13 @@ MP_RES list_files(etl::string_view dir_path, uint8_t page, etl::array<FILINFO, P
         {
             log("  <DIR>  ");
             log(fno.fname);
-            log("\n");
+            log("\r\n");
         }
         else
         {
             log("  <FILE>  ");
             log(fno.fname);
-            log("\n");
+            log("\r\n");
         }
     }
 
