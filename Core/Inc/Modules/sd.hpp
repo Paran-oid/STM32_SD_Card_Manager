@@ -6,11 +6,55 @@ extern "C"
 #include "main.h"
 }
 
+#include <etl/array.h>
+#include <etl/memory.h>
 #include <etl/string.h>
 
 #include "defines.hpp"
 
 constexpr uint8_t MAX_FILE_HANDLES = 4;
+constexpr uint8_t PAGE_SIZE        = 16;  // 16 entities can be read at a time
+
+class SDFile
+{
+   private:
+    etl::string<100> m_path;
+    FIL              m_fil;
+
+   public:
+    SDFile() = delete;
+
+    SDFile(const etl::string<100>& path) : m_path {path}
+    {
+    }
+
+    ~SDFile() = default;
+
+    void write(uint8_t);
+
+    MP_RES write(etl::string_view txt);
+    MP_RES append(etl::string_view txt);
+
+    template <size_t size>
+    MP_RES read(etl::string<size> txt);
+
+    MP_RES seek(uint32_t offset);
+    MP_RES truncate();
+
+    MP_RES rename(etl::string_view old_path, etl::string_view new_path);
+    MP_RES delete_();
+
+    uint32_t size() const;
+
+    FIL* fil()
+    {
+        return &m_fil;
+    }
+    const FIL* fil() const
+    {
+        return &m_fil;
+    }
+};
 
 class MicroSDReader
 {
@@ -19,7 +63,7 @@ class MicroSDReader
 
     FATFS m_fs;
 
-    etl::array<FIL, MAX_FILE_HANDLES> m_file_handles;
+    etl::array<etl::unique_ptr<SDFile>, MAX_FILE_HANDLES> m_file_handles;
 
    public:
     enum class SDType
@@ -42,44 +86,14 @@ class MicroSDReader
     MP_RES unmount();
 
     // File and directory Management
-    FIL*   open_file(etl::string_view path, uint8_t mode);
-    MP_RES close_file(FIL* file);
+    SDFile* open_file(etl::string_view path, uint8_t mode);
+    MP_RES  close_file(FIL* file);
 
     MP_RES exists(etl::string_view path);
     MP_RES mkdir(etl::string_view path);
-    MP_RES list_files(etl::string_view dir);
+
+    MP_RES list_files(etl::string_view dir_path, uint8_t page, etl::array<FILINFO, PAGE_SIZE>& out);
 
     uint64_t total_space() const;
     uint64_t free_space() const;
-};
-
-class SDFile
-{
-   private:
-    MicroSDReader& m_sd_reader;
-    FIL            m_fil;
-
-   public:
-    SDFile() = delete;
-
-    SDFile(MicroSDReader& sd_reader) : m_sd_reader {sd_reader}
-    {
-    }
-
-    ~SDFile() = default;
-
-    void write(uint8_t);
-
-    MP_RES write(etl::string_view txt);
-    MP_RES append(etl::string_view txt);
-
-    template <size_t size>
-    MP_RES read(etl::string<size> txt);
-
-    MP_RES seek(uint32_t offset);
-    MP_RES truncate();
-
-    uint32_t size() const;
-    MP_RES   rename(etl::string_view old_path, etl::string_view new_path);
-    MP_RES   remove();
 };

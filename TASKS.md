@@ -18,7 +18,7 @@
 - Make sure my code is optimal (consider using design patterns)
 - Consider using >> and << operators for microsd class and other classes (other operators too)
 - Make sure everything (functions and methods) returns an MP_RES
-- Write some error handling
+- Write some error handling and logging
 - Write some tests
-- Write documentation
+- Write documentation and add defines section for each file
 - Write a good README.md and end the project

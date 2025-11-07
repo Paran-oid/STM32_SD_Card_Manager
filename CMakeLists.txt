@@ -52,8 +52,10 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
     Core/Src/main.cpp
+    Core/Src/utils.cpp
 
-    Core/Src/Modules/sd.cpp
+    Core/Src/Modules/sd_file.cpp
+    Core/Src/Modules/sd_reader.cpp
 
     Core/Src/App/hal_init.cpp
 

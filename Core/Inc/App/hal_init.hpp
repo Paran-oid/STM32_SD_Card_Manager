@@ -5,6 +5,8 @@ extern "C"
 #include "main.h"
 }
 
+#include "sd.hpp"
+
 /***********************************************************
  * Public defines
  ***********************************************************/
@@ -36,6 +38,8 @@ extern UART_HandleTypeDef huart2;
 extern PTimer<uint32_t> tim2;
 
 extern _IWDG iwdg;
+
+extern MicroSDReader sd_reader;
 
 /***************************************************************
  * Function declarations
