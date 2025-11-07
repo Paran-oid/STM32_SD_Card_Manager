@@ -51,21 +51,26 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
-    Core/Src/main.cpp
-    Core/Src/utils.cpp
+    ${CMAKE_SOURCE_DIR}/Core/Src/entry.cpp
+    ${CMAKE_SOURCE_DIR}/Core/Src/utils.cpp
 
-    Core/Src/Modules/sd_file.cpp
-    Core/Src/Modules/sd_reader.cpp
+    ${CMAKE_SOURCE_DIR}/Core/Src/Modules/sd_file.cpp
+    ${CMAKE_SOURCE_DIR}/Core/Src/Modules/sd_reader.cpp
 
-    Core/Src/App/hal_init.cpp
+    ${CMAKE_SOURCE_DIR}/Core/Src/App/hal_init.cpp
 
-    Core/Src/C++/System_Core/_iwdg.cpp
-    Core/Src/C++/System_Core/gpio.cpp
-    Core/Src/C++/ptimer.cpp
+    ${CMAKE_SOURCE_DIR}/Core/Src/C++/System_Core/_iwdg.cpp
+    ${CMAKE_SOURCE_DIR}/Core/Src/C++/System_Core/gpio.cpp
+    ${CMAKE_SOURCE_DIR}/Core/Src/C++/ptimer.cpp
+
+    # Test-related
+    ${CMAKE_SOURCE_DIR}/Core/Tests/test_sd.cpp
+    ${CMAKE_SOURCE_DIR}/Core/Tests/tests.cpp
+
 
 
     # Added micro sd spi "implementation"
-    FATFS/Target/fatfs_sd.c
+    ${CMAKE_SOURCE_DIR}/FATFS/Target/fatfs_sd.c
 )
 
 # Add include paths
@@ -78,8 +83,11 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/Core/Inc/App
     
     
-    ${CMAKE_SOURCE_DIR}/Core/Inc/C++
+    ${CMAKE_SOURCE_DIR}/Core/Inc/C++/
     ${CMAKE_SOURCE_DIR}/Core/Inc/C++/System_Core
+
+    # Test-related
+    ${CMAKE_SOURCE_DIR}/Core/Tests
 
 )
 

@@ -10,7 +10,7 @@ extern "C"
 #include <etl/memory.h>
 #include <etl/string.h>
 
-#include "defines.hpp"
+#include "utils.hpp"
 
 constexpr uint8_t MAX_FILE_HANDLES = 4;
 constexpr uint8_t PAGE_SIZE        = 16;  // 16 entities can be read at a time
@@ -32,11 +32,21 @@ class SDFile
 
     void write(uint8_t);
 
-    MP_RES write(etl::string_view txt);
-    MP_RES append(etl::string_view txt);
-
     template <size_t size>
-    MP_RES read(etl::string<size> txt);
+    MP_RES read(etl::string<size>& str)
+    {
+        char buf[size];
+
+        UINT    bytes_read;
+        FRESULT fres = f_read(&m_fil, buf, size, &bytes_read);
+
+        str.assign(buf);
+
+        if (fres) return MP_RES::ERR;
+        return MP_RES::OK;
+    }
+
+    MP_RES write(etl::string_view txt);
 
     MP_RES seek(uint32_t offset);
     MP_RES truncate();

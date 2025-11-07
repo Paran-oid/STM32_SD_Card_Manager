@@ -1,5 +1,4 @@
 #include "sd.hpp"
-#include "utils.hpp"
 
 MP_RES MicroSDReader::mount()
 {
@@ -55,8 +54,11 @@ MP_RES MicroSDReader::mkdir(etl::string_view path)
     return f_mkdir(path.data()) == FR_OK ? MP_RES::OK : MP_RES::ERR;
 }
 
-MP_RES list_files(etl::string_view dir_path, uint8_t page, etl::array<FILINFO, PAGE_SIZE>& out);
+MP_RES list_files(etl::string_view dir_path, uint8_t page, etl::array<FILINFO, PAGE_SIZE>& out)
 {
+    (void) page;
+    (void) out;
+
     DIR     dir;
     FRESULT fres = f_opendir(&dir, dir_path.data());
 
@@ -64,10 +66,10 @@ MP_RES list_files(etl::string_view dir_path, uint8_t page, etl::array<FILINFO, P
 
     // TODO: make sure the array passed is filled after this function
 
-    FILINFO finfo;
+    FILINFO fno;
     for (;;)
     {
-        fres = f_readdir(&dir, &finfo);
+        fres = f_readdir(&dir, &fno);
         if (fres != FR_OK) break;
         if (!fno.fname[0]) break;
 
