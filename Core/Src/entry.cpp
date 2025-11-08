@@ -5,31 +5,25 @@ extern "C"
 }
 
 #include <etl/array.h>
+#include <etl/format_spec.h>
 #include <etl/string.h>
+#include <etl/to_string.h>
 
 #include "_iwdg.hpp"
 #include "hal_init.hpp"
 #include "tests.hpp"
+#include "uart.hpp"
 
-#define DEBUG_
+#define TESTING_ 0
 
 void setup()
 {
-#ifdef DEBUG_
-    __HAL_DBGMCU_FREEZE_IWDG();
-#endif
-
     hal_init_all();
 
-    // run_tests();  // to configure tests modify run_tests in tests.cpp inside Tests folder
-
+#if TESTING_
+    run_tests();  // to configure tests modify run_tests in tests.cpp inside Tests folder
+#endif
     sd_reader.mount();
-
-    etl::array<FILINFO, PAGE_SIZE> arr;
-
-    sd_reader.list_files("/", 0, arr);
-    // TODO: delete all files and recheck with list_files
-    // TODO: make sure paging works for reading from a directory
 
     sd_reader.unmount();
 }

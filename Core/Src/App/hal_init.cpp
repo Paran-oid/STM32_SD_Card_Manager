@@ -2,10 +2,15 @@
 
 #include "_iwdg.hpp"
 #include "ptimer.hpp"
+#include "spi.hpp"
+#include "uart.hpp"
 
-PTimer<uint32_t> tim2      = {htim2};
-_IWDG            iwdg      = {hiwdg};
-MicroSDReader    sd_reader = {hspi1};
+_IWDG            iwdg  = {hiwdg};
+SPI              spi1  = {hspi1};
+PTimer<uint32_t> tim2  = {htim2};
+UART             uart2 = {huart2};
+
+MicroSDReader sd_reader = {hspi1};
 
 void hal_init_all()
 {

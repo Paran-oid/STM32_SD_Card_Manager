@@ -1,24 +1,24 @@
 cmake_minimum_required(VERSION 3.22)
 
 #
-# This file is generated only once,
-# and is not re-generated if converter is called multiple times.
+# This file is generated only once, and is not re-generated if converter is
+# called multiple times.
 #
 # User is free to modify the file as much as necessary
 #
 
 # Setup compiler settings
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)
 
 # Define the build type
 if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Debug")
+  set(CMAKE_BUILD_TYPE "Debug")
 endif()
 
 # Set the project name
@@ -44,68 +44,66 @@ add_executable(${CMAKE_PROJECT_NAME})
 add_subdirectory(cmake/stm32cubemx)
 
 # Link directories setup
-target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user defined library search paths
+target_link_directories(
+  ${CMAKE_PROJECT_NAME} PRIVATE # Add user defined library search paths
 )
 
 # Add sources to executable
-target_sources(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user sources here
-    ${CMAKE_SOURCE_DIR}/Core/Src/entry.cpp
-    ${CMAKE_SOURCE_DIR}/Core/Src/utils.cpp
-
-    ${CMAKE_SOURCE_DIR}/Core/Src/Modules/sd_file.cpp
-    ${CMAKE_SOURCE_DIR}/Core/Src/Modules/sd_reader.cpp
-
-    ${CMAKE_SOURCE_DIR}/Core/Src/App/hal_init.cpp
-
-    ${CMAKE_SOURCE_DIR}/Core/Src/C++/System_Core/_iwdg.cpp
-    ${CMAKE_SOURCE_DIR}/Core/Src/C++/System_Core/gpio.cpp
-    ${CMAKE_SOURCE_DIR}/Core/Src/C++/ptimer.cpp
-
-    # Test-related
-    ${CMAKE_SOURCE_DIR}/Core/Tests/test_sd.cpp
-    ${CMAKE_SOURCE_DIR}/Core/Tests/tests.cpp
-    
-
-    # Added micro sd spi "implementation"
-    ${CMAKE_SOURCE_DIR}/FATFS/Target/fatfs_sd.c
-)
+target_sources(
+  ${CMAKE_PROJECT_NAME}
+  PRIVATE #
+          # Add user sources here
+          #
+          ${CMAKE_SOURCE_DIR}/Core/Src/entry.cpp
+          ${CMAKE_SOURCE_DIR}/Core/Src/utils.cpp
+          ${CMAKE_SOURCE_DIR}/Core/Src/Modules/sd_file.cpp
+          ${CMAKE_SOURCE_DIR}/Core/Src/Modules/sd_reader.cpp
+          ${CMAKE_SOURCE_DIR}/Core/Src/App/hal_init.cpp
+          ${CMAKE_SOURCE_DIR}/Core/Src/C++/System_Core/_iwdg.cpp
+          ${CMAKE_SOURCE_DIR}/Core/Src/C++/System_Core/gpio.cpp
+          ${CMAKE_SOURCE_DIR}/Core/Src/C++/Connectivity/uart.cpp
+          ${CMAKE_SOURCE_DIR}/Core/Src/C++/Connectivity/spi.cpp
+          ${CMAKE_SOURCE_DIR}/Core/Src/C++/ptimer.cpp
+          #
+          # Test-related
+          #
+          ${CMAKE_SOURCE_DIR}/Core/Tests/test_sd.cpp
+          ${CMAKE_SOURCE_DIR}/Core/Tests/tests.cpp
+          #
+          # Added micro sd spi "implementation"
+          #
+          ${CMAKE_SOURCE_DIR}/FATFS/Target/fatfs_sd.c)
 
 # Add include paths
-target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user defined include paths
-    ${CMAKE_SOURCE_DIR}/Core/Inc
-
-    ${CMAKE_SOURCE_DIR}/Core/Inc/Modules
-
-    ${CMAKE_SOURCE_DIR}/Core/Inc/App
-    
-    
-    ${CMAKE_SOURCE_DIR}/Core/Inc/C++/
-    ${CMAKE_SOURCE_DIR}/Core/Inc/C++/System_Core
-
-    # Test-related
-    ${CMAKE_SOURCE_DIR}/Core/Tests
-
-)
+target_include_directories(
+  ${CMAKE_PROJECT_NAME}
+  PRIVATE #
+          # Add user defined include paths
+          #
+          ${CMAKE_SOURCE_DIR}/Core/Inc
+          ${CMAKE_SOURCE_DIR}/Core/Inc/Modules
+          ${CMAKE_SOURCE_DIR}/Core/Inc/App
+          ${CMAKE_SOURCE_DIR}/Core/Inc/C++/
+          ${CMAKE_SOURCE_DIR}/Core/Inc/C++/System_Core
+          ${CMAKE_SOURCE_DIR}/Core/Inc/C++/Connectivity
+          #
+          # Test-related
+          #
+          ${CMAKE_SOURCE_DIR}/Core/Tests)
 
 # Add project symbols (macros)
-target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user defined symbols
+target_compile_definitions(
+  ${CMAKE_PROJECT_NAME} PRIVATE # Add user defined symbols
 )
 
 # Add flags
-target_compile_options( ${CMAKE_PROJECT_NAME} PRIVATE
-    -Wall -Wextra -fno-rtti -fno-exceptions
-)
+target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Wextra -fno-rtti
+                                                     -fno-exceptions)
 
 # Remove wrong libob.a library dependency when using cpp files
 list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
 
 # Add linked libraries
-target_link_libraries(${CMAKE_PROJECT_NAME}
-    stm32cubemx
-    etl::etl
-    # Add user defined libraries
+target_link_libraries(
+  ${CMAKE_PROJECT_NAME} stm32cubemx etl::etl # Add user defined libraries
 )

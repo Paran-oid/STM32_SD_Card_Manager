@@ -31,7 +31,7 @@ TestResult test_sd_read_write(bool display)
         for (auto msg : msgs) log(msg);
     }
 
-    if (sd_reader.close_file(file->fil())) return {false, "close file failed"};
+    if (sd_reader.close_file(file)) return {false, "close file failed"};
     if (sd_reader.unmount()) return {false, "unmount failed"};
 
     return {true, ""};

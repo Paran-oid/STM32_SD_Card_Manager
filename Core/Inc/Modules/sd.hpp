@@ -32,17 +32,18 @@ class SDFile
 
     void write(uint8_t);
 
-    template <size_t size>
-    MP_RES read(etl::string<size>& str)
+    template <size_t N>
+    MP_RES read(etl::string<N>& str)
     {
-        char buf[size];
+        char buf[N];  // must be char[] because f_read works that way
 
         UINT    bytes_read;
-        FRESULT fres = f_read(&m_fil, buf, size, &bytes_read);
+        FRESULT fres = f_read(&m_fil, buf, N, &bytes_read);
+
+        if (fres) return MP_RES::ERR;
 
         str.assign(buf);
 
-        if (fres) return MP_RES::ERR;
         return MP_RES::OK;
     }
 
@@ -52,7 +53,6 @@ class SDFile
     MP_RES truncate();
 
     MP_RES rename(etl::string_view old_path, etl::string_view new_path);
-    MP_RES delete_();
 
     uint32_t size() const;
 
@@ -63,6 +63,11 @@ class SDFile
     const FIL* fil() const
     {
         return &m_fil;
+    }
+
+    etl::string_view path() const
+    {
+        return m_path;
     }
 };
 
@@ -97,12 +102,14 @@ class MicroSDReader
 
     // File and directory Management
     SDFile* open_file(etl::string_view path, uint8_t mode);
-    MP_RES  close_file(FIL* file);
+    MP_RES  close_file(SDFile* file);
 
     MP_RES exists(etl::string_view path);
     MP_RES mkdir(etl::string_view path);
 
-    MP_RES list_files(etl::string_view dir_path, uint8_t page, etl::array<FILINFO, PAGE_SIZE>& out);
+    MP_RES list(etl::string_view dir_path, uint8_t page, etl::array<FILINFO, PAGE_SIZE>& out);
+    MP_RES delete_(etl::string_view path,
+                   bool             recursive = false);  // both a file and directory can be passed
 
     uint64_t total_space() const;
     uint64_t free_space() const;

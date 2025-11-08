@@ -15,10 +15,12 @@ constexpr uint16_t IWDG_DELAY = 1000;  // in ms
 /***************************************************************
  * Forward declarations
  ***************************************************************/
+class UART;
+class SPI;
+
 template <typename T>
 class PTimer;
 
-class GPIO;
 class _IWDG;
 
 /***************************************************************
@@ -33,11 +35,20 @@ extern TIM_HandleTypeDef htim2;
 extern UART_HandleTypeDef huart2;
 
 /***************************************************************
- * Exported objects
+ * Exported C++ converted peripherals
  ***************************************************************/
-extern PTimer<uint32_t> tim2;
 
 extern _IWDG iwdg;
+
+extern SPI spi1;
+
+extern PTimer<uint32_t> tim2;
+
+extern UART uart2;
+
+/***************************************************************
+ * Exported objects
+ ***************************************************************/
 
 extern MicroSDReader sd_reader;
 

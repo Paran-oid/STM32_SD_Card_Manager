@@ -24,8 +24,3 @@ MP_RES SDFile::rename(etl::string_view old_path, etl::string_view new_path)
 {
     return f_rename(old_path.data(), new_path.data()) == FR_OK ? MP_RES::OK : MP_RES::ERR;
 }
-
-MP_RES SDFile::delete_()
-{
-    return f_unlink(m_path.data()) == FR_OK ? MP_RES::OK : MP_RES::ERR;
-}
