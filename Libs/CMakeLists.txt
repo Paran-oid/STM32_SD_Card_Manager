@@ -1,2 +1,2 @@
 add_subdirectory(etl)
-add_subdirectory(stm32_cpp_abstractions)
+add_subdirectory(sca) # stm32_cpp_abstractions

@@ -85,8 +85,12 @@ target_include_directories(
 
 # Add project symbols (macros)
 target_compile_definitions(
-  ${CMAKE_PROJECT_NAME} PRIVATE # Add user defined symbols
+  ${CMAKE_PROJECT_NAME} PUBLIC # Add user defined symbols
 )
+
+target_compile_definitions(
+  sca PUBLIC # Add user defined symbols for cpp abstraction library
+             SCA_GPIO SCA_IWDG SCA_SPI SCA_PTIMER SCA_UART)
 
 # Add flags
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Wextra -fno-rtti
@@ -98,4 +102,4 @@ list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
 # Add linked libraries
 target_link_libraries(
   ${CMAKE_PROJECT_NAME} stm32cubemx etl::etl # Add user defined libraries
-  stm32_cpp_abstractions)
+  sca)
