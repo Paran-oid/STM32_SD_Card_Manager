@@ -7,5 +7,5 @@ void run_tests()
     res = test_sd_read_write();
     if (!res.passed) die(res.msg);
 
-    log("all tests ran with success!\r\n");
+    log("all tests ran with success!\n");
 }

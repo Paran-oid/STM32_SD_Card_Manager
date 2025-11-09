@@ -35,7 +35,7 @@ message("Build type: " ${CMAKE_BUILD_TYPE})
 enable_language(C CXX ASM)
 
 # Packages
-find_package(etl 20.44.1)
+add_subdirectory(Libs)
 
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME})
@@ -59,11 +59,6 @@ target_sources(
           ${CMAKE_SOURCE_DIR}/Core/Src/Modules/sd_file.cpp
           ${CMAKE_SOURCE_DIR}/Core/Src/Modules/sd_reader.cpp
           ${CMAKE_SOURCE_DIR}/Core/Src/App/hal_init.cpp
-          ${CMAKE_SOURCE_DIR}/Core/Src/C++/System_Core/_iwdg.cpp
-          ${CMAKE_SOURCE_DIR}/Core/Src/C++/System_Core/gpio.cpp
-          ${CMAKE_SOURCE_DIR}/Core/Src/C++/Connectivity/uart.cpp
-          ${CMAKE_SOURCE_DIR}/Core/Src/C++/Connectivity/spi.cpp
-          ${CMAKE_SOURCE_DIR}/Core/Src/C++/ptimer.cpp
           #
           # Test-related
           #
@@ -83,9 +78,6 @@ target_include_directories(
           ${CMAKE_SOURCE_DIR}/Core/Inc
           ${CMAKE_SOURCE_DIR}/Core/Inc/Modules
           ${CMAKE_SOURCE_DIR}/Core/Inc/App
-          ${CMAKE_SOURCE_DIR}/Core/Inc/C++/
-          ${CMAKE_SOURCE_DIR}/Core/Inc/C++/System_Core
-          ${CMAKE_SOURCE_DIR}/Core/Inc/C++/Connectivity
           #
           # Test-related
           #
@@ -106,4 +98,4 @@ list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
 # Add linked libraries
 target_link_libraries(
   ${CMAKE_PROJECT_NAME} stm32cubemx etl::etl # Add user defined libraries
-)
+  stm32_cpp_abstractions)

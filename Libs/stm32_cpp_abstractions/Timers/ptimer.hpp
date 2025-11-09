@@ -2,27 +2,31 @@
 
 extern "C"
 {
-#include "main.h"
+#include "stm32l4xx.h"
 }
 
 #include <etl/type_traits.h>
 
+#include "defs.hpp"
 #include "gpio.hpp"
 
-/***********************************************************
- * Public defines
- ***********************************************************/
-constexpr uint8_t MAX_PWM_CHANNELS = 8;
+namespace sca
+{
 
 /***************************************************************
- * PTimer class
+ * ptimer class
  * - precise (micro second level) 32/16-bit timer
  * --> assuming that timers use internal clock of MCU
  ***************************************************************/
 template <typename T = uint32_t>
-class PTimer
+class ptimer
 {
    private:
+    /***********************************************************
+     * Private Defines
+     ***********************************************************/
+    static constexpr uint8_t MAX_PWM_CHANNELS = 8;
+
     /***********************************************************
      * Private Members
      ***********************************************************/
@@ -40,12 +44,12 @@ class PTimer
     /***********************************************************
      * Constructors / Destructor
      ***********************************************************/
-    PTimer() = delete;
-    PTimer(TIM_HandleTypeDef& htim) : m_htim {htim}, m_pwm_channels_state {0x0}
+    ptimer() = delete;
+    ptimer(TIM_HandleTypeDef& htim) : m_htim {htim}, m_pwm_channels_state {0x0}
     {
     }
 
-    ~PTimer()
+    ~ptimer()
     {
         // stop any channel that is still running pwm
         for (uint8_t channel = 0; channel < 8; channel++)
@@ -58,8 +62,8 @@ class PTimer
     /***********************************************************
      * Public Methods
      ***********************************************************/
-    bool start();
-    bool stop();
+    SCA_RES start();
+    SCA_RES stop();
 
     uint32_t elapsed_us() const;
     uint32_t elapsed_ms() const;
@@ -67,23 +71,25 @@ class PTimer
     void delay_us(T period_us);
     void delay_ms(uint16_t period_ms);
 
-    bool delay_until(GPIO& gpio, GPIO::GPIOState expected_state, T period_us);
+    SCA_RES delay_until(gpio& gpio, gpio::GPIOState expected_state, T period_us);
 
     // pulse-width modulation generation
-    bool        start_pwm(uint8_t channel);
+    SCA_RES     start_pwm(uint8_t channel);
     inline void set_pwm(uint16_t val, uint8_t channel)
     {
-        __HAL_TIM_SET_COMPARE(&m_htim, channel, val);
+        (void) __HAL_TIM_SET_COMPARE(&m_htim, channel, val);
     }
     inline T get_pwm(uint8_t channel) const
     {
         return __HAL_TIM_GET_COMPARE(&m_htim, channel);
     }
 
-    bool stop_pwm(uint8_t channel);
+    SCA_RES stop_pwm(uint8_t channel);
 
     inline void reset() const
     {
         __HAL_TIM_SET_COUNTER(&m_htim, 0);
     }
 };
+
+}  // namespace sca

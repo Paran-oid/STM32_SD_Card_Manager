@@ -8,30 +8,33 @@ extern "C"
 #include <etl/span.h>
 #include <etl/string.h>
 
-#include <utils.hpp>
+#include "defs.hpp"
 
-class UART
+namespace sca
+{
+
+class uart
 {
    private:
     UART_HandleTypeDef& m_huart;
 
    public:
-    UART() = delete;
+    uart() = delete;
 
-    UART(UART_HandleTypeDef& huart) : m_huart {huart}
+    uart(UART_HandleTypeDef& huart) : m_huart {huart}
     {
     }
 
-    ~UART() = default;
+    ~uart() = default;
 
-    MP_RES send(etl::span<const uint8_t> tx);
-    MP_RES send(const uint8_t tx);
+    SCA_RES send(etl::span<const uint8_t> tx);
+    SCA_RES send(const uint8_t tx);
 
-    MP_RES receive(etl::span<uint8_t>& rx, bool wait_forever);
-    MP_RES receive(uint8_t& rx, bool wait_forever = true);
+    SCA_RES receive(etl::span<uint8_t>& rx, bool wait_forever);
+    SCA_RES receive(uint8_t& rx, bool wait_forever = true);
 
     template <size_t N>
-    MP_RES scan(etl::string<N>& out, bool display = true)
+    SCA_RES scan(etl::string<N>& out, bool display = true)
     {
         char   res[N];
         size_t size = 0;
@@ -40,7 +43,7 @@ class UART
 
         for (;;)
         {
-            if (this->receive(c) != MP_RES::OK) return MP_RES::ERR;
+            if (this->receive(c) != SCA_RES::OK) return SCA_RES::ERR;
 
             if (c == '\r' || c == '\n')
             {
@@ -53,12 +56,14 @@ class UART
                 res[size++] = static_cast<char>(c);
                 if (display)
                 {
-                    if (this->send(c) != MP_RES::OK) return MP_RES::ERR;
+                    if (this->send(c) != SCA_RES::OK) return SCA_RES::ERR;
                 }
             }
         }
 
         out.assign(res);
-        return MP_RES::OK;
+        return SCA_RES::OK;
     }
 };
+
+}  // namespace sca

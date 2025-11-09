@@ -1,6 +1,9 @@
 #include "gpio.hpp"
 
-void GPIO::mode_set(GPIOMode mode)
+namespace sca
+{
+
+void gpio::mode_set(GPIOMode mode)
 {
     GPIO_InitTypeDef gpio_initializer;
 
@@ -10,17 +13,19 @@ void GPIO::mode_set(GPIOMode mode)
     HAL_GPIO_Init(m_port, &gpio_initializer);
 }
 
-void GPIO::set_state(GPIOState state)
+void gpio::set_state(GPIOState state)
 {
     HAL_GPIO_WritePin(m_port, m_pin, (GPIO_PinState) state);
 }
 
-void GPIO::toggle_state()
+void gpio::toggle_state()
 {
     HAL_GPIO_TogglePin(m_port, m_pin);
 }
 
-GPIO::GPIOState GPIO::get_state() const
+gpio::GPIOState gpio::get_state() const
 {
     return HAL_GPIO_ReadPin(m_port, m_pin) == GPIO_PIN_RESET ? GPIOState::LOW : GPIOState::HIGH;
 }
+
+}  // namespace sca

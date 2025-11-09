@@ -2,13 +2,18 @@
 
 extern "C"
 {
-#include "main.h"
+#include "stm32l4xx.h"
 }
 
+#include "defs.hpp"
+
+namespace sca
+{
+
 /***************************************************************
- * _IWDG class for managing independent watchdog timer
+ * iwdg class for managing independent watchdog timer
  ****************************************************************/
-class _IWDG
+class iwdg
 {
    private:
     /***********************************************************
@@ -20,15 +25,17 @@ class _IWDG
     /***********************************************************
      * Constructors / Destructor
      ***********************************************************/
-    _IWDG() = delete;
-    _IWDG(IWDG_HandleTypeDef& hiwdg) : m_hiwdg {hiwdg}
+    iwdg() = delete;
+    iwdg(IWDG_HandleTypeDef& hiwdg) : m_hiwdg {hiwdg}
     {
     }
 
-    ~_IWDG() = default;
+    ~iwdg() = default;
 
     /***********************************************************
      * Public Methods
      ***********************************************************/
-    bool refresh();
+    SCA_RES refresh();
 };
+
+}  // namespace sca

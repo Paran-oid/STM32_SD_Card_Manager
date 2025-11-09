@@ -15,13 +15,18 @@ constexpr uint16_t IWDG_DELAY = 1000;  // in ms
 /***************************************************************
  * Forward declarations
  ***************************************************************/
-class UART;
-class SPI;
+namespace sca
+{
+
+class uart;
+class spi;
 
 template <typename T>
-class PTimer;
+class ptimer;
 
-class _IWDG;
+class iwdg;
+
+}  // namespace sca
 
 /***************************************************************
  * HAL generated variables in main.c
@@ -38,13 +43,13 @@ extern UART_HandleTypeDef huart2;
  * Exported C++ converted peripherals
  ***************************************************************/
 
-extern _IWDG iwdg;
+extern sca::iwdg iwdg;
 
-extern SPI spi1;
+extern sca::spi spi1;
 
-extern PTimer<uint32_t> tim2;
+extern sca::ptimer<uint32_t> tim2;
 
-extern UART uart2;
+extern sca::uart uart2;
 
 /***************************************************************
  * Exported objects

@@ -1,4 +1,3 @@
-#include "_iwdg.hpp"  // TODO: get rid of this include
 #include "hal_init.hpp"
 #include "sd.hpp"
 

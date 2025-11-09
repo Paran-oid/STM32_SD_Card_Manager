@@ -9,13 +9,12 @@ extern "C"
 #include <etl/string.h>
 #include <etl/to_string.h>
 
-#include "_iwdg.hpp"
 #include "hal_init.hpp"
+#include "iwdg.hpp"
 #include "tests.hpp"
 #include "uart.hpp"
 
 #define TESTING_ 0
-
 void setup()
 {
     hal_init_all();
@@ -23,6 +22,13 @@ void setup()
 #if TESTING_
     run_tests();  // to configure tests modify run_tests in tests.cpp inside Tests folder
 #endif
+
+    // TODO:
+    /*
+     * Create a project that lets you transfer files to stm32 from pc and vice versa
+     * Verify that the data is actually stored in micro sd card
+     */
+
     sd_reader.mount();
 
     sd_reader.unmount();
@@ -30,6 +36,8 @@ void setup()
 
 void loop()
 {
+    log("Hello!\n");
+
     iwdg.refresh();  // time limit 10 seconds
     HAL_Delay(IWDG_DELAY);
 }

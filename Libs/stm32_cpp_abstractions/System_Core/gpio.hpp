@@ -2,13 +2,16 @@
 
 extern "C"
 {
-#include "main.h"
+#include "stm32l4xx.h"
 }
 
+namespace sca
+{
+
 /***************************************************************
- * GPIO class for handling general-purpose register interactions
+ * gpio class for handling general-purpose register interactions
  ***************************************************************/
-class GPIO
+class gpio
 {
    private:
     /***********************************************************
@@ -21,15 +24,15 @@ class GPIO
     /***********************************************************
      * Constructors / Destructor
      ***********************************************************/
-    GPIO() = delete;
-    GPIO(GPIO_TypeDef* port, uint16_t pin) : m_port {port}, m_pin {pin}
+    gpio() = delete;
+    gpio(GPIO_TypeDef* port, uint16_t pin) : m_port {port}, m_pin {pin}
     {
     }
 
-    ~GPIO() = default;
+    ~gpio() = default;
 
     /***************************************************************
-     * Public GPIO enums for state and mode management
+     * Public gpio enums for state and mode management
      ***************************************************************/
     enum class GPIOMode : uint8_t
     {
@@ -46,11 +49,11 @@ class GPIO
     /***********************************************************
      * Getters and Setters
      ***********************************************************/
-    void mode_set(GPIO::GPIOMode mode);
+    void mode_set(gpio::GPIOMode mode);
 
-    void            set_state(GPIO::GPIOState state);
+    void            set_state(gpio::GPIOState state);
     void            toggle_state();
-    GPIO::GPIOState get_state() const;
+    gpio::GPIOState get_state() const;
 
     inline uint16_t get_pin() const
     {
@@ -62,3 +65,5 @@ class GPIO
         return m_port;
     }
 };
+
+}  // namespace sca
