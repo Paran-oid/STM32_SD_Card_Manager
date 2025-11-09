@@ -10,9 +10,9 @@ extern "C"
 #include <etl/to_string.h>
 
 #include "hal_init.hpp"
-#include "iwdg.hpp"
+#include "sca/iwdg.hpp"
+#include "sca/uart.hpp"
 #include "tests.hpp"
-#include "uart.hpp"
 
 #define TESTING_ 0
 void setup()

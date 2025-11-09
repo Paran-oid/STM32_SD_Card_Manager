@@ -1,9 +1,9 @@
 #include "hal_init.hpp"
 
-#include "iwdg.hpp"
-#include "ptimer.hpp"
-#include "spi.hpp"
-#include "uart.hpp"
+#include "sca/iwdg.hpp"
+#include "sca/ptimer.hpp"
+#include "sca/spi.hpp"
+#include "sca/uart.hpp"
 
 sca::iwdg             iwdg  = {hiwdg};
 sca::spi              spi1  = {hspi1};
