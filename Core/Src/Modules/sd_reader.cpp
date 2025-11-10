@@ -1,21 +1,21 @@
 #include "hal_init.hpp"
 #include "sd.hpp"
 
-MP_RES MicroSDReader::mount()
+SDR_RES MicroSDReader::mount()
 {
-    return f_mount(&m_fs, "", 1) == FR_OK ? MP_RES::OK : MP_RES::ERR;
+    return f_mount(&m_fs, "", 1) == FR_OK ? SDR_RES::OK : SDR_RES::ERR;
 }
 
-MP_RES MicroSDReader::is_mounted() const
+SDR_RES MicroSDReader::is_mounted() const
 {
-    return m_fs.fs_type != 0 ? MP_RES::OK : MP_RES::ERR;
+    return m_fs.fs_type != 0 ? SDR_RES::OK : SDR_RES::ERR;
 }
 
-MP_RES MicroSDReader::unmount()
+SDR_RES MicroSDReader::unmount()
 {
     FRESULT res = f_mount(NULL, "", 1);
-    if (res != FR_OK) return MP_RES::ERR;
-    return MP_RES::OK;
+    if (res != FR_OK) return SDR_RES::ERR;
+    return SDR_RES::OK;
 }
 
 // File and directory management
@@ -36,34 +36,34 @@ SDFile* MicroSDReader::open_file(etl::string_view path, uint8_t mode)
     return nullptr;
 }
 
-MP_RES MicroSDReader::close_file(SDFile* file)
+SDR_RES MicroSDReader::close_file(SDFile* file)
 {
-    if (!file) return MP_RES::ERR;
+    if (!file) return SDR_RES::ERR;
     for (auto& handle : m_file_handles)
     {
         if (file->path() == handle->path())
         {
-            if (f_close(file->fil()) != FR_OK) return MP_RES::ERR;  // couldn't close the file
+            if (f_close(file->fil()) != FR_OK) return SDR_RES::ERR;  // couldn't close the file
             handle.reset();
-            return MP_RES::OK;
+            return SDR_RES::OK;
         }
     }
 
-    return MP_RES::ERR;
+    return SDR_RES::ERR;
 }
 
-MP_RES MicroSDReader::exists(etl::string_view path)
+SDR_RES MicroSDReader::exists(etl::string_view path)
 {
-    return f_stat(path.data(), NULL) == FR_OK ? MP_RES::OK : MP_RES::ERR;
+    return f_stat(path.data(), NULL) == FR_OK ? SDR_RES::OK : SDR_RES::ERR;
 }
 
-MP_RES MicroSDReader::mkdir(etl::string_view path)
+SDR_RES MicroSDReader::mkdir(etl::string_view path)
 {
-    return f_mkdir(path.data()) == FR_OK ? MP_RES::OK : MP_RES::ERR;
+    return f_mkdir(path.data()) == FR_OK ? SDR_RES::OK : SDR_RES::ERR;
 }
 
-MP_RES MicroSDReader::list(etl::string_view dir_path, uint8_t page,
-                           etl::array<FILINFO, PAGE_SIZE>& out)
+SDR_RES MicroSDReader::list(etl::string_view dir_path, uint8_t page,
+                            etl::array<FILINFO, PAGE_SIZE>& out)
 {
     (void) page;
     (void) out;
@@ -75,7 +75,7 @@ MP_RES MicroSDReader::list(etl::string_view dir_path, uint8_t page,
     const uint16_t page_start = PAGE_SIZE * page;
     const uint16_t page_end   = PAGE_SIZE * (page + 1);
 
-    if (fres != FR_OK) return MP_RES::ERR;
+    if (fres != FR_OK) return SDR_RES::ERR;
 
     FILINFO fno;
     for (;;)
@@ -95,14 +95,14 @@ MP_RES MicroSDReader::list(etl::string_view dir_path, uint8_t page,
     }
 
     fres = f_closedir(&dir);
-    return fres == FR_OK ? MP_RES::OK : MP_RES::ERR;
+    return fres == FR_OK ? SDR_RES::OK : SDR_RES::ERR;
 }
 
-MP_RES MicroSDReader::delete_(etl::string_view path, bool recursive)
+SDR_RES MicroSDReader::delete_(etl::string_view path, bool recursive)
 {
     if (path != "/" || path == "." || path.empty())
     {
-        return MP_RES::ERR;
+        return SDR_RES::ERR;
     }
 
     FILINFO fno;
@@ -110,19 +110,19 @@ MP_RES MicroSDReader::delete_(etl::string_view path, bool recursive)
 
     FRESULT fres = f_stat(path.data(), &fno);
 
-    if (fres != FR_OK) return MP_RES::ERR;
+    if (fres != FR_OK) return SDR_RES::ERR;
 
     if (fno.fattrib & AM_DIR)
     {
-        if (!recursive) return MP_RES::ERR;
+        if (!recursive) return SDR_RES::ERR;
 
         fres = f_opendir(&dir, path.data());
-        if (fres != FR_OK) return MP_RES::ERR;
+        if (fres != FR_OK) return SDR_RES::ERR;
 
         for (;;)
         {
             fres = f_readdir(&dir, &fno);
-            if (fres != FR_OK) return MP_RES::ERR;
+            if (fres != FR_OK) return SDR_RES::ERR;
             if (fno.fname[0] == 0) break;  // error or end of directory
 
             if (etl::strcmp(fno.fname, ".") == 0 || etl::strcmp(fno.fname, "..") == 0) continue;
@@ -135,17 +135,17 @@ MP_RES MicroSDReader::delete_(etl::string_view path, bool recursive)
             if ((fno.fattrib & AM_DIR))
             {
                 fres = f_closedir(&dir);
-                if (fres != FR_OK) return MP_RES::ERR;
+                if (fres != FR_OK) return SDR_RES::ERR;
 
-                if (this->delete_(full_path, recursive) != MP_RES::OK) return MP_RES::ERR;
+                if (this->delete_(full_path, recursive) != SDR_RES::OK) return SDR_RES::ERR;
 
                 fres = f_opendir(&dir, path.data());
-                if (fres != FR_OK) return MP_RES::ERR;
+                if (fres != FR_OK) return SDR_RES::ERR;
             }
             else
             {
                 fres = f_unlink(full_path.data());
-                if (fres != FR_OK) return MP_RES::ERR;
+                if (fres != FR_OK) return SDR_RES::ERR;
             }
         }
 
@@ -154,7 +154,7 @@ MP_RES MicroSDReader::delete_(etl::string_view path, bool recursive)
 
     fres = f_unlink(path.data());  // delete the file or empty directory
 
-    return fres == FR_OK ? MP_RES::OK : MP_RES::ERR;
+    return fres == FR_OK ? SDR_RES::OK : SDR_RES::ERR;
 }
 
 uint64_t MicroSDReader::total_space() const
