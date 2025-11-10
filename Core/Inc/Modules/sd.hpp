@@ -13,7 +13,8 @@ extern "C"
 #include "utils.hpp"
 
 constexpr uint8_t MAX_FILE_HANDLES = 4;
-constexpr uint8_t PAGE_SIZE        = 16;  // 16 entities can be read at a time
+constexpr uint8_t PAGE_SIZE        = 4;  // 16 entities can be read at a time
+constexpr uint8_t MAX_LABEL_SIZE   = 32;
 
 class SDFile
 {
@@ -71,7 +72,7 @@ class SDFile
     }
 };
 
-class MicroSDReader
+class MicroSDHandler
 {
    private:
     SPI_HandleTypeDef& m_hspi;
@@ -79,6 +80,8 @@ class MicroSDReader
     FATFS m_fs;
 
     etl::array<etl::unique_ptr<SDFile>, MAX_FILE_HANDLES> m_file_handles;
+
+    etl::string<MAX_LABEL_SIZE> m_label = "";
 
    public:
     enum class SDType
@@ -88,13 +91,13 @@ class MicroSDReader
         SDXC
     };
 
-    MicroSDReader() = delete;
+    MicroSDHandler() = delete;
 
-    MicroSDReader(SPI_HandleTypeDef& hspi) : m_hspi {hspi}
+    MicroSDHandler(SPI_HandleTypeDef& hspi) : m_hspi {hspi}
     {
     }
 
-    ~MicroSDReader() = default;
+    ~MicroSDHandler() = default;
 
     SDR_RES mount();
     SDR_RES is_mounted() const;
@@ -113,4 +116,7 @@ class MicroSDReader
 
     uint64_t total_space() const;
     uint64_t free_space() const;
+
+    void                        set_label(etl::string<MAX_LABEL_SIZE> new_label);
+    etl::string<MAX_LABEL_SIZE> label();
 };

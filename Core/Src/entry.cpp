@@ -14,7 +14,10 @@ extern "C"
 #include "sca/uart.hpp"
 #include "tests.hpp"
 
+etl::string<256> uart_input_buf;
+
 #define TESTING_ 0
+
 void setup()
 {
     hal_init_all();
@@ -23,20 +26,29 @@ void setup()
     run_tests();  // to configure tests modify run_tests in tests.cpp inside Tests folder
 #endif
 
-    // TODO:
-    /*
-     * Create a project that lets you transfer files to stm32 from pc and vice versa
-     * Verify that the data is actually stored in micro sd card
-     */
-
-    sd_reader.mount();
-
-    sd_reader.unmount();
+    if (sd_reader.mount() != SDR_RES::OK) die("error mounting drive\n");
+    if (sd_reader.label().empty()) die("invalid label...\n");  // set label
+    // if (sd_reader.unmount() != SDR_RES::OK) die("unmount failed...\n");
 }
 
 void loop()
 {
-    log("Hello!\n");
+    etl::string<100> filepath = sd_reader.label();
+    filepath += etl::string<4>(":~$ ");
+    uart2.send(filepath);
+
+    uart2.scan(uart_input_buf);
+
+    if (uart_input_buf.empty())
+    {
+        log("empty...\n");
+    }
+    else
+    {
+        log("you enetered: ");
+        log(uart_input_buf);
+        log("\n");
+    }
 
     iwdg.refresh();  // time limit 10 seconds
     HAL_Delay(IWDG_DELAY);

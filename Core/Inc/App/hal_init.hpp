@@ -43,12 +43,6 @@ extern UART_HandleTypeDef huart2;
  * Exported C++ converted peripherals
  ***************************************************************/
 
-// #define SCA_GPIO
-// #define SCA_IWDG
-// #define SCA_SPI
-// #define SCA_PTIMER
-// #define SCA_UART
-
 extern sca::iwdg iwdg;
 
 extern sca::spi spi1;
@@ -61,7 +55,7 @@ extern sca::uart uart2;
  * Exported objects
  ***************************************************************/
 
-extern MicroSDReader sd_reader;
+extern MicroSDHandler sd_reader;
 
 /***************************************************************
  * Function declarations

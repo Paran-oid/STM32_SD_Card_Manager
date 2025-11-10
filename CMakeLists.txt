@@ -90,7 +90,7 @@ target_compile_definitions(
 
 target_compile_definitions(
   sca PUBLIC # Add user defined symbols for cpp abstraction library
-             SCA_GPIO SCA_IWDG SCA_SPI SCA_PTIMER SCA_UART)
+             SCA_GPIO SCA_SPI SCA_IWDG SCA_PTIMER SCA_UART)
 
 # Add flags
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Wextra -fno-rtti

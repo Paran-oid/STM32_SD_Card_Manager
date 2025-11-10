@@ -1,17 +1,17 @@
 #include "hal_init.hpp"
 #include "sd.hpp"
 
-SDR_RES MicroSDReader::mount()
+SDR_RES MicroSDHandler::mount()
 {
     return f_mount(&m_fs, "", 1) == FR_OK ? SDR_RES::OK : SDR_RES::ERR;
 }
 
-SDR_RES MicroSDReader::is_mounted() const
+SDR_RES MicroSDHandler::is_mounted() const
 {
     return m_fs.fs_type != 0 ? SDR_RES::OK : SDR_RES::ERR;
 }
 
-SDR_RES MicroSDReader::unmount()
+SDR_RES MicroSDHandler::unmount()
 {
     FRESULT res = f_mount(NULL, "", 1);
     if (res != FR_OK) return SDR_RES::ERR;
@@ -19,7 +19,7 @@ SDR_RES MicroSDReader::unmount()
 }
 
 // File and directory management
-SDFile* MicroSDReader::open_file(etl::string_view path, uint8_t mode)
+SDFile* MicroSDHandler::open_file(etl::string_view path, uint8_t mode)
 {
     for (auto& handle : m_file_handles)
     {
@@ -36,7 +36,7 @@ SDFile* MicroSDReader::open_file(etl::string_view path, uint8_t mode)
     return nullptr;
 }
 
-SDR_RES MicroSDReader::close_file(SDFile* file)
+SDR_RES MicroSDHandler::close_file(SDFile* file)
 {
     if (!file) return SDR_RES::ERR;
     for (auto& handle : m_file_handles)
@@ -52,18 +52,18 @@ SDR_RES MicroSDReader::close_file(SDFile* file)
     return SDR_RES::ERR;
 }
 
-SDR_RES MicroSDReader::exists(etl::string_view path)
+SDR_RES MicroSDHandler::exists(etl::string_view path)
 {
     return f_stat(path.data(), NULL) == FR_OK ? SDR_RES::OK : SDR_RES::ERR;
 }
 
-SDR_RES MicroSDReader::mkdir(etl::string_view path)
+SDR_RES MicroSDHandler::mkdir(etl::string_view path)
 {
     return f_mkdir(path.data()) == FR_OK ? SDR_RES::OK : SDR_RES::ERR;
 }
 
-SDR_RES MicroSDReader::list(etl::string_view dir_path, uint8_t page,
-                            etl::array<FILINFO, PAGE_SIZE>& out)
+SDR_RES MicroSDHandler::list(etl::string_view dir_path, uint8_t page,
+                             etl::array<FILINFO, PAGE_SIZE>& out)
 {
     (void) page;
     (void) out;
@@ -98,7 +98,7 @@ SDR_RES MicroSDReader::list(etl::string_view dir_path, uint8_t page,
     return fres == FR_OK ? SDR_RES::OK : SDR_RES::ERR;
 }
 
-SDR_RES MicroSDReader::delete_(etl::string_view path, bool recursive)
+SDR_RES MicroSDHandler::delete_(etl::string_view path, bool recursive)
 {
     if (path != "/" || path == "." || path.empty())
     {
@@ -157,7 +157,7 @@ SDR_RES MicroSDReader::delete_(etl::string_view path, bool recursive)
     return fres == FR_OK ? SDR_RES::OK : SDR_RES::ERR;
 }
 
-uint64_t MicroSDReader::total_space() const
+uint64_t MicroSDHandler::total_space() const
 {
     FATFS* pfs;
 
@@ -167,7 +167,7 @@ uint64_t MicroSDReader::total_space() const
     return (pfs->n_fatent - 2) * pfs->csize;
 }
 
-uint64_t MicroSDReader::free_space() const
+uint64_t MicroSDHandler::free_space() const
 {
     DWORD  free_clusters;
     FATFS* pfs;
@@ -176,4 +176,29 @@ uint64_t MicroSDReader::free_space() const
     if (fres != FR_OK) return 0;
 
     return free_clusters * pfs->csize;
+}
+
+void MicroSDHandler::set_label(etl::string<MAX_LABEL_SIZE> new_label)
+{
+    if (f_setlabel(new_label.data()) != FR_OK)
+    {
+        m_label = "";
+    }
+    else
+    {
+        m_label = new_label;
+    }
+}
+etl::string<MAX_LABEL_SIZE> MicroSDHandler::label()
+{
+    if (!m_label.empty())
+    {
+        return m_label;
+    }
+
+    char buf[MAX_LABEL_SIZE];
+    if (f_getlabel("", buf, NULL) != FR_OK) return "";
+    m_label.assign(buf);
+
+    return m_label;
 }

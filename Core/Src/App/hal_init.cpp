@@ -10,7 +10,7 @@ sca::spi              spi1  = {hspi1};
 sca::ptimer<uint32_t> tim2  = {htim2};
 sca::uart             uart2 = {huart2};
 
-MicroSDReader sd_reader = {hspi1};
+MicroSDHandler sd_reader = {hspi1};
 
 void hal_init_all()
 {
