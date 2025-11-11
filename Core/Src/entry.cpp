@@ -14,12 +14,13 @@ extern "C"
 #include "sca/uart.hpp"
 #include "tests.hpp"
 
-etl::string<256> uart_input_buf;
+etl::string<MAX_INPUT> uart_input_buf;
 
 #define TESTING_ 0
 
 void setup()
 {
+    // Initialization of peripherals and API
     hal_init_all();
 
 #if TESTING_
@@ -33,23 +34,9 @@ void setup()
 
 void loop()
 {
-    etl::string<100> filepath = sd_reader.label();
-    filepath += etl::string<4>(":~$ ");
-    uart2.send(filepath);
-
     uart2.scan(uart_input_buf);
-
-    if (uart_input_buf.empty())
-    {
-        log("empty...\n");
-    }
-    else
-    {
-        log("you enetered: ");
-        log(uart_input_buf);
-        log("\n");
-    }
-
-    iwdg.refresh();  // time limit 10 seconds
-    HAL_Delay(IWDG_DELAY);
+    // command [options] [arguments]
+    // check if command:
+    //      if command not found return none
+    // execute command with args and return it's result to uart screen and with SDR_RES
 }

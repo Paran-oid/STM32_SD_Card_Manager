@@ -10,7 +10,6 @@ extern "C"
 /***********************************************************
  * Public defines
  ***********************************************************/
-constexpr uint16_t IWDG_DELAY = 1000;  // in ms
 
 /***************************************************************
  * Forward declarations
@@ -31,7 +30,6 @@ class iwdg;
 /***************************************************************
  * HAL generated variables in main.c
  ***************************************************************/
-extern IWDG_HandleTypeDef hiwdg;
 
 extern SPI_HandleTypeDef hspi1;
 
@@ -42,8 +40,6 @@ extern UART_HandleTypeDef huart2;
 /***************************************************************
  * Exported C++ converted peripherals
  ***************************************************************/
-
-extern sca::iwdg iwdg;
 
 extern sca::spi spi1;
 

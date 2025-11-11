@@ -9,7 +9,7 @@
 - be able to read, write to a file
 - be able to create a file
 - be able to list content of a directory
-- delet efile
+- delete file
 - move and rename files
 
 - recursive directory listing
