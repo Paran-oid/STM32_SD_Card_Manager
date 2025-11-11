@@ -4,8 +4,8 @@
 #include "command_handler.hpp"
 #include "utils.hpp"
 
-SDR_RES cd_exec(const etl::vector<etl::string<ARGS_BUF_ITEM_SIZE>, ARGS_BUF_CAPACITY>& args)
+CmdExec cd_exec = [](const etl::vector<etl::string<ARGS_BUF_ITEM_SIZE>, ARGS_BUF_CAPACITY>& args)
 {
     (void) args;
-    return SDR_RES::OK;
-}
+    return SD_RES::OK;
+};

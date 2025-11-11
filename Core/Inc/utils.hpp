@@ -9,7 +9,7 @@ extern "C"
 
 // TODO: introduce more status codes (and rename it to MP_STAT)
 
-enum SDR_RES
+enum SD_RES
 {
     OK  = 0,
     ERR = 1

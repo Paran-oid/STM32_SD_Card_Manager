@@ -13,7 +13,7 @@ TestResult test_sd_read_write(bool display)
 
     if (sd_reader.mount()) return {false, "couldn't mount micro sd card"};
 
-    etl::string_view path = "test.txt";
+    etl::string<MAX_DIR_SIZE> path = "test.txt";
 
     SDFile* file = sd_reader.open_file(path, FA_READ | FA_WRITE);
     if (!file) return {false, "couldn't create file"};

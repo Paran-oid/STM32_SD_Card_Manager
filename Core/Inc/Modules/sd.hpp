@@ -15,6 +15,7 @@ extern "C"
 constexpr uint8_t MAX_FILE_HANDLES = 4;
 constexpr uint8_t PAGE_SIZE        = 4;  // 16 entities can be read at a time
 constexpr uint8_t MAX_LABEL_SIZE   = 32;
+constexpr uint8_t MAX_DIR_SIZE     = 200;
 
 class SDFile
 {
@@ -34,26 +35,25 @@ class SDFile
     void write(uint8_t);
 
     template <size_t N>
-    SDR_RES read(etl::string<N>& str)
+    SD_RES read(etl::string<N>& str)
     {
         char buf[N];  // must be char[] because f_read works that way
+        UINT bytes_read = 0;
 
-        UINT    bytes_read;
         FRESULT fres = f_read(&m_fil, buf, N, &bytes_read);
-
-        if (fres) return SDR_RES::ERR;
+        if (fres != FR_OK || bytes_read == 0)
+            return SD_RES::ERR;  // TODO: make it return different error for empty buffer
 
         str.assign(buf);
-
-        return SDR_RES::OK;
+        return SD_RES::OK;
     }
 
-    SDR_RES write(etl::string_view txt);
+    SD_RES write(etl::string_view txt);
 
-    SDR_RES seek(uint32_t offset);
-    SDR_RES truncate();
+    SD_RES seek(uint32_t offset);
+    SD_RES truncate();
 
-    SDR_RES rename(etl::string_view old_path, etl::string_view new_path);
+    SD_RES rename(etl::string_view old_path, etl::string_view new_path);
 
     uint32_t size() const;
 
@@ -81,8 +81,6 @@ class MicroSDHandler
 
     etl::array<etl::unique_ptr<SDFile>, MAX_FILE_HANDLES> m_file_handles;
 
-    etl::string<MAX_LABEL_SIZE> m_label = "";
-
    public:
     enum class SDType
     {
@@ -99,24 +97,28 @@ class MicroSDHandler
 
     ~MicroSDHandler() = default;
 
-    SDR_RES mount();
-    SDR_RES is_mounted() const;
-    SDR_RES unmount();
+    SD_RES mount();
+    SD_RES is_mounted() const;
+    SD_RES unmount();
 
     // File and directory Management
-    SDFile* open_file(etl::string_view path, uint8_t mode);
-    SDR_RES close_file(SDFile* file);
+    SDFile* open_file(const etl::string<MAX_DIR_SIZE>& path, uint8_t mode);
+    SD_RES  close_file(SDFile* file);
 
-    SDR_RES exists(etl::string_view path);
-    SDR_RES mkdir(etl::string_view path);
+    SD_RES exists(const etl::string<MAX_DIR_SIZE>& path);
+    SD_RES mkdir(const etl::string<MAX_DIR_SIZE>& path);
 
-    SDR_RES list(etl::string_view dir_path, uint8_t page, etl::array<FILINFO, PAGE_SIZE>& out);
-    SDR_RES delete_(etl::string_view path,
-                    bool             recursive = false);  // both a file and directory can be passed
+    SD_RES list(const etl::string<MAX_DIR_SIZE>& dir_path, uint8_t page,
+                etl::array<FILINFO, PAGE_SIZE>& out);
+    SD_RES delete_(const etl::string<MAX_DIR_SIZE>& path,
+                   bool recursive = false);  // both a file and directory can be passed
 
     uint64_t total_space() const;
     uint64_t free_space() const;
 
-    void                        set_label(etl::string<MAX_LABEL_SIZE> new_label);
+    void                        chlabel(const etl::string<MAX_LABEL_SIZE>& new_label);
     etl::string<MAX_LABEL_SIZE> label();
+
+    void                      chdir(const etl::string<MAX_DIR_SIZE>& dir_path);
+    etl::string<MAX_DIR_SIZE> cwd();
 };

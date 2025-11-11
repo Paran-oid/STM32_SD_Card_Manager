@@ -4,8 +4,8 @@
 #include "command_handler.hpp"
 #include "utils.hpp"
 
-SDR_RES cp_exec(const etl::vector<etl::string<ARGS_BUF_ITEM_SIZE>, ARGS_BUF_CAPACITY>& args)
+CmdExec cp_exec = [](const etl::vector<etl::string<ARGS_BUF_ITEM_SIZE>, ARGS_BUF_CAPACITY>& args)
 {
     (void) args;
-    return SDR_RES::OK;
-}
+    return SD_RES::OK;
+};

@@ -16,18 +16,20 @@ const uint16_t COMMANDS_COUNT = 6;
 
 enum class CommandType
 {
-    CAT,   // read to file
-    ECHO,  // write to a file
-    LS,    // list contents of a directory
-    RM,    // delete a file/dir
-    CP,    // move and/or rename file
-    CD,    // enter a directory
+    CAT,    // read to file
+    ECHO,   // write to a file
+    LS,     // list contents of a directory
+    RM,     // delete a file/dir
+    CP,     // move and/or rename file
+    CD,     // enter a directory
+    CLEAR,  // clears terminal
+    PWD,    // prints current working directory
     NONE
 };
 
-using CmdExec = SDR_RES (*)(const etl::vector<etl::string<ARGS_BUF_ITEM_SIZE>, ARGS_BUF_CAPACITY>&);
+using CmdExec = SD_RES (*)(const etl::vector<etl::string<ARGS_BUF_ITEM_SIZE>, ARGS_BUF_CAPACITY>&);
 
 // defined in command_handler.cpp
 extern etl::unordered_map<CommandType, CmdExec, COMMANDS_COUNT> cmd_table;
 
-SDR_RES handle_command(const etl::string<INPUT_BUF_SIZE> str);
+SD_RES handle_command(const etl::string<INPUT_BUF_SIZE>& str);
