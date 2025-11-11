@@ -22,7 +22,6 @@ etl::string<MAX_INPUT_BUF_SIZE> uart_input_buf;
 
 void setup()
 {
-    // Initialization of peripherals and API
     hal_init_all();
 
     // TODO:

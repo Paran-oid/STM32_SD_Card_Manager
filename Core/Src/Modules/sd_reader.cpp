@@ -178,34 +178,22 @@ uint64_t MicroSDHandler::free_space() const
     return free_clusters * pfs->csize;
 }
 
-void MicroSDHandler::chlabel(const etl::string<MAX_LABEL_SIZE>& new_label)
+void MicroSDHandler::set_label(const etl::string<MAX_LABEL_SIZE>& new_label)
 {
-    f_setlabel(new_label.data());
+    if (f_setlabel(new_label.data()) != FR_OK)
+    {
+        m_label = "";
+        return;
+    }
+
+    m_label = new_label;
 }
 etl::string<MAX_LABEL_SIZE> MicroSDHandler::label()
 {
-    etl::string<MAX_LABEL_SIZE> res;
-    TCHAR                       buf[MAX_LABEL_SIZE];
+    TCHAR buf[MAX_LABEL_SIZE];
 
     if (f_getlabel("", buf, nullptr) != FR_OK) return "";
-    res.assign(buf);
+    m_label.assign(buf);
 
-    return res;
-}
-
-void chdir(const etl::string<MAX_DIR_SIZE>& dir_path)
-{
-    (void) dir_path;
-    // f_chdir(dir_path.data());
-}
-
-etl::string<MAX_DIR_SIZE> MicroSDHandler::cwd()
-{
-    etl::string<MAX_DIR_SIZE> res;
-    TCHAR                     buf[MAX_DIR_SIZE];
-
-    // if (f_getcwd(buf, MAX_DIR_SIZE) != FR_OK) return "";
-    res.assign(buf);
-
-    return res;
+    return m_label;
 }

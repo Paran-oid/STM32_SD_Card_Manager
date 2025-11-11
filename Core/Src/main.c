@@ -21,7 +21,6 @@
 
 #include "fatfs.h"
 
-
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -98,14 +97,14 @@ int main(void)
     MX_FATFS_Init();
     MX_TIM2_Init();
     /* USER CODE BEGIN 2 */
-    setup();
+    // setup();
     /* USER CODE END 2 */
 
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
     while (1)
     {
-        loop();
+        // loop();
         /* USER CODE END WHILE */
 
         /* USER CODE BEGIN 3 */

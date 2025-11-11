@@ -81,6 +81,9 @@ class MicroSDHandler
 
     etl::array<etl::unique_ptr<SDFile>, MAX_FILE_HANDLES> m_file_handles;
 
+    etl::string<MAX_DIR_SIZE>   m_cwd   = "";
+    etl::string<MAX_LABEL_SIZE> m_label = "/";
+
    public:
     enum class SDType
     {
@@ -116,9 +119,15 @@ class MicroSDHandler
     uint64_t total_space() const;
     uint64_t free_space() const;
 
-    void                        chlabel(const etl::string<MAX_LABEL_SIZE>& new_label);
+    void                        set_label(const etl::string<MAX_LABEL_SIZE>& new_label);
     etl::string<MAX_LABEL_SIZE> label();
 
-    void                      chdir(const etl::string<MAX_DIR_SIZE>& dir_path);
-    etl::string<MAX_DIR_SIZE> cwd();
+    void set_cwd(const etl::string<MAX_DIR_SIZE>& dir)
+    {
+        m_cwd = dir;
+    }
+    etl::string<MAX_DIR_SIZE> cwd()
+    {
+        return m_cwd;
+    }
 };
