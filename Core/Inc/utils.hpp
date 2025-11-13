@@ -7,6 +7,8 @@ extern "C"
 
 #include "etl/string.h"
 
+constexpr uint8_t SSIZE = 255U;  // usual string size
+
 enum SD_RES
 {
     OK  = 0,

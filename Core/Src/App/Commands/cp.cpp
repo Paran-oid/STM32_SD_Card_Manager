@@ -3,7 +3,7 @@
 #include "etl/vector.h"
 #include "utils.hpp"
 
-CmdExec cp_exec = [](const etl::vector<etl::string<ARGS_ITEM_SIZE>, ARGS_CAPACITY>& args)
+CmdExec cp_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& args)
 {
     (void) args;
     return SD_RES::OK;

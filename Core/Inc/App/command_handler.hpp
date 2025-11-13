@@ -6,9 +6,7 @@
 #include "etl/vector.h"
 #include "utils.hpp"
 
-constexpr uint16_t MAX_COMMAND_SIZE = 255;  // input buf that gets passed to handle_command
 constexpr uint16_t ARGS_CAPACITY  = 10;  // max number of items inside args buf inside the function
-constexpr uint16_t ARGS_ITEM_SIZE = MAX_COMMAND_SIZE / ARGS_CAPACITY;  // size of each string
 
 const uint16_t COMMANDS_COUNT = 8;
 
@@ -25,9 +23,9 @@ enum class CommandType
     NONE
 };
 
-using CmdExec = SD_RES (*)(const etl::vector<etl::string<ARGS_ITEM_SIZE>, ARGS_CAPACITY>&);
+using CmdExec = SD_RES (*)(const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>&);
 
 // defined in command_handler.cpp
 extern etl::unordered_map<CommandType, CmdExec, COMMANDS_COUNT> cmd_table;
 
-SD_RES handle_command(const etl::string<MAX_COMMAND_SIZE>& str);
+void handle_command(const etl::string<SSIZE>& str);

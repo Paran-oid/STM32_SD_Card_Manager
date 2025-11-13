@@ -16,7 +16,7 @@ extern "C"
 #include "tests.hpp"
 #include "utils.hpp"
 
-etl::string<MAX_COMMAND_SIZE> uart_input_buf;
+etl::string<SSIZE> uart_input_buf;
 
 #define TESTING_ 0
 
@@ -30,7 +30,7 @@ void setup()
 
     if (sd_reader.mount() != SD_RES::OK) die("error mounting drive\r\n");
     if (sd_reader.label().empty()) die("invalid label...\r\n");  // set label
-    if (sd_reader.unmount() != SD_RES::OK) die("unmount failed...\r\n");
+    // if (sd_reader.unmount() != SD_RES::OK) die("unmount failed...\r\n");
 
     printf("=======STM32 MICRO SD CARD READER READY!=======\r\n");
 }
