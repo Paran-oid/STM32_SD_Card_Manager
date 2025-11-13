@@ -9,7 +9,6 @@ extern "C"
 #include <etl/string.h>
 #include <etl/to_string.h>
 
-#include "command_handler.hpp"
 #include "hal_init.hpp"
 #include "sca/iwdg.hpp"
 #include "sca/uart.hpp"
@@ -43,5 +42,5 @@ void setup()
 void loop()
 {
     uart2.scan(uart_input_buf);
-    handle_command(uart_input_buf);
+    // handle_command(uart_input_buf);
 }
