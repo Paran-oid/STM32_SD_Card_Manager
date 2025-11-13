@@ -4,6 +4,7 @@ extern "C"
 #include "main.h"
 }
 
+#include "command_handler.hpp"
 #include "etl/array.h"
 #include "etl/format_spec.h"
 #include "etl/string.h"
@@ -15,8 +16,7 @@ extern "C"
 #include "tests.hpp"
 #include "utils.hpp"
 
-#define MAX_INPUT_BUF_SIZE 200
-etl::string<MAX_INPUT_BUF_SIZE> uart_input_buf;
+etl::string<MAX_COMMAND_SIZE> uart_input_buf;
 
 #define TESTING_ 0
 
@@ -38,6 +38,5 @@ void setup()
 void loop()
 {
     uart2.scan(uart_input_buf);
-    HAL_Delay(500);
-    // handle_command(uart_input_buf);
+    handle_command(uart_input_buf);
 }

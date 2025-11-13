@@ -1,11 +1,10 @@
-#include <etl/string.h>
-#include <etl/vector.h>
-
 #include "command_handler.hpp"
+#include "etl/string.h"
+#include "etl/vector.h"
 #include "hal_init.hpp"
 #include "utils.hpp"
 
-CmdExec cat_exec = [](const etl::vector<etl::string<ARGS_BUF_ITEM_SIZE>, ARGS_BUF_CAPACITY>& args)
+CmdExec cat_exec = [](const etl::vector<etl::string<ARGS_ITEM_SIZE>, ARGS_CAPACITY>& args)
 {
     if (args.empty()) return SD_RES::ERR;
 
@@ -16,7 +15,7 @@ CmdExec cat_exec = [](const etl::vector<etl::string<ARGS_BUF_ITEM_SIZE>, ARGS_BU
     if (!f) return SD_RES::ERR;
 
     etl::string<100> read_buf;
-    while (f->read(read_buf) != SD_RES::ERR) log(read_buf);  // TODO: test this
+    while (f->read(read_buf) != SD_RES::ERR) printf("%s", read_buf);  // TODO: test this
 
     (void) args;
     return SD_RES::OK;

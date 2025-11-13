@@ -1,15 +1,14 @@
-#include <etl/algorithm.h>
-#include <etl/string.h>
-#include <etl/vector.h>
-
 #include "command_handler.hpp"
+#include "etl/algorithm.h"
+#include "etl/string.h"
+#include "etl/vector.h"
 #include "utils.hpp"
 
-CmdExec echo_exec = [](const etl::vector<etl::string<ARGS_BUF_ITEM_SIZE>, ARGS_BUF_CAPACITY>& args)
+CmdExec echo_exec = [](const etl::vector<etl::string<ARGS_ITEM_SIZE>, ARGS_CAPACITY>& args)
 {
     if (args.empty())
     {
-        log("\n");
+        printf("\n");
         return SD_RES::OK;
     }
 
@@ -18,14 +17,14 @@ CmdExec echo_exec = [](const etl::vector<etl::string<ARGS_BUF_ITEM_SIZE>, ARGS_B
 
     if (write_symb == args.end() && append_symb == args.end())
     {
-        etl::string<ARGS_BUF_ITEM_SIZE * ARGS_BUF_CAPACITY> output_str;
+        etl::string<ARGS_ITEM_SIZE * ARGS_CAPACITY> output_str;
         for (auto it = args.begin(); it != args.end(); it++)
         {
             output_str += *it;
             if (etl::next(it) != args.end()) output_str += " ";
         }
         output_str += "\n";
-        log(output_str);
+        printf("%s", output_str.data());
     }
 
     return SD_RES::OK;

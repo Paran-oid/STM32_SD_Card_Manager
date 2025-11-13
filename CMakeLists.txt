@@ -59,7 +59,7 @@ target_sources(
           ${CMAKE_SOURCE_DIR}/Core/Src/Modules/sd_file.cpp
           ${CMAKE_SOURCE_DIR}/Core/Src/Modules/sd_reader.cpp
           ${CMAKE_SOURCE_DIR}/Core/Src/App/hal_init.cpp
-          # ${CMAKE_SOURCE_DIR}/Core/Src/App/command_handler.cpp
+          ${CMAKE_SOURCE_DIR}/Core/Src/App/command_handler.cpp
           # ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/echo.cpp
           # ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/rm.cpp
           # ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/common_cmds.cpp
