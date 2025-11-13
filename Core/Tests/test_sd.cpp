@@ -1,4 +1,5 @@
 #include "hal_init.hpp"
+#include "printf.h"
 #include "tests.hpp"
 
 TestResult test_sd_read_write(bool display)
@@ -28,7 +29,7 @@ TestResult test_sd_read_write(bool display)
     if (display)
     {
         etl::array<etl::string_view, 5> msgs = {"content of ", path, "is:\r\n", s, "\r\n\r\n"};
-        for (auto msg : msgs) log(msg);
+        for (auto msg : msgs) printf("%s", msg.data());
     }
 
     if (sd_reader.close_file(file)) return {false, "close file failed"};

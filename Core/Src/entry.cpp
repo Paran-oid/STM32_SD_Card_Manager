@@ -4,15 +4,16 @@ extern "C"
 #include "main.h"
 }
 
-#include <etl/array.h>
-#include <etl/format_spec.h>
-#include <etl/string.h>
-#include <etl/to_string.h>
-
+#include "etl/array.h"
+#include "etl/format_spec.h"
+#include "etl/string.h"
+#include "etl/to_string.h"
 #include "hal_init.hpp"
+#include "printf.h"
 #include "sca/iwdg.hpp"
 #include "sca/uart.hpp"
 #include "tests.hpp"
+#include "utils.hpp"
 
 #define MAX_INPUT_BUF_SIZE 200
 etl::string<MAX_INPUT_BUF_SIZE> uart_input_buf;
@@ -32,15 +33,17 @@ void setup()
     run_tests();  // to configure tests modify run_tests in tests.cpp inside Tests folder
 #endif
 
-    if (sd_reader.mount() != SD_RES::OK) die("error mounting drive\n");
-    if (sd_reader.label().empty()) die("invalid label...\n");  // set label
-    if (sd_reader.unmount() != SD_RES::OK) die("unmount failed...\n");
+    if (sd_reader.mount() != SD_RES::OK) die("error mounting drive\r\n");
+    if (sd_reader.label().empty()) die("invalid label...\r\n");  // set label
+    if (sd_reader.unmount() != SD_RES::OK) die("unmount failed...\r\n");
 
-    log("=======STM32 MICRO SD CARD READER READY!=======\n");
+    printf("=======STM32 MICRO SD CARD READER READY!=======\r\n");
 }
 
 void loop()
 {
-    uart2.scan(uart_input_buf);
+    // uart2.scan(uart_input_buf);
+    printf("Hello World!??\r\n");
+    HAL_Delay(500);
     // handle_command(uart_input_buf);
 }

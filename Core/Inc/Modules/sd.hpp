@@ -6,9 +6,9 @@ extern "C"
 #include "main.h"
 }
 
-#include <etl/array.h>
-#include <etl/memory.h>
-#include <etl/string.h>
+#include "etl/array.h"
+#include "etl/memory.h"
+#include "etl/string.h"
 
 #include "utils.hpp"
 

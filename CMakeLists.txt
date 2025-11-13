@@ -34,7 +34,7 @@ message("Build type: " ${CMAKE_BUILD_TYPE})
 # Enable CMake support for ASM and C languages
 enable_language(C CXX ASM)
 
-# Packages
+# Packages and libraries
 add_subdirectory(Libs)
 
 # Create an executable object type
@@ -110,4 +110,4 @@ list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
 # Add linked libraries
 target_link_libraries(
   ${CMAKE_PROJECT_NAME} stm32cubemx etl::etl # Add user defined libraries
-  sca)
+  sca printf)

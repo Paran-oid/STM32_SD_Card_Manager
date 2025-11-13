@@ -1,5 +1,8 @@
 #include "tests.hpp"
 
+#include "printf.h"
+#include "utils.hpp"
+
 void run_tests()
 {
     TestResult res;
@@ -7,5 +10,5 @@ void run_tests()
     res = test_sd_read_write();
     if (!res.passed) die(res.msg);
 
-    log("all tests ran with success!\n");
+    printf("all tests ran with success!\n");
 }
