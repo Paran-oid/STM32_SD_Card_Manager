@@ -78,7 +78,11 @@ class MicroSDHandler
 
     etl::array<etl::unique_ptr<SDFile>, MAX_FILE_HANDLES> m_file_handles;
 
+<<<<<<< HEAD
     etl::string<SSIZE>          m_cwd   = "/";
+=======
+    etl::string<MAX_DIR_SIZE>   m_cwd   = "/";
+>>>>>>> dc6478d (init)
     etl::string<MAX_LABEL_SIZE> m_label = "";
 
    public:

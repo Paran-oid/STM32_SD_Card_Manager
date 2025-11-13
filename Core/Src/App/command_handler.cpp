@@ -27,7 +27,11 @@ etl::unordered_map<CommandType, CmdExec, COMMANDS_COUNT> cmd_table = {
     {CommandType::RM, rm_exec},       {CommandType::CP, cp_exec},     {CommandType::CD, cd_exec},
     {CommandType::CLEAR, clear_exec}, {CommandType::PWD, pwd_exec}};
 
+<<<<<<< HEAD
 static CommandType check_command_type(const etl::string<SSIZE>& item)
+=======
+static CommandType check_command_type(const etl::string<ARGS_ITEM_SIZE>& item)
+>>>>>>> dc6478d (init)
 {
     if (item == "cat") return CommandType::CAT;
     if (item == "echo") return CommandType::ECHO;
@@ -40,6 +44,7 @@ static CommandType check_command_type(const etl::string<SSIZE>& item)
     return CommandType::NONE;
 }
 
+<<<<<<< HEAD
 void handle_command(const etl::string<SSIZE>& str)
 {
     etl::vector<etl::string<SSIZE>, ARGS_CAPACITY> args;
@@ -59,6 +64,27 @@ void handle_command(const etl::string<SSIZE>& str)
             start = end + 1;
         }
         args.push_back(str.substr(start));
+=======
+SD_RES handle_command(const etl::string<MAX_COMMAND_SIZE>& str)
+{
+    etl::vector<etl::string<ARGS_ITEM_SIZE>, ARGS_CAPACITY> args;
+    etl::string<MAX_COMMAND_SIZE>                           cmd;
+    size_t                                                  start = 0, end = 0;
+
+    size_t pos_space = str.find(' ');
+    if (pos_space != etl::string<MAX_COMMAND_SIZE>::npos)
+    {
+        cmd   = str.substr(0, pos_space);
+        start = pos_space + 1;
+        while ((end = str.find(' ', start)) != etl::string<MAX_COMMAND_SIZE>::npos)
+        {
+            if (args.size() == args.capacity()) die("too many arguments entered...");
+            etl::string<ARGS_ITEM_SIZE> item = str.substr(start, end);
+            args.push_back(item);
+            start = end + 1;
+        }
+        args.push_back(str.substr(start));  // add last element
+>>>>>>> dc6478d (init)
     }
     else
     {
@@ -69,6 +95,7 @@ void handle_command(const etl::string<SSIZE>& str)
     CommandType cmd_type = check_command_type(cmd);
     (void) cmd_type;
     auto it = cmd_table.find(cmd_type);
+<<<<<<< HEAD
     if (it == cmd_table.end())
     {
         printf("command not found\r\n");
@@ -79,4 +106,9 @@ void handle_command(const etl::string<SSIZE>& str)
     SD_RES res = it->second(args);
     if (res == SD_RES::OK) printf("\r\n");
     return;
+=======
+    if (it == cmd_table.end()) return SD_RES::ERR;
+
+    return it->second(args);
+>>>>>>> dc6478d (init)
 }

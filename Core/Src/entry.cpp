@@ -16,7 +16,11 @@ extern "C"
 #include "tests.hpp"
 #include "utils.hpp"
 
+<<<<<<< HEAD
 etl::string<SSIZE> uart_input_buf;
+=======
+etl::string<MAX_COMMAND_SIZE> uart_input_buf;
+>>>>>>> dc6478d (init)
 
 #define TESTING_ 0
 
