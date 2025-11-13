@@ -8,7 +8,7 @@ CmdExec echo_exec = [](const etl::vector<etl::string<ARGS_ITEM_SIZE>, ARGS_CAPAC
 {
     if (args.empty())
     {
-        printf("\n");
+        printf("\r\n");
         return SD_RES::OK;
     }
 

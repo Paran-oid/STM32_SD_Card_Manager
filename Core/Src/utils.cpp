@@ -4,6 +4,6 @@
 
 void die(etl::string_view msg)
 {
-    printf("%s", msg.data());
+    printf("%s\r\n", msg.data());
     Error_Handler();
 }

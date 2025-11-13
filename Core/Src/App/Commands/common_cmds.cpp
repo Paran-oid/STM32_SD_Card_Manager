@@ -8,13 +8,13 @@
 CmdExec clear_exec = [](const etl::vector<etl::string<ARGS_ITEM_SIZE>, ARGS_CAPACITY>& args)
 {
     (void) args;
-    printf("%s", "\033[3J\033[H\033[2J");
+    printf("\033[2J\033[H\r\n");
     return SD_RES::OK;
 };
 
 CmdExec pwd_exec = [](const etl::vector<etl::string<ARGS_ITEM_SIZE>, ARGS_CAPACITY>& args)
 {
     (void) args;
-    printf("%s", sd_reader.cwd().data());
+    printf("%s\r\n", sd_reader.cwd().data());
     return SD_RES::OK;
 };

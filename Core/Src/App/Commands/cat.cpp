@@ -15,7 +15,8 @@ CmdExec cat_exec = [](const etl::vector<etl::string<ARGS_ITEM_SIZE>, ARGS_CAPACI
     if (!f) return SD_RES::ERR;
 
     etl::string<100> read_buf;
-    while (f->read(read_buf) != SD_RES::ERR) printf("%s", read_buf);  // TODO: test this
+    while (f->read(read_buf) != SD_RES::ERR) printf("%s", read_buf.data());  // TODO: test this
+    printf("\r\n");
 
     (void) args;
     return SD_RES::OK;

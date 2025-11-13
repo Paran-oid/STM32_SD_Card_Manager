@@ -9,7 +9,6 @@ extern "C"
 #include "etl/array.h"
 #include "etl/memory.h"
 #include "etl/string.h"
-
 #include "utils.hpp"
 
 constexpr uint8_t MAX_FILE_HANDLES = 4;
@@ -41,8 +40,7 @@ class SDFile
         UINT bytes_read = 0;
 
         FRESULT fres = f_read(&m_fil, buf, N, &bytes_read);
-        if (fres != FR_OK || bytes_read == 0)
-            return SD_RES::ERR; 
+        if (fres != FR_OK || bytes_read == 0) return SD_RES::ERR;
 
         str.assign(buf);
         return SD_RES::OK;
@@ -81,8 +79,8 @@ class MicroSDHandler
 
     etl::array<etl::unique_ptr<SDFile>, MAX_FILE_HANDLES> m_file_handles;
 
-    etl::string<MAX_DIR_SIZE>   m_cwd   = "";
-    etl::string<MAX_LABEL_SIZE> m_label = "/";
+    etl::string<MAX_DIR_SIZE>   m_cwd   = "/";
+    etl::string<MAX_LABEL_SIZE> m_label = "";
 
    public:
     enum class SDType

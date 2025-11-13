@@ -13,19 +13,19 @@
 
 // each of these is defined in their respective .cpp file (some may be shared inside
 // common_cmds.cpp)
-// extern CmdExec cat_exec;
-// extern CmdExec echo_exec;
-// extern CmdExec ls_exec;
-// extern CmdExec rm_exec;
-// extern CmdExec cp_exec;
-// extern CmdExec cd_exec;
-// extern CmdExec clear_exec;
-// extern CmdExec pwd_exec;
+extern CmdExec cat_exec;
+extern CmdExec echo_exec;
+extern CmdExec ls_exec;
+extern CmdExec rm_exec;
+extern CmdExec cp_exec;
+extern CmdExec cd_exec;
+extern CmdExec clear_exec;
+extern CmdExec pwd_exec;
 
-// etl::unordered_map<CommandType, CmdExec, COMMANDS_COUNT> cmd_table = {
-//     {CommandType::CAT, cat_exec},     {CommandType::ECHO, echo_exec}, {CommandType::LS, ls_exec},
-//     {CommandType::RM, rm_exec},       {CommandType::CP, cp_exec},     {CommandType::CD, cd_exec},
-//     {CommandType::CLEAR, clear_exec}, {CommandType::PWD, pwd_exec}};
+etl::unordered_map<CommandType, CmdExec, COMMANDS_COUNT> cmd_table = {
+    {CommandType::CAT, cat_exec},     {CommandType::ECHO, echo_exec}, {CommandType::LS, ls_exec},
+    {CommandType::RM, rm_exec},       {CommandType::CP, cp_exec},     {CommandType::CD, cd_exec},
+    {CommandType::CLEAR, clear_exec}, {CommandType::PWD, pwd_exec}};
 
 static CommandType check_command_type(const etl::string<ARGS_ITEM_SIZE>& item)
 {
@@ -68,9 +68,8 @@ SD_RES handle_command(const etl::string<MAX_COMMAND_SIZE>& str)
 
     CommandType cmd_type = check_command_type(cmd);
     (void) cmd_type;
-    // auto        it       = cmd_table.find(cmd_type);
-    // if (it == cmd_table.end()) return SD_RES::ERR;
+    auto it = cmd_table.find(cmd_type);
+    if (it == cmd_table.end()) return SD_RES::ERR;
 
-    // return it->second(args);
-    return SD_RES::OK;
+    return it->second(args);
 }
