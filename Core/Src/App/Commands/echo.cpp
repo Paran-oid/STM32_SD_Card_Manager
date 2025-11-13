@@ -2,16 +2,10 @@
 #include "etl/algorithm.h"
 #include "etl/string.h"
 #include "etl/vector.h"
-<<<<<<< HEAD
 #include "hal_init.hpp"
 #include "utils.hpp"
 
 CmdExec echo_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& args)
-=======
-#include "utils.hpp"
-
-CmdExec echo_exec = [](const etl::vector<etl::string<ARGS_ITEM_SIZE>, ARGS_CAPACITY>& args)
->>>>>>> dc6478d (init)
 {
     if (args.empty())
     {
@@ -19,7 +13,6 @@ CmdExec echo_exec = [](const etl::vector<etl::string<ARGS_ITEM_SIZE>, ARGS_CAPAC
         return SD_RES::OK;
     }
 
-<<<<<<< HEAD
     // > and >> are only used for echo just for simplicity's sake
     auto write_symb  = etl::find(args.begin(), args.end(), ">");
     auto append_symb = etl::find(args.begin(), args.end(), ">>");
@@ -37,20 +30,11 @@ CmdExec echo_exec = [](const etl::vector<etl::string<ARGS_ITEM_SIZE>, ARGS_CAPAC
     if (write_symb == args.end() && append_symb == args.end())
     {
         etl::string<SSIZE * ARGS_CAPACITY> output_str;
-=======
-    auto write_symb  = etl::find(args.begin(), args.end(), ">");
-    auto append_symb = etl::find(args.begin(), args.end(), ">>");
-
-    if (write_symb == args.end() && append_symb == args.end())
-    {
-        etl::string<ARGS_ITEM_SIZE * ARGS_CAPACITY> output_str;
->>>>>>> dc6478d (init)
         for (auto it = args.begin(); it != args.end(); it++)
         {
             output_str += *it;
             if (etl::next(it) != args.end()) output_str += " ";
         }
-<<<<<<< HEAD
         printf("%s", output_str.data());
     }
     else
@@ -69,11 +53,6 @@ CmdExec echo_exec = [](const etl::vector<etl::string<ARGS_ITEM_SIZE>, ARGS_CAPAC
 
         if (sd_reader.close_file(file) != SD_RES::OK) return SD_RES::ERR;
     }
-=======
-        output_str += "\n";
-        printf("%s", output_str.data());
-    }
->>>>>>> dc6478d (init)
 
     return SD_RES::OK;
 };
