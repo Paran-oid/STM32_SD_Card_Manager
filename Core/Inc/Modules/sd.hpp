@@ -42,7 +42,7 @@ class SDFile
 
         FRESULT fres = f_read(&m_fil, buf, N, &bytes_read);
         if (fres != FR_OK || bytes_read == 0)
-            return SD_RES::ERR;  // TODO: make it return different error for empty buffer
+            return SD_RES::ERR; 
 
         str.assign(buf);
         return SD_RES::OK;

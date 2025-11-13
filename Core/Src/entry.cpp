@@ -24,11 +24,6 @@ void setup()
 {
     hal_init_all();
 
-    // TODO:
-    // ; add printf library for embedded
-    // ; optimize code (make sure i don't use any unessential copies and ask ai for more
-    // ; suggestions)
-
 #if TESTING_
     run_tests();  // to configure tests modify run_tests in tests.cpp inside Tests folder
 #endif
@@ -42,8 +37,7 @@ void setup()
 
 void loop()
 {
-    // uart2.scan(uart_input_buf);
-    printf("Hello World!??\r\n");
+    uart2.scan(uart_input_buf);
     HAL_Delay(500);
     // handle_command(uart_input_buf);
 }

@@ -7,8 +7,6 @@ extern "C"
 
 #include "etl/string.h"
 
-// TODO: introduce more status codes (and rename it to MP_STAT)
-
 enum SD_RES
 {
     OK  = 0,
