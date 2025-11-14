@@ -89,7 +89,9 @@ class MicroSDHandler
         SDXC
     };
 
-    MicroSDHandler() = delete;
+    MicroSDHandler()
+    {
+    }
 
     MicroSDHandler(SPI_HandleTypeDef& hspi) : m_hspi {hspi}
     {

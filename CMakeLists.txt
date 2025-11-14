@@ -37,8 +37,8 @@ enable_language(C CXX ASM)
 # Packages and libraries
 add_subdirectory(Libs)
 
-# Create an executable object type
-add_executable(${CMAKE_PROJECT_NAME})
+# Software testing directory (just software)
+add_subdirectory(SW)
 
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)
