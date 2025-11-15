@@ -22,15 +22,15 @@ enum SD_RES
 #define FA_OPEN_ALWAYS   0x10
 #define FA_OPEN_APPEND   0x30
 
-void die(etl::string_view msg);
+void die(etl::string<SSIZE> msg);
 
-bool is_double_quoted(etl::string_view s);
+bool isstring(etl::string<SSIZE> s);
 bool isescseq(char c);
 
-size_t find_outside_quotes(etl::string_view s, char c, size_t start = 0,
-                           size_t length = etl::string_view::npos);
+size_t find_outside_quotes(etl::string<SSIZE> s, char c, size_t start = 0,
+                           size_t length = etl::string<SSIZE>::npos);
 
-// from string ""foo"" to string "foo"
+// from string "foo" to string foo
 etl::string<SSIZE> format_str(const etl::string<SSIZE>& s);
 
-etl::string<SSIZE> unescape(etl::string_view s);
+etl::string<SSIZE> unescape(etl::string<SSIZE> s);

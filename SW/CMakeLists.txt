@@ -21,6 +21,7 @@ target_sources(
           ${CMAKE_SOURCE_DIR}/Src/App/Commands/cat.cpp
           ${CMAKE_SOURCE_DIR}/Src/App/Commands/cp.cpp
           ${CMAKE_SOURCE_DIR}/Src/App/Commands/ls.cpp
+          ${CMAKE_SOURCE_DIR}/Src/App/Commands/dir_cmds.cpp
           ${CMAKE_SOURCE_DIR}/Src/App/Commands/cd.cpp)
 
 target_include_directories(
@@ -31,13 +32,15 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE etl::etl)
 
 target_compile_options(
   ${CMAKE_PROJECT_NAME}
-  PRIVATE -Wall
+  PRIVATE # Debug: enable debug info
+          $<$<CONFIG:Debug>:-O0
+          -g3
           -Wall
           -Wextra
-          -Werror
-          -Wshadow
-          -Wnon-virtual-dtor
-          -Wold-style-cast
-          -Wunused
-          -Wconversion
-          -Wsign-conversion)
+          -fstack-protector-strong>
+          # Release: optimize for size
+          $<$<CONFIG:Release>:-O3
+          -DNDEBUG
+          -ffunction-sections
+          -Wall
+          -Wextra>)

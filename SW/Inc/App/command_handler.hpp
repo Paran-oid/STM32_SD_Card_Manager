@@ -1,14 +1,14 @@
 #pragma once
 
-#include "etl/functional.h"
 #include "etl/string.h"
 #include "etl/unordered_map.h"
 #include "etl/vector.h"
 #include "utils.hpp"
 
-constexpr uint16_t ARGS_CAPACITY  = 10;  // max number of items inside args buf inside the function
+constexpr uint16_t ARGS_CAPACITY = 10;  // max number of items inside args buf inside the function
 
-const uint16_t COMMANDS_COUNT = 8;
+const uint16_t     COMMANDS_COUNT = 10;
+extern etl::string<SSIZE> g_cwd;
 
 enum class CommandType
 {
@@ -20,6 +20,8 @@ enum class CommandType
     CD,     // enter a directory
     CLEAR,  // clears terminal
     PWD,    // prints current working directory
+    MKDIR,  // creates a new directory(or more)
+    RMDIR,  // deletes a directory(or more)
     NONE
 };
 

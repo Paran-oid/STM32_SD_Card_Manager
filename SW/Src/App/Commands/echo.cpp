@@ -30,7 +30,7 @@ CmdExec echo_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& arg
         for (auto it = args.begin(); it != args.end(); it++)
         {
             temp = *it;
-            if (is_double_quoted(temp))
+            if (isstring(temp))
             {
                 temp = format_str(temp);  // get rid of double quotes for the string
             }
@@ -38,7 +38,8 @@ CmdExec echo_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& arg
             output_str += temp;
             if (etl::next(it) != args.end()) output_str += " ";
         }
-        printf("%s\r\n", output_str.data());
+        printf("%s", output_str.c_str());
+        printf("\r\n");
     }
     else
     {
@@ -47,10 +48,11 @@ CmdExec echo_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& arg
         if ((idx_symb - 1) < 0 || (idx_symb + 1) > static_cast<ptrdiff_t>(args.size()))
             return SD_RES::ERR;
 
-        etl::string<SSIZE> content, temp;
+        etl::string<SSIZE> content;
+        etl::string<SSIZE> temp;
         for (uint8_t i = 0; i < idx_symb; i++)
         {
-            if (is_double_quoted(args[i]))
+            if (isstring(args[i]))
                 temp = format_str(args[i]);
             else
                 temp = args[i];
@@ -61,11 +63,11 @@ CmdExec echo_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& arg
 
         etl::string<SSIZE> output_file = args[static_cast<size_t>(idx_symb + 1)];
 
-        std::ofstream file(output_file.data(),
+        std::ofstream file(output_file.c_str(),
                            append_symb != args.end() ? std::ios::app : std::ios::out);
         if (!file.is_open()) return SD_RES::ERR;
 
-        file << content.data();
+        file << content.c_str();
 
         file.close();
     }

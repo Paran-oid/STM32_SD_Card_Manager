@@ -1,12 +1,12 @@
 #include "utils.hpp"
 
-void die(etl::string_view msg)
+void die(etl::string<SSIZE> msg)
 {
-    printf("%s\r\n", msg.data());
+    printf("%s\r\n", msg.c_str());
     for (;;);
 }
 
-bool is_double_quoted(etl::string_view s)
+bool isstring(etl::string<SSIZE> s)
 {
     if (s.size() >= 2 && s.front() == '\"' && s.back() == '\"') return true;
     return false;
@@ -35,9 +35,9 @@ bool isescseq(char c)
     return false;
 }
 
-size_t find_outside_quotes(etl::string_view s, char c, size_t start, size_t length)
+size_t find_outside_quotes(etl::string<SSIZE> s, char c, size_t start, size_t length)
 {
-    size_t end = length == etl::string_view::npos ? s.size() : length - start;
+    size_t end = length == etl::string<SSIZE>::npos ? s.size() : length - start;
 
     bool in_quotes = false;
     for (size_t i = start; i < end && i < s.size(); i++)
@@ -53,16 +53,16 @@ size_t find_outside_quotes(etl::string_view s, char c, size_t start, size_t leng
         }
     }
 
-    return etl::string_view::npos;
+    return etl::string<SSIZE>::npos;
 }
 
 etl::string<SSIZE> format_str(const etl::string<SSIZE>& s)
 {
-    if (!is_double_quoted(s)) return "";
+    if (!isstring(s)) return "";
     return s.substr(1, s.size() - 2);  // get rid of double quotes for the string
 }
 
-etl::string<SSIZE> unescape(etl::string_view s)
+etl::string<SSIZE> unescape(etl::string<SSIZE> s)
 {
     etl::string<SSIZE> res;
     for (uint8_t i = 0; i < s.size(); i++)
