@@ -16,12 +16,11 @@ CmdExec cat_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& args
                                    // ;file instead of trying to open it...
     if (!f.is_open()) return SD_RES::ERR;
 
-    std::string readbuf;
+    std::string readbuf;  // have to use std::string to ready from getline
     while (std::getline(f, readbuf))
     {
-        printf("%s", readbuf.data());
+        printf("%s\n", readbuf.data());
     }
-    printf("\r\n");
 
     f.close();
 

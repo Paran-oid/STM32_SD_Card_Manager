@@ -25,9 +25,12 @@ enum SD_RES
 void die(etl::string_view msg);
 
 bool isstring(etl::string_view s);
+bool isescseq(char c);
 
 size_t find_outside_quotes(etl::string_view s, char c, size_t start = 0,
                            size_t length = etl::string_view::npos);
 
 // from string "foo" to string foo
 etl::string<SSIZE> format_str(const etl::string<SSIZE>& s);
+
+etl::string<SSIZE> unescape(etl::string_view s);

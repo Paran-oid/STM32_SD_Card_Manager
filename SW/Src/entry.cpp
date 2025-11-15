@@ -21,8 +21,8 @@ void setup()
 
 void loop()
 {
-    
     std::cin.getline(tbuf, SSIZE);
     sinput.assign(tbuf);
+    sinput = unescape(sinput.data());
     handle_command(sinput);
 }
