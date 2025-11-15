@@ -28,8 +28,8 @@ TestResult test_sd_read_write(bool display)
 
     if (display)
     {
-        etl::array<etl::string_view, 5> msgs = {"content of ", path, "is:\r\n", s, "\r\n\r\n"};
-        for (auto msg : msgs) printf("%s", msg.data());
+        etl::array<etl::string<SSIZE>, 5> msgs = {"content of ", path, "is:\r\n", s, "\r\n\r\n"};
+        for (auto msg : msgs) printf("%s", msg.c_str());
     }
 
     if (sd_reader.close_file(file)) return {false, "close file failed"};

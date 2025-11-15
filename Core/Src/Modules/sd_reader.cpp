@@ -26,7 +26,7 @@ SDFile* MicroSDHandler::open_file(const etl::string<SSIZE>& path, uint8_t mode)
         if (!handle)
         {
             handle = etl::unique_ptr<SDFile>(new SDFile(path.data()));
-            if (f_open(handle->fil(), path.data(), mode) == FR_OK)
+            if (f_open(handle->fil(), path.c_str(), mode) == FR_OK)
                 return handle.get();
             else
                 handle.reset();  // delete the object
@@ -54,12 +54,12 @@ SD_RES MicroSDHandler::close_file(SDFile* file)
 
 SD_RES MicroSDHandler::exists(const etl::string<SSIZE>& path)
 {
-    return f_stat(path.data(), NULL) == FR_OK ? SD_RES::OK : SD_RES::ERR;
+    return f_stat(path.c_str(), NULL) == FR_OK ? SD_RES::OK : SD_RES::ERR;
 }
 
 SD_RES MicroSDHandler::mkdir(const etl::string<SSIZE>& path)
 {
-    return f_mkdir(path.data()) == FR_OK ? SD_RES::OK : SD_RES::ERR;
+    return f_mkdir(path.c_str()) == FR_OK ? SD_RES::OK : SD_RES::ERR;
 }
 
 SD_RES MicroSDHandler::list(const etl::string<SSIZE>& dir_path, uint8_t page,
@@ -69,11 +69,11 @@ SD_RES MicroSDHandler::list(const etl::string<SSIZE>& dir_path, uint8_t page,
     (void) out;
 
     DIR     dir;
-    FRESULT fres = f_opendir(&dir, dir_path.data());
+    FRESULT fres = f_opendir(&dir, dir_path.c_str());
 
     uint16_t       file_count = 0;
     const uint16_t page_start = PAGE_SIZE * page;
-    const uint16_t page_end   = PAGE_SIZE * (page + 1);
+    const uint16_t page_end   = PAGE_SIZE * static_cast<uint16_t>((page + 1));
 
     if (fres != FR_OK) return SD_RES::ERR;
 
@@ -108,7 +108,7 @@ SD_RES MicroSDHandler::delete_(const etl::string<SSIZE>& path, bool recursive)
     FILINFO fno;
     DIR     dir;
 
-    FRESULT fres = f_stat(path.data(), &fno);
+    FRESULT fres = f_stat(path.c_str(), &fno);
 
     if (fres != FR_OK) return SD_RES::ERR;
 
@@ -116,7 +116,7 @@ SD_RES MicroSDHandler::delete_(const etl::string<SSIZE>& path, bool recursive)
     {
         if (!recursive) return SD_RES::ERR;
 
-        fres = f_opendir(&dir, path.data());
+        fres = f_opendir(&dir, path.c_str());
         if (fres != FR_OK) return SD_RES::ERR;
 
         for (;;)
@@ -139,12 +139,12 @@ SD_RES MicroSDHandler::delete_(const etl::string<SSIZE>& path, bool recursive)
 
                 if (this->delete_(full_path, recursive) != SD_RES::OK) return SD_RES::ERR;
 
-                fres = f_opendir(&dir, path.data());
+                fres = f_opendir(&dir, path.c_str());
                 if (fres != FR_OK) return SD_RES::ERR;
             }
             else
             {
-                fres = f_unlink(full_path.data());
+                fres = f_unlink(full_path.c_str());
                 if (fres != FR_OK) return SD_RES::ERR;
             }
         }
@@ -152,7 +152,7 @@ SD_RES MicroSDHandler::delete_(const etl::string<SSIZE>& path, bool recursive)
         fres = f_closedir(&dir);
     }
 
-    fres = f_unlink(path.data());  // delete the file or empty directory
+    fres = f_unlink(path.c_str());  // delete the file or empty directory
 
     return fres == FR_OK ? SD_RES::OK : SD_RES::ERR;
 }
@@ -180,7 +180,7 @@ uint64_t MicroSDHandler::free_space() const
 
 void MicroSDHandler::set_label(const etl::string<MAX_LABEL_SIZE>& new_label)
 {
-    if (f_setlabel(new_label.data()) != FR_OK)
+    if (f_setlabel(new_label.c_str()) != FR_OK)
     {
         m_label = "";
         return;

@@ -31,7 +31,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE etl::etl)
 
 target_compile_options(
   ${CMAKE_PROJECT_NAME}
-  PRIVATE -Wall # Enable common
+  PRIVATE -Wall
           -Wall
           -Wextra
           -Werror

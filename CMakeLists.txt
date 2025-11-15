@@ -101,8 +101,23 @@ target_compile_definitions(
              SCA_GPIO SCA_SPI SCA_PTIMER SCA_UART)
 
 # Add flags
-target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Wextra -fno-rtti
-                                                     -fno-exceptions)
+target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Wall -Wextra
+                                                     -Werror -Wunused -Os)
+
+target_compile_options(
+  ${CMAKE_PROJECT_NAME}
+  PRIVATE # Debug: enable debug info
+          $<$<CONFIG:Debug>:-O0
+          -g3
+          -Wall
+          -Wextra
+          -fstack-protector-strong>
+          # Release: optimize for size
+          $<$<CONFIG:Release>:-Os
+          -DNDEBUG
+          -ffunction-sections
+          -Wall
+          -Wextra>)
 
 # Remove wrong libob.a library dependency when using cpp files
 list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)

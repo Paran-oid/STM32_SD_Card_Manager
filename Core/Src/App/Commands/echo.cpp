@@ -38,7 +38,7 @@ CmdExec echo_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& arg
             output_str += temp;
             if (etl::next(it) != args.end()) output_str += " ";
         }
-        printf("%s\r\n", output_str.data());
+        printf("%s\r\n", output_str.c_str());
     }
     else
     {
@@ -59,7 +59,7 @@ CmdExec echo_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& arg
             if (i != (idx_symb - 1)) content += " ";
         }
 
-        etl::string<SSIZE> output_file = args[idx_symb + 1];
+        etl::string<SSIZE> output_file = args[static_cast<size_t>(idx_symb + 1)];
         SDFile*            file        = sd_reader.open_file(output_file, open_mode);
 
         if (write_symb) file->truncate();  // set to start of file

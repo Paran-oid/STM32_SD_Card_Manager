@@ -46,12 +46,12 @@ class SDFile
         return SD_RES::OK;
     }
 
-    SD_RES write(etl::string_view txt);
+    SD_RES write(etl::string<SSIZE> txt);
 
     SD_RES seek(uint32_t offset);
     SD_RES truncate();
 
-    SD_RES rename(etl::string_view old_path, etl::string_view new_path);
+    SD_RES rename(etl::string<SSIZE> old_path, etl::string<SSIZE> new_path);
 
     uint32_t size() const;
 
@@ -64,7 +64,7 @@ class SDFile
         return &m_fil;
     }
 
-    etl::string_view path() const
+    etl::string<SSIZE> path() const
     {
         return m_path;
     }
