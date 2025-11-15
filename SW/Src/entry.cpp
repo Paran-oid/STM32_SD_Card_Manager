@@ -23,6 +23,6 @@ void loop()
 {
     std::cin.getline(tbuf, SSIZE);
     sinput.assign(tbuf);
-    sinput = unescape(sinput.data());
+    sinput = unescape(sinput);
     handle_command(sinput);
 }

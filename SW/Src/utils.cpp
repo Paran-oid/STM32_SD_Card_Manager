@@ -6,7 +6,7 @@ void die(etl::string_view msg)
     for (;;);
 }
 
-bool isstring(etl::string_view s)
+bool is_double_quoted(etl::string_view s)
 {
     if (s.size() >= 2 && s.front() == '\"' && s.back() == '\"') return true;
     return false;
@@ -58,7 +58,7 @@ size_t find_outside_quotes(etl::string_view s, char c, size_t start, size_t leng
 
 etl::string<SSIZE> format_str(const etl::string<SSIZE>& s)
 {
-    if (!isstring(s)) return "";
+    if (!is_double_quoted(s)) return "";
     return s.substr(1, s.size() - 2);  // get rid of double quotes for the string
 }
 

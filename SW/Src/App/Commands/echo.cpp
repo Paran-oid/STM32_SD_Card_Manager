@@ -30,7 +30,7 @@ CmdExec echo_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& arg
         for (auto it = args.begin(); it != args.end(); it++)
         {
             temp = *it;
-            if (isstring(temp))
+            if (is_double_quoted(temp))
             {
                 temp = format_str(temp);  // get rid of double quotes for the string
             }
@@ -38,8 +38,7 @@ CmdExec echo_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& arg
             output_str += temp;
             if (etl::next(it) != args.end()) output_str += " ";
         }
-        printf("%s", output_str.data());
-        printf("\r\n");
+        printf("%s\r\n", output_str.data());
     }
     else
     {
@@ -48,11 +47,10 @@ CmdExec echo_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& arg
         if ((idx_symb - 1) < 0 || (idx_symb + 1) > static_cast<ptrdiff_t>(args.size()))
             return SD_RES::ERR;
 
-        etl::string<SSIZE> content;
-        etl::string<SSIZE> temp;
+        etl::string<SSIZE> content, temp;
         for (uint8_t i = 0; i < idx_symb; i++)
         {
-            if (isstring(args[i]))
+            if (is_double_quoted(args[i]))
                 temp = format_str(args[i]);
             else
                 temp = args[i];

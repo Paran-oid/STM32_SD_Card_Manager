@@ -46,12 +46,12 @@ void handle_command(const etl::string<SSIZE>& str)
     etl::string<SSIZE>                             cmd;
     size_t                                         start = 0, end = 0;
 
-    size_t pos_space = str.find(' ');
+    size_t pos_space = find_outside_quotes(str, ' ');
     if (pos_space != etl::string<SSIZE>::npos)
     {
         cmd   = str.substr(0, pos_space);
         start = end = pos_space + 1;
-        while ((end = str.find(' ', start)) != etl::string<SSIZE>::npos)
+        while ((end = find_outside_quotes(str, ' ', start)) != etl::string<SSIZE>::npos)
         {
             if (args.size() == args.capacity()) die("too many arguments entered...");
             etl::string<SSIZE> item = str.substr(start, end - start);
@@ -67,16 +67,14 @@ void handle_command(const etl::string<SSIZE>& str)
     }
 
     CommandType cmd_type = check_command_type(cmd);
-    (void) cmd_type;
-    auto it = cmd_table.find(cmd_type);
+    auto        it       = cmd_table.find(cmd_type);
     if (it == cmd_table.end())
     {
         printf("command not found\r\n");
         return;
     }
 
-    printf("\r\n");
     SD_RES res = it->second(args);
-    if (res == SD_RES::OK) printf("\r\n");
+    if (res != SD_RES::OK) printf("error occured...\r\n");
     return;
 }

@@ -16,7 +16,7 @@ extern "C"
 #include "tests.hpp"
 #include "utils.hpp"
 
-etl::string<SSIZE> uart_input_buf;
+etl::string<SSIZE> in_str;
 
 #define TESTING_ 0
 
@@ -37,6 +37,7 @@ void setup()
 
 void loop()
 {
-    uart2.scan(uart_input_buf);
-    handle_command(uart_input_buf);
+    uart2.scan(in_str);
+    in_str = unescape(in_str);
+    handle_command(in_str);
 }

@@ -35,13 +35,14 @@ class SDFile
     template <size_t N>
     SD_RES read(etl::string<N>& str)
     {
-        char buf[N];  // must be char[] because f_read works that way
+        char buf[N - 1];  // must be char[] because f_read works that way
         UINT bytes_read = 0;
 
-        FRESULT fres = f_read(&m_fil, buf, N, &bytes_read);
+        FRESULT fres = f_read(&m_fil, buf, N - 1, &bytes_read);
         if (fres != FR_OK || bytes_read == 0) return SD_RES::ERR;
 
         str.assign(buf);
+        str[bytes_read] = '\0';  // content of files don't null terminate
         return SD_RES::OK;
     }
 

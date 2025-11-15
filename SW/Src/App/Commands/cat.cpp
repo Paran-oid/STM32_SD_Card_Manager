@@ -10,7 +10,7 @@ CmdExec cat_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& args
     if (args.empty()) return SD_RES::ERR;
 
     etl::string<SSIZE> path = args[0];
-    if (isstring(args[0])) path = format_str(path);
+    if (is_double_quoted(path)) path = format_str(path);
 
     std::ifstream f(path.data());  // TODO: use some kind of function that checks the existence of a
                                    // ;file instead of trying to open it...

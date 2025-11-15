@@ -30,25 +30,39 @@ CmdExec echo_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& arg
     if (write_symb == args.end() && append_symb == args.end())
     {
         etl::string<SSIZE * ARGS_CAPACITY> output_str;
+        etl::string<SSIZE>                 temp;
         for (auto it = args.begin(); it != args.end(); it++)
         {
-            output_str += *it;
+            temp = *it;
+            if (is_double_quoted(temp)) temp = format_str(temp);
+            output_str += temp;
             if (etl::next(it) != args.end()) output_str += " ";
         }
-        printf("%s", output_str.data());
+        printf("%s\r\n", output_str.data());
     }
     else
     {
-        int idx_symb =
+        ptrdiff_t idx_symb =
             etl::distance(args.begin(), write_symb != args.end() ? write_symb : append_symb);
-        if (((idx_symb - 1) < 0) || (idx_symb + 1) > static_cast<int>(args.size()))
+        if (((idx_symb - 1) < 0) || (idx_symb + 1) > static_cast<ptrdiff_t>(args.size()))
             return SD_RES::ERR;
 
-        etl::string<SSIZE> content = args[idx_symb - 1];
+        etl::string<SSIZE> content, temp;
+        for (uint8_t i = 0; i < idx_symb; i++)
+        {
+            if (is_double_quoted(args[i]))
+                temp = format_str(args[i]);
+            else
+                temp = args[i];
+
+            content += temp;
+            if (i != (idx_symb - 1)) content += " ";
+        }
 
         etl::string<SSIZE> output_file = args[idx_symb + 1];
         SDFile*            file        = sd_reader.open_file(output_file, open_mode);
-        if (write_symb) file->truncate();  // reduce size to the pointer if in write mode
+
+        if (write_symb) file->truncate();  // set to start of file
         if (file->write(content) != SD_RES::OK) return SD_RES::ERR;
 
         if (sd_reader.close_file(file) != SD_RES::OK) return SD_RES::ERR;

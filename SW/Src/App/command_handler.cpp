@@ -69,8 +69,7 @@ void handle_command(const etl::string<SSIZE>& str)
     }
 
     CommandType cmd_type = check_command_type(cmd);
-    (void) cmd_type;
-    auto it = cmd_table.find(cmd_type);
+    auto        it       = cmd_table.find(cmd_type);
     if (it == cmd_table.end())
     {
         printf("command not found\r\n");
@@ -78,6 +77,6 @@ void handle_command(const etl::string<SSIZE>& str)
     }
 
     SD_RES res = it->second(args);
-    if (res != SD_RES::OK) printf("error occured\r\n");
+    if (res != SD_RES::OK) printf("error occured...\r\n");
     return;
 }
