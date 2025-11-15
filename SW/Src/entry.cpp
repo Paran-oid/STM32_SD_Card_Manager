@@ -21,6 +21,7 @@ void setup()
 
 void loop()
 {
+    
     std::cin.getline(tbuf, SSIZE);
     sinput.assign(tbuf);
     handle_command(sinput);
