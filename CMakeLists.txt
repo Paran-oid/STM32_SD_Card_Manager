@@ -34,10 +34,10 @@ message("Build type: " ${CMAKE_BUILD_TYPE})
 # Enable CMake support for ASM and C languages
 enable_language(C CXX ASM)
 
-# Packages
+# Packages and libraries
 add_subdirectory(Libs)
 
-# Create an executable object type
+# build
 add_executable(${CMAKE_PROJECT_NAME})
 
 # Add STM32CubeMX generated sources
@@ -59,14 +59,14 @@ target_sources(
           ${CMAKE_SOURCE_DIR}/Core/Src/Modules/sd_file.cpp
           ${CMAKE_SOURCE_DIR}/Core/Src/Modules/sd_reader.cpp
           ${CMAKE_SOURCE_DIR}/Core/Src/App/hal_init.cpp
-          # ${CMAKE_SOURCE_DIR}/Core/Src/App/command_handler.cpp
-          # ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/echo.cpp
-          # ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/rm.cpp
-          # ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/common_cmds.cpp
-          # ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/cat.cpp
-          # ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/cp.cpp
-          # ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/ls.cpp
-          # ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/cd.cpp
+          ${CMAKE_SOURCE_DIR}/Core/Src/App/command_handler.cpp
+          ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/echo.cpp
+          ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/rm.cpp
+          ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/common_cmds.cpp
+          ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/cat.cpp
+          ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/cp.cpp
+          ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/ls.cpp
+          ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/cd.cpp
           #
           # Test-related
           #
@@ -110,4 +110,4 @@ list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
 # Add linked libraries
 target_link_libraries(
   ${CMAKE_PROJECT_NAME} stm32cubemx etl::etl # Add user defined libraries
-  sca)
+  sca printf)

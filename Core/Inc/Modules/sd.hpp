@@ -6,16 +6,14 @@ extern "C"
 #include "main.h"
 }
 
-#include <etl/array.h>
-#include <etl/memory.h>
-#include <etl/string.h>
-
+#include "etl/array.h"
+#include "etl/memory.h"
+#include "etl/string.h"
 #include "utils.hpp"
 
 constexpr uint8_t MAX_FILE_HANDLES = 4;
 constexpr uint8_t PAGE_SIZE        = 4;  // 16 entities can be read at a time
 constexpr uint8_t MAX_LABEL_SIZE   = 32;
-constexpr uint8_t MAX_DIR_SIZE     = 200;
 
 class SDFile
 {
@@ -41,8 +39,7 @@ class SDFile
         UINT bytes_read = 0;
 
         FRESULT fres = f_read(&m_fil, buf, N, &bytes_read);
-        if (fres != FR_OK || bytes_read == 0)
-            return SD_RES::ERR;  // TODO: make it return different error for empty buffer
+        if (fres != FR_OK || bytes_read == 0) return SD_RES::ERR;
 
         str.assign(buf);
         return SD_RES::OK;
@@ -81,8 +78,8 @@ class MicroSDHandler
 
     etl::array<etl::unique_ptr<SDFile>, MAX_FILE_HANDLES> m_file_handles;
 
-    etl::string<MAX_DIR_SIZE>   m_cwd   = "";
-    etl::string<MAX_LABEL_SIZE> m_label = "/";
+    etl::string<SSIZE>          m_cwd   = "/";
+    etl::string<MAX_LABEL_SIZE> m_label = "";
 
    public:
     enum class SDType
@@ -105,15 +102,15 @@ class MicroSDHandler
     SD_RES unmount();
 
     // File and directory Management
-    SDFile* open_file(const etl::string<MAX_DIR_SIZE>& path, uint8_t mode);
+    SDFile* open_file(const etl::string<SSIZE>& path, uint8_t mode);
     SD_RES  close_file(SDFile* file);
 
-    SD_RES exists(const etl::string<MAX_DIR_SIZE>& path);
-    SD_RES mkdir(const etl::string<MAX_DIR_SIZE>& path);
+    SD_RES exists(const etl::string<SSIZE>& path);
+    SD_RES mkdir(const etl::string<SSIZE>& path);
 
-    SD_RES list(const etl::string<MAX_DIR_SIZE>& dir_path, uint8_t page,
+    SD_RES list(const etl::string<SSIZE>& dir_path, uint8_t page,
                 etl::array<FILINFO, PAGE_SIZE>& out);
-    SD_RES delete_(const etl::string<MAX_DIR_SIZE>& path,
+    SD_RES delete_(const etl::string<SSIZE>& path,
                    bool recursive = false);  // both a file and directory can be passed
 
     uint64_t total_space() const;
@@ -122,11 +119,11 @@ class MicroSDHandler
     void                        set_label(const etl::string<MAX_LABEL_SIZE>& new_label);
     etl::string<MAX_LABEL_SIZE> label();
 
-    void set_cwd(const etl::string<MAX_DIR_SIZE>& dir)
+    void set_cwd(const etl::string<SSIZE>& dir)
     {
         m_cwd = dir;
     }
-    etl::string<MAX_DIR_SIZE> cwd()
+    etl::string<SSIZE> cwd()
     {
         return m_cwd;
     }

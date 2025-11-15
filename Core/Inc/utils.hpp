@@ -5,9 +5,9 @@ extern "C"
 #include "main.h"
 }
 
-#include <etl/string.h>
+#include "etl/string.h"
 
-// TODO: introduce more status codes (and rename it to MP_STAT)
+constexpr uint8_t SSIZE = 255U;  // usual string size
 
 enum SD_RES
 {
@@ -15,7 +15,4 @@ enum SD_RES
     ERR = 1
 };
 
-extern UART_HandleTypeDef huart2;
-
-void log(etl::string_view msg);
 void die(etl::string_view msg);

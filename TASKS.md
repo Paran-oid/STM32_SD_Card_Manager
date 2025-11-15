@@ -1,9 +1,5 @@
 # Tasks
 
-## start
-
-- Create C++ abstraction for FATFS sd functionalities
-
 ## command interface for these features
 
 - be able to read, write to a file

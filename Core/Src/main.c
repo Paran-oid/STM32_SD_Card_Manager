@@ -314,6 +314,14 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+// needed for printf imported library to work (for embedded)
+int _write(int file, char* ptr, int len)
+{
+    (void) file;
+    HAL_UART_Transmit(&huart2, (const uint8_t*) ptr, len, 100);
+    return len;
+}
 /* USER CODE END 4 */
 
 /**

@@ -19,7 +19,7 @@ SD_RES MicroSDHandler::unmount()
 }
 
 // File and directory management
-SDFile* MicroSDHandler::open_file(const etl::string<MAX_DIR_SIZE>& path, uint8_t mode)
+SDFile* MicroSDHandler::open_file(const etl::string<SSIZE>& path, uint8_t mode)
 {
     for (auto& handle : m_file_handles)
     {
@@ -52,17 +52,17 @@ SD_RES MicroSDHandler::close_file(SDFile* file)
     return SD_RES::ERR;
 }
 
-SD_RES MicroSDHandler::exists(const etl::string<MAX_DIR_SIZE>& path)
+SD_RES MicroSDHandler::exists(const etl::string<SSIZE>& path)
 {
     return f_stat(path.data(), NULL) == FR_OK ? SD_RES::OK : SD_RES::ERR;
 }
 
-SD_RES MicroSDHandler::mkdir(const etl::string<MAX_DIR_SIZE>& path)
+SD_RES MicroSDHandler::mkdir(const etl::string<SSIZE>& path)
 {
     return f_mkdir(path.data()) == FR_OK ? SD_RES::OK : SD_RES::ERR;
 }
 
-SD_RES MicroSDHandler::list(const etl::string<MAX_DIR_SIZE>& dir_path, uint8_t page,
+SD_RES MicroSDHandler::list(const etl::string<SSIZE>& dir_path, uint8_t page,
                             etl::array<FILINFO, PAGE_SIZE>& out)
 {
     (void) page;
@@ -98,7 +98,7 @@ SD_RES MicroSDHandler::list(const etl::string<MAX_DIR_SIZE>& dir_path, uint8_t p
     return fres == FR_OK ? SD_RES::OK : SD_RES::ERR;
 }
 
-SD_RES MicroSDHandler::delete_(const etl::string<MAX_DIR_SIZE>& path, bool recursive)
+SD_RES MicroSDHandler::delete_(const etl::string<SSIZE>& path, bool recursive)
 {
     if (path != "/" || path == "." || path.empty())
     {
