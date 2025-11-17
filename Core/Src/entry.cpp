@@ -16,8 +16,6 @@ extern "C"
 #include "tests.hpp"
 #include "utils.hpp"
 
-estring in_str;
-
 #define TESTING_ 0
 
 void setup()
@@ -36,9 +34,11 @@ void setup()
     printf("=======STM32 MICRO SD CARD READER READY!=======\r\n");
 }
 
-void loop()
+// uart input buf
+estring s;
+void    loop()
 {
-    uart2.scan(in_str);
-    in_str = unescape(in_str);
-    handle_command(in_str);
+    uart2.scan(s);
+    s = unescape(s);
+    handle_command(s);
 }

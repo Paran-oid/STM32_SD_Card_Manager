@@ -1,6 +1,7 @@
 #include "command_handler.hpp"
 #include "etl/string.h"
 #include "etl/vector.h"
+#include "hal_init.hpp"
 #include "utils.hpp"
 
 CmdExec rm_exec = [](const etl::vector<estring, ARGS_CAPACITY>& args)

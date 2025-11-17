@@ -11,9 +11,10 @@ extern "C"
 #include "etl/string.h"
 #include "utils.hpp"
 
-constexpr uint8_t MAX_FILE_HANDLES = 4;
-constexpr uint8_t PAGE_SIZE        = 4;  // 16 entities can be read at a time
-constexpr uint8_t MAX_LABEL_SIZE   = 32;
+constexpr uint8_t  MAX_FILE_HANDLES = 4;
+constexpr uint8_t  PAGE_SIZE        = 16;  // 16 entities can be read at a time
+constexpr uint8_t  MAX_LABEL_SIZE   = 32;
+constexpr uint16_t MAX_WD_SIZE      = 256;
 
 class SDFile
 {
@@ -81,9 +82,6 @@ class MicroSDHandler
 
     etl::array<etl::unique_ptr<SDFile>, MAX_FILE_HANDLES> m_file_handles;
 
-    estring                     m_cwd   = "/";
-    etl::string<MAX_LABEL_SIZE> m_label = "";
-
    public:
     enum class SDType
     {
@@ -108,7 +106,7 @@ class MicroSDHandler
     SDFile* open_file(const estring& path, uint8_t mode);
     SD_RES  close_file(SDFile* file);
 
-    SD_RES exists(const estring& path);
+    bool exists(const estring& path);
     SD_RES mkdir(const estring& path);
 
     SD_RES list(const estring& dir_path, uint8_t page, etl::array<FILINFO, PAGE_SIZE>& out);
@@ -123,15 +121,9 @@ class MicroSDHandler
 
     // getters and setters
 
-    void                        set_label(const etl::string<MAX_LABEL_SIZE>& new_label);
+    SD_RES                      set_label(const etl::string<MAX_LABEL_SIZE>& new_label);
     etl::string<MAX_LABEL_SIZE> label();
 
-    void set_cwd(const estring& dir)
-    {
-        m_cwd = dir;
-    }
-    estring cwd()
-    {
-        return m_cwd;
-    }
+    SD_RES  chdir(const estring& dir);
+    estring cwd();
 };

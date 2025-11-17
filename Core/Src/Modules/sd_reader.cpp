@@ -52,9 +52,9 @@ SD_RES MicroSDHandler::close_file(SDFile* file)
     return SD_RES::ERR;
 }
 
-SD_RES MicroSDHandler::exists(const estring& path)
+bool MicroSDHandler::exists(const estring& path)
 {
-    return f_stat(path.c_str(), NULL) == FR_OK ? SD_RES::OK : SD_RES::ERR;
+    return f_stat(path.c_str(), NULL) == FR_OK ? true : false;
 }
 
 SD_RES MicroSDHandler::mkdir(const estring& path)
@@ -65,37 +65,33 @@ SD_RES MicroSDHandler::mkdir(const estring& path)
 SD_RES MicroSDHandler::list(const estring& dir_path, uint8_t page,
                             etl::array<FILINFO, PAGE_SIZE>& out)
 {
-    (void) page;
-    (void) out;
-
-    DIR     dir;
-    FRESULT fres = f_opendir(&dir, dir_path.c_str());
+    DIR dir;
+    if (f_opendir(&dir, dir_path.c_str()) != FR_OK) return SD_RES::ERR;
 
     uint16_t       file_count = 0;
     const uint16_t page_start = PAGE_SIZE * page;
     const uint16_t page_end   = PAGE_SIZE * static_cast<uint16_t>((page + 1));
 
-    if (fres != FR_OK) return SD_RES::ERR;
-
     FILINFO fno;
+    bool    filled = false;
     for (;;)
     {
-        fres = f_readdir(&dir, &fno);
-        if (fres != FR_OK) break;
+        if (f_readdir(&dir, &fno) != FR_OK) return SD_RES::ERR;
         if (!fno.fname[0]) break;
 
-        if (!((file_count > page_start) && (file_count < page_end)))
+        if ((file_count < page_start) || (file_count >= page_end))
         {
             file_count++;
             continue;
         }
 
+        filled                       = true;
         out[file_count - page_start] = fno;
         file_count++;
     }
 
-    fres = f_closedir(&dir);
-    return fres == FR_OK ? SD_RES::OK : SD_RES::ERR;
+    if (f_closedir(&dir) != FR_OK) return SD_RES::ERR;
+    return filled ? SD_RES::OK : SD_RES::ERR;
 }
 
 SD_RES MicroSDHandler::delete_(const estring& path, bool recursive)
@@ -195,22 +191,35 @@ bool MicroSDHandler::is_directory(const estring& path)
     return (fno.fattrib & AM_DIR) != 0;
 }
 
-void MicroSDHandler::set_label(const etl::string<MAX_LABEL_SIZE>& new_label)
+SD_RES MicroSDHandler::set_label(const etl::string<MAX_LABEL_SIZE>& new_label)
 {
-    if (f_setlabel(new_label.c_str()) != FR_OK)
-    {
-        m_label = "";
-        return;
-    }
-
-    m_label = new_label;
+    if (f_setlabel(new_label.c_str()) != FR_OK) return SD_RES::ERR;
+    return SD_RES::OK;
 }
 etl::string<MAX_LABEL_SIZE> MicroSDHandler::label()
 {
-    TCHAR buf[MAX_LABEL_SIZE];
+    estring res;
+    TCHAR   buf[MAX_LABEL_SIZE];
 
     if (f_getlabel("", buf, nullptr) != FR_OK) return "";
-    m_label.assign(buf);
+    res.assign(buf);
 
-    return m_label;
+    return res;
+}
+
+SD_RES MicroSDHandler::chdir(const estring& dir)
+{
+    if (f_chdir(dir.data()) != FR_OK) return SD_RES::ERR;
+    return SD_RES::OK;
+}
+
+estring MicroSDHandler::cwd()
+{
+    estring res;
+    char    buf[MAX_WD_SIZE];
+
+    if (f_getcwd(buf, sizeof(buf)) != FR_OK) die("error trying to get cwd\r\n");
+    res.assign(buf);
+
+    return res;
 }

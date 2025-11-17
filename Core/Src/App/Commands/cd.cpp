@@ -11,10 +11,5 @@ CmdExec cd_exec = [](const etl::vector<estring, ARGS_CAPACITY>& args)
     if (sd_reader.exists(path) != SD_RES::OK) return SD_RES::ERR;
     if (!sd_reader.is_directory(path)) return SD_RES::ERR;
 
-    estring fpath = sd_reader.cwd();
-    fpath += path;
-    fpath += "/";
-    sd_reader.set_cwd(fpath);
-
-    return SD_RES::OK;
+    return sd_reader.chdir(path);
 };
