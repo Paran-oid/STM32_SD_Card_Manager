@@ -8,6 +8,8 @@
 - delete file
 - move and rename files
 
+- start using more widespread conventional c++ naming patterns
+
 - recursive directory listing
 - copy files between sd and pc
 - file search and filter
@@ -20,6 +22,7 @@
 - fatfs microsd ready code, etc)
 - Include low power modes
 - Make sure my code is optimal (consider using design patterns)
+- Decrease compile time (and runtime maybe)
 - Consider using >> and << operators for microsd class and other classes (other operators too)
 - Make sure everything (functions and methods) returns an MP_RES
 - Write some error handling and logging

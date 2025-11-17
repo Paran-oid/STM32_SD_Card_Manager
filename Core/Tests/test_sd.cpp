@@ -14,7 +14,7 @@ TestResult test_sd_read_write(bool display)
 
     if (sd_reader.mount()) return {false, "couldn't mount micro sd card"};
 
-    etl::string<SSIZE> path = "test.txt";
+    estring path = "test.txt";
 
     SDFile* file = sd_reader.open_file(path, FA_READ | FA_WRITE);
     if (!file) return {false, "couldn't create file"};
@@ -28,7 +28,7 @@ TestResult test_sd_read_write(bool display)
 
     if (display)
     {
-        etl::array<etl::string<SSIZE>, 5> msgs = {"content of ", path, "is:\r\n", s, "\r\n\r\n"};
+        etl::array<estring, 5> msgs = {"content of ", path, "is:\r\n", s, "\r\n\r\n"};
         for (auto msg : msgs) printf("%s", msg.c_str());
     }
 

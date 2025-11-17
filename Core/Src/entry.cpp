@@ -16,7 +16,7 @@ extern "C"
 #include "tests.hpp"
 #include "utils.hpp"
 
-etl::string<SSIZE> in_str;
+estring in_str;
 
 #define TESTING_ 0
 
@@ -32,6 +32,7 @@ void setup()
     if (sd_reader.label().empty()) die("invalid label...\r\n");  // set label
     // if (sd_reader.unmount() != SD_RES::OK) die("unmount failed...\r\n");
 
+    // TODO: get used to writing docs before even beginning to write code
     printf("=======STM32 MICRO SD CARD READER READY!=======\r\n");
 }
 

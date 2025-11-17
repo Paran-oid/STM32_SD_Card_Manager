@@ -1,6 +1,6 @@
 #include "sd.hpp"
 
-SD_RES SDFile::write(etl::string<SSIZE> txt)
+SD_RES SDFile::write(estring txt)
 {
     return f_write(&m_fil, txt.data(), txt.length(), NULL) == FR_OK ? SD_RES::OK : SD_RES::ERR;
 }
@@ -20,7 +20,7 @@ uint32_t SDFile::size() const
     return f_size(&m_fil);
 }
 
-SD_RES SDFile::rename(etl::string<SSIZE> old_path, etl::string<SSIZE> new_path)
+SD_RES SDFile::rename(estring old_path, estring new_path)
 {
     return f_rename(old_path.c_str(), new_path.c_str()) == FR_OK ? SD_RES::OK : SD_RES::ERR;
 }

@@ -7,8 +7,8 @@
 
 struct TestResult
 {
-    bool               passed;
-    etl::string<SSIZE> msg;
+    bool    passed;
+    estring msg;
 };
 
 void run_tests();

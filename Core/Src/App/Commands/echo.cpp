@@ -5,7 +5,7 @@
 #include "hal_init.hpp"
 #include "utils.hpp"
 
-CmdExec echo_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& args)
+CmdExec echo_exec = [](const etl::vector<estring, ARGS_CAPACITY>& args)
 {
     if (args.empty())
     {
@@ -30,7 +30,7 @@ CmdExec echo_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& arg
     if (write_symb == args.end() && append_symb == args.end())
     {
         etl::string<SSIZE * ARGS_CAPACITY> output_str;
-        etl::string<SSIZE>                 temp;
+        estring                            temp;
         for (auto it = args.begin(); it != args.end(); it++)
         {
             temp = *it;
@@ -47,7 +47,7 @@ CmdExec echo_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& arg
         if (((idx_symb - 1) < 0) || (idx_symb + 1) > static_cast<ptrdiff_t>(args.size()))
             return SD_RES::ERR;
 
-        etl::string<SSIZE> content, temp;
+        estring content, temp;
         for (uint8_t i = 0; i < idx_symb; i++)
         {
             if (is_double_quoted(args[i]))
@@ -59,8 +59,8 @@ CmdExec echo_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& arg
             if (i != (idx_symb - 1)) content += " ";
         }
 
-        etl::string<SSIZE> output_file = args[static_cast<size_t>(idx_symb + 1)];
-        SDFile*            file        = sd_reader.open_file(output_file, open_mode);
+        estring output_file = args[static_cast<size_t>(idx_symb + 1)];
+        SDFile* file        = sd_reader.open_file(output_file, open_mode);
 
         if (write_symb) file->truncate();  // set to start of file
         if (file->write(content) != SD_RES::OK) return SD_RES::ERR;

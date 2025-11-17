@@ -6,26 +6,28 @@
 #include "etl/vector.h"
 #include "utils.hpp"
 
-constexpr uint16_t ARGS_CAPACITY  = 10;  // max number of items inside args buf inside the function
-
-const uint16_t COMMANDS_COUNT = 8;
+constexpr uint16_t ARGS_CAPACITY = 10;  // max number of items inside args buf inside the function
 
 enum class CommandType
 {
-    CAT,    // read to file
-    ECHO,   // write to a file
-    LS,     // list contents of a directory
-    RM,     // delete a file/dir
-    CP,     // move and/or rename file
-    CD,     // enter a directory
-    CLEAR,  // clears terminal
-    PWD,    // prints current working directory
-    NONE
+    CAT = 0,  // read to file
+    ECHO,     // write to a file
+    LS,       // list contents of a directory
+    RM,       // delete a file/dir
+    CP,       // move and/or rename file
+    CD,       // enter a directory
+    CLEAR,    // clears terminal
+    PWD,      // prints current working directory
+    MKDIR,    // creates a new directory(or more)
+    RMDIR,    // deletes a directory(or more)
+    NONE,     // undefined
+    COMMANDS_COUNT
 };
 
-using CmdExec = SD_RES (*)(const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>&);
+using CmdExec = SD_RES (*)(const etl::vector<estring, ARGS_CAPACITY>&);
 
 // defined in command_handler.cpp
-extern etl::unordered_map<CommandType, CmdExec, COMMANDS_COUNT> cmd_table;
+extern etl::unordered_map<CommandType, CmdExec, static_cast<size_t>(CommandType::COMMANDS_COUNT)>
+    cmd_table;
 
-void handle_command(const etl::string<SSIZE>& str);
+void handle_command(const estring& str);

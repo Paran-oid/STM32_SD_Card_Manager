@@ -19,7 +19,7 @@ SD_RES MicroSDHandler::unmount()
 }
 
 // File and directory management
-SDFile* MicroSDHandler::open_file(const etl::string<SSIZE>& path, uint8_t mode)
+SDFile* MicroSDHandler::open_file(const estring& path, uint8_t mode)
 {
     for (auto& handle : m_file_handles)
     {
@@ -52,17 +52,17 @@ SD_RES MicroSDHandler::close_file(SDFile* file)
     return SD_RES::ERR;
 }
 
-SD_RES MicroSDHandler::exists(const etl::string<SSIZE>& path)
+SD_RES MicroSDHandler::exists(const estring& path)
 {
     return f_stat(path.c_str(), NULL) == FR_OK ? SD_RES::OK : SD_RES::ERR;
 }
 
-SD_RES MicroSDHandler::mkdir(const etl::string<SSIZE>& path)
+SD_RES MicroSDHandler::mkdir(const estring& path)
 {
     return f_mkdir(path.c_str()) == FR_OK ? SD_RES::OK : SD_RES::ERR;
 }
 
-SD_RES MicroSDHandler::list(const etl::string<SSIZE>& dir_path, uint8_t page,
+SD_RES MicroSDHandler::list(const estring& dir_path, uint8_t page,
                             etl::array<FILINFO, PAGE_SIZE>& out)
 {
     (void) page;
@@ -98,9 +98,9 @@ SD_RES MicroSDHandler::list(const etl::string<SSIZE>& dir_path, uint8_t page,
     return fres == FR_OK ? SD_RES::OK : SD_RES::ERR;
 }
 
-SD_RES MicroSDHandler::delete_(const etl::string<SSIZE>& path, bool recursive)
+SD_RES MicroSDHandler::delete_(const estring& path, bool recursive)
 {
-    if (path != "/" || path == "." || path.empty())
+    if (path == "/" || path == "." || path.empty())
     {
         return SD_RES::ERR;
     }
@@ -109,7 +109,6 @@ SD_RES MicroSDHandler::delete_(const etl::string<SSIZE>& path, bool recursive)
     DIR     dir;
 
     FRESULT fres = f_stat(path.c_str(), &fno);
-
     if (fres != FR_OK) return SD_RES::ERR;
 
     if (fno.fattrib & AM_DIR)
@@ -176,6 +175,24 @@ uint64_t MicroSDHandler::free_space() const
     if (fres != FR_OK) return 0;
 
     return free_clusters * pfs->csize;
+}
+
+bool MicroSDHandler::is_file(const estring& path)
+{
+    FILINFO fno;
+    FRESULT res = f_stat(path.c_str(), &fno);
+    if (res != FR_OK) return false;
+
+    return !(fno.fattrib & AM_DIR);
+}
+
+bool MicroSDHandler::is_directory(const estring& path)
+{
+    FILINFO fno;
+    FRESULT res = f_stat(path.c_str(), &fno);
+    if (res != FR_OK) return false;
+
+    return (fno.fattrib & AM_DIR) != 0;
 }
 
 void MicroSDHandler::set_label(const etl::string<MAX_LABEL_SIZE>& new_label)

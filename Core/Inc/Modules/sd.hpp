@@ -46,12 +46,14 @@ class SDFile
         return SD_RES::OK;
     }
 
-    SD_RES write(etl::string<SSIZE> txt);
+    SD_RES write(estring txt);
 
     SD_RES seek(uint32_t offset);
     SD_RES truncate();
 
-    SD_RES rename(etl::string<SSIZE> old_path, etl::string<SSIZE> new_path);
+    SD_RES rename(estring old_path, estring new_path);
+
+    // getters and setters
 
     uint32_t size() const;
 
@@ -64,7 +66,7 @@ class SDFile
         return &m_fil;
     }
 
-    etl::string<SSIZE> path() const
+    estring path() const
     {
         return m_path;
     }
@@ -79,7 +81,7 @@ class MicroSDHandler
 
     etl::array<etl::unique_ptr<SDFile>, MAX_FILE_HANDLES> m_file_handles;
 
-    etl::string<SSIZE>          m_cwd   = "/";
+    estring                     m_cwd   = "/";
     etl::string<MAX_LABEL_SIZE> m_label = "";
 
    public:
@@ -103,28 +105,32 @@ class MicroSDHandler
     SD_RES unmount();
 
     // File and directory Management
-    SDFile* open_file(const etl::string<SSIZE>& path, uint8_t mode);
+    SDFile* open_file(const estring& path, uint8_t mode);
     SD_RES  close_file(SDFile* file);
 
-    SD_RES exists(const etl::string<SSIZE>& path);
-    SD_RES mkdir(const etl::string<SSIZE>& path);
+    SD_RES exists(const estring& path);
+    SD_RES mkdir(const estring& path);
 
-    SD_RES list(const etl::string<SSIZE>& dir_path, uint8_t page,
-                etl::array<FILINFO, PAGE_SIZE>& out);
-    SD_RES delete_(const etl::string<SSIZE>& path,
-                   bool recursive = false);  // both a file and directory can be passed
+    SD_RES list(const estring& dir_path, uint8_t page, etl::array<FILINFO, PAGE_SIZE>& out);
+    SD_RES delete_(const estring& path,
+                   bool           recursive = false);  // both a file and directory can be passed
 
     uint64_t total_space() const;
     uint64_t free_space() const;
 
+    bool is_file(const estring& path);
+    bool is_directory(const estring& path);
+
+    // getters and setters
+
     void                        set_label(const etl::string<MAX_LABEL_SIZE>& new_label);
     etl::string<MAX_LABEL_SIZE> label();
 
-    void set_cwd(const etl::string<SSIZE>& dir)
+    void set_cwd(const estring& dir)
     {
         m_cwd = dir;
     }
-    etl::string<SSIZE> cwd()
+    estring cwd()
     {
         return m_cwd;
     }

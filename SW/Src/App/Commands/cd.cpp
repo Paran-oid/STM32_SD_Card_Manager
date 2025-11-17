@@ -14,6 +14,7 @@ CmdExec cd_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& args)
     const etl::string<SSIZE>& arg  = args[0];
     const fs::path            path = fs::path(arg.c_str());
     if (!fs::exists(path)) return SD_RES::ERR;
+    if (!fs::is_directory(path)) return SD_RES::ERR;
 
     g_cwd.assign(path.string().c_str());
     fs::current_path(path);

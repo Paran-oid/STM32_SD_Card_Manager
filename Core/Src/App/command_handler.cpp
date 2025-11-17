@@ -4,9 +4,8 @@
 
 /*
  * HOW TO ADD A FUNCTIONALITY:
- * - modify COMMANDS_COUNT (usually just increment as much as needed)
- * - add extern declaration for functions (and define it somewhere)
  * - add enum for it
+ * - add extern declaration for functions (and define it somewhere)
  * - add it to the cmd_table unordered_map
  * - pass it in check_command_type function
  */
@@ -21,13 +20,17 @@ extern CmdExec cp_exec;
 extern CmdExec cd_exec;
 extern CmdExec clear_exec;
 extern CmdExec pwd_exec;
+extern CmdExec mkdir_exec;
+extern CmdExec rmdir_exec;
 
-etl::unordered_map<CommandType, CmdExec, COMMANDS_COUNT> cmd_table = {
-    {CommandType::CAT, cat_exec},     {CommandType::ECHO, echo_exec}, {CommandType::LS, ls_exec},
-    {CommandType::RM, rm_exec},       {CommandType::CP, cp_exec},     {CommandType::CD, cd_exec},
-    {CommandType::CLEAR, clear_exec}, {CommandType::PWD, pwd_exec}};
+etl::unordered_map<CommandType, CmdExec, static_cast<size_t>(CommandType::COMMANDS_COUNT)>
+    cmd_table = {{CommandType::CAT, cat_exec},     {CommandType::ECHO, echo_exec},
+                 {CommandType::LS, ls_exec},       {CommandType::RM, rm_exec},
+                 {CommandType::CP, cp_exec},       {CommandType::CD, cd_exec},
+                 {CommandType::CLEAR, clear_exec}, {CommandType::PWD, pwd_exec},
+                 {CommandType::MKDIR, mkdir_exec}, {CommandType::RMDIR, rmdir_exec}};
 
-static CommandType check_command_type(const etl::string<SSIZE>& item)
+static CommandType check_command_type(const estring& item)
 {
     if (item == "cat") return CommandType::CAT;
     if (item == "echo") return CommandType::ECHO;
@@ -37,24 +40,26 @@ static CommandType check_command_type(const etl::string<SSIZE>& item)
     if (item == "cd") return CommandType::CD;
     if (item == "clear") return CommandType::CLEAR;
     if (item == "pwd") return CommandType::PWD;
+    if (item == "mkdir") return CommandType::MKDIR;
+    if (item == "rmdir") return CommandType::RMDIR;
     return CommandType::NONE;
 }
 
-void handle_command(const etl::string<SSIZE>& str)
+void handle_command(const estring& str)
 {
-    etl::vector<etl::string<SSIZE>, ARGS_CAPACITY> args;
-    etl::string<SSIZE>                             cmd;
-    size_t                                         start = 0, end = 0;
+    etl::vector<estring, ARGS_CAPACITY> args;
+    estring                             cmd;
+    size_t                              start = 0, end = 0;
 
     size_t pos_space = find_outside_quotes(str, ' ');
-    if (pos_space != etl::string<SSIZE>::npos)
+    if (pos_space != estring::npos)
     {
         cmd   = str.substr(0, pos_space);
         start = end = pos_space + 1;
-        while ((end = find_outside_quotes(str, ' ', start)) != etl::string<SSIZE>::npos)
+        while ((end = find_outside_quotes(str, ' ', start)) != estring::npos)
         {
             if (args.size() == args.capacity()) die("too many arguments entered...");
-            etl::string<SSIZE> item = str.substr(start, end - start);
+            estring item = str.substr(start, end - start);
             args.push_back(item);
             start = end + 1;
         }

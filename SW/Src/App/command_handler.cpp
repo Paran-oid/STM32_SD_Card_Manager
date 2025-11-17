@@ -4,8 +4,7 @@
 
 /*
  * HOW TO ADD A FUNCTIONALITY:
- * - modify COMMANDS_COUNT (usually just increment as much as needed)
- * - add enum for it
+ * - add it's enum in the header file
  * - add extern declaration for functions (and define it somewhere)
  * - add it to the cmd_table unordered_map
  * - pass it in check_command_type function
@@ -27,12 +26,12 @@ extern CmdExec rmdir_exec;
 
 etl::string<SSIZE> g_cwd;  // exists just for SW
 
-etl::unordered_map<CommandType, CmdExec, COMMANDS_COUNT> cmd_table = {
-    {CommandType::CAT, cat_exec},     {CommandType::ECHO, echo_exec},
-    {CommandType::LS, ls_exec},       {CommandType::RM, rm_exec},
-    {CommandType::CP, cp_exec},       {CommandType::CD, cd_exec},
-    {CommandType::CLEAR, clear_exec}, {CommandType::PWD, pwd_exec},
-    {CommandType::MKDIR, mkdir_exec}, {CommandType::RMDIR, rmdir_exec}};
+etl::unordered_map<CommandType, CmdExec, static_cast<size_t>(CommandType::COMMANDS_COUNT)>
+    cmd_table = {{CommandType::CAT, cat_exec},     {CommandType::ECHO, echo_exec},
+                 {CommandType::LS, ls_exec},       {CommandType::RM, rm_exec},
+                 {CommandType::CP, cp_exec},       {CommandType::CD, cd_exec},
+                 {CommandType::CLEAR, clear_exec}, {CommandType::PWD, pwd_exec},
+                 {CommandType::MKDIR, mkdir_exec}, {CommandType::RMDIR, rmdir_exec}};
 
 static CommandType check_command_type(const etl::string<SSIZE>& item)
 {

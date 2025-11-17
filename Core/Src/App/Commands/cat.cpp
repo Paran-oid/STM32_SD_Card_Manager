@@ -4,11 +4,11 @@
 #include "hal_init.hpp"
 #include "utils.hpp"
 
-CmdExec cat_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& args)
+CmdExec cat_exec = [](const etl::vector<estring, ARGS_CAPACITY>& args)
 {
     if (args.empty()) return SD_RES::ERR;
 
-    etl::string<SSIZE> path = args[0];
+    estring path = args[0];
     if (is_double_quoted(path)) path = format_str(path);
 
     if (sd_reader.exists(path) != SD_RES::OK) return SD_RES::ERR;

@@ -16,16 +16,17 @@ enum SD_RES
     ERR = 1
 };
 
-void die(etl::string<SSIZE> msg);
+using estring = etl::string<SSIZE>;
 
-bool is_double_quoted(etl::string<SSIZE> s);
+void die(estring msg);
+
+bool is_double_quoted(estring s);
 bool is_esc_seq(char c);
 
-size_t find_outside_quotes(etl::string<SSIZE> s, char c, size_t start = 0,
-                           size_t length = etl::string<SSIZE>::npos);
+size_t find_outside_quotes(estring s, char c, size_t start = 0, size_t length = estring::npos);
 
 // from string ""foo""" to string "foo"
-etl::string<SSIZE> format_str(const etl::string<SSIZE>& s);
+estring format_str(const estring& s);
 
 // test\\n -> test\n
-etl::string<SSIZE> unescape(etl::string<SSIZE> s);
+estring unescape(estring s);
