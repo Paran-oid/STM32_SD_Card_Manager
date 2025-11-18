@@ -8,7 +8,7 @@ void run_tests()
     TestResult res;
 
     res = test_sd_read_write();
-    if (!res.passed) die(res.msg);
+    if (!res.passed) stm_sd::die(res.msg);
 
     printf("all tests ran with success!\r\n");
 }

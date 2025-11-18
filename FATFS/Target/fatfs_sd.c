@@ -500,11 +500,11 @@ DRESULT SD_disk_ioctl(BYTE drv, BYTE ctrl, void* buff)
                 /* SEND_CSD */
                 if ((SD_SendCmd(CMD9, 0) == 0) && SD_RxDataBlock(csd, 16))
                 {
-                    if ((csd[0] >> 6) == 1)
+                    if ((csd[0] >> 6) == 1)  // SDC V2
                     {
-                        /* SDC V2 */
-                        csize          = csd[9] + ((WORD) csd[8] << 8) + 1;
-                        *(DWORD*) buff = (DWORD) csize << 10;
+                        DWORD csize;
+                        csize          = ((DWORD) csd[7] << 16) | ((DWORD) csd[8] << 8) | csd[9];
+                        *(DWORD*) buff = (csize + 1) * 1024;  // 512-byte sectors
                     }
                     else
                     {

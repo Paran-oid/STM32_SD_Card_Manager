@@ -18,6 +18,13 @@ extern "C"
 
 #define TESTING_ 0
 
+using stm_sd::string;
+
+namespace fs = stm_sd::filesystem;
+
+// uart input buf
+string s;
+
 void setup()
 {
     hal_init_all();
@@ -26,19 +33,17 @@ void setup()
     run_tests();  // to configure tests modify run_tests in tests.cpp inside Tests folder
 #endif
 
-    if (sd_reader.mount() != SD_RES::OK) die("error mounting drive\r\n");
-    if (sd_reader.label().empty()) die("invalid label...\r\n");  // set label
-    // if (sd_reader.unmount() != SD_RES::OK) die("unmount failed...\r\n");
+    fs::init(hspi1);
 
-    // TODO: get used to writing docs before even beginning to write code
+    if (fs::mount() != stm_sd::StatusCode::OK) stm_sd::die("couldn't mount SD Card");
+    if (fs::label().empty()) stm_sd::die("invalid label...");  // set label
+
     printf("=======STM32 MICRO SD CARD READER READY!=======\r\n");
 }
 
-// uart input buf
-estring s;
-void    loop()
+void loop()
 {
     uart2.scan(s);
-    s = unescape(s);
-    handle_command(s);
+    s = stm_sd::unescape(s);
+    stm_sd::handle_command(s);
 }

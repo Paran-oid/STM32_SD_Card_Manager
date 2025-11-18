@@ -2,31 +2,63 @@
 
 extern "C"
 {
+#include "ff.h"
 #include "main.h"
 }
 
 #include "etl/string.h"
 
-constexpr uint8_t  SSIZE      = 255U;  // usual string size
-constexpr uint16_t BLOCK_SIZE = 512U;
+namespace stm_sd
+{
 
-enum SD_RES
+// inline constexpr to make sure it's declared only once
+
+inline constexpr uint16_t SSIZE      = 256U;
+inline constexpr uint16_t BLOCK_SIZE = 512U;
+
+using string = etl::string<SSIZE>;
+
+enum class StatusCode
 {
     OK  = 0,
     ERR = 1
 };
 
-using estring = etl::string<SSIZE>;
+void die(const string& msg);
 
-void die(estring msg);
+size_t find_outside_quotes(
+    const string& s, char c, size_t start = 0,
+    size_t length = string::npos);   // find function but works only outside quotes
+string format_str(const string& s);  //  ""foo""" -> "foo"
+string unescape(const string& s);    // test\\n -> test\n
 
-bool is_double_quoted(estring s);
-bool is_esc_seq(char c);
+inline bool is_double_quoted(const string& s)
+{
+    return s.size() >= 2 && s.front() == '\"' && s.back() == '\"';
+}
 
-size_t find_outside_quotes(estring s, char c, size_t start = 0, size_t length = estring::npos);
+inline bool is_esc_seq(char c)
+{
+    switch (c)
+    {
+        case '\n':
+        case '\r':
+        case '\t':
+        case '\v':
+        case '\f':
+        case '\b':
+        case '\a':
+        case '\\':
+        case '\'':
+        case '\"':
+        case '\?':
+        case '\0':
+            return true;
+        default:
+            return false;
+    }
 
-// from string ""foo""" to string "foo"
-estring format_str(const estring& s);
+    return false;
+}
 
-// test\\n -> test\n
-estring unescape(estring s);
+};  // namespace stm_sd

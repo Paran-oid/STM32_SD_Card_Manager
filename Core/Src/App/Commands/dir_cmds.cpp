@@ -6,26 +6,35 @@
 #include "hal_init.hpp"
 #include "utils.hpp"
 
-CmdExec mkdir_exec = [](const etl::vector<estring, ARGS_CAPACITY>& args)
+namespace fs = stm_sd::filesystem;
+
+namespace stm_sd
 {
-    if (args.empty()) return SD_RES::ERR;
+
+CmdExec mkdir_exec = [](const etl::vector<string, ARGS_CAPACITY>& args)
+{
+    if (args.empty()) return StatusCode::ERR;
 
     for (const auto& arg : args)
     {
-        if (sd_reader.mkdir(arg) != SD_RES::OK) return SD_RES::ERR;
+        if (fs::mkdir(arg) != StatusCode::OK) return StatusCode::ERR;
     }
 
-    return SD_RES::OK;
+    return StatusCode::OK;
 };
 
-CmdExec rmdir_exec = [](const etl::vector<estring, ARGS_CAPACITY>& args)
+CmdExec rmdir_exec = [](const etl::vector<string, ARGS_CAPACITY>& args)
 {
-    if (args.empty()) return SD_RES::ERR;
+    if (args.empty()) return StatusCode::ERR;
 
     for (const auto& arg : args)
     {
-        if (sd_reader.delete_(arg, true) != SD_RES::OK) return SD_RES::ERR;
+        if (!fs::exists(arg)) return StatusCode::ERR;
+        if (!fs::is_directory(arg)) return StatusCode::ERR;
+        if (fs::remove(arg, true) != StatusCode::OK) return StatusCode::ERR;
     }
 
-    return SD_RES::OK;
+    return StatusCode::OK;
 };
+
+}  // namespace stm_sd

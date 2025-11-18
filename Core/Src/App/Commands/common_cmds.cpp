@@ -5,16 +5,22 @@
 #include "printf.h"
 #include "utils.hpp"
 
-CmdExec clear_exec = [](const etl::vector<estring, ARGS_CAPACITY>& args)
+namespace fs = stm_sd::filesystem;
+
+namespace stm_sd
+{
+CmdExec clear_exec = [](const etl::vector<string, ARGS_CAPACITY>& args)
 {
     (void) args;
     printf("\033[2J\033[H\r\n");
-    return SD_RES::OK;
+    return StatusCode::OK;
 };
 
-CmdExec pwd_exec = [](const etl::vector<estring, ARGS_CAPACITY>& args)
+CmdExec pwd_exec = [](const etl::vector<string, ARGS_CAPACITY>& args)
 {
     (void) args;
-    printf("%s\r\n", sd_reader.cwd().c_str());
-    return SD_RES::OK;
+    printf("%s\r\n", fs::cwd().c_str());
+    return StatusCode::OK;
 };
+
+}  // namespace stm_sd

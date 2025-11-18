@@ -4,7 +4,12 @@
 #include "hal_init.hpp"
 #include "utils.hpp"
 
-CmdExec ls_exec = [](const etl::vector<estring, ARGS_CAPACITY>& args)
+namespace fs = stm_sd::filesystem;
+
+namespace stm_sd
+{
+
+CmdExec ls_exec = [](const etl::vector<string, ARGS_CAPACITY>& args)
 {
     etl::string<SSIZE> path;
     if (args.empty())
@@ -12,19 +17,24 @@ CmdExec ls_exec = [](const etl::vector<estring, ARGS_CAPACITY>& args)
     else
         path = args[0];
 
-    uint8_t                        page = 0;
-    etl::array<FILINFO, PAGE_SIZE> arr;
+    etl::array<FILINFO, PAGE_SIZE> arr = {};
 
-    while (sd_reader.list(path, page, arr) == SD_RES::OK)
+    uint8_t page = 0, res = 0;
+    arr.assign(arr.begin(), arr.end());
+
+    // res is returned number of files (number negative or null is an error/end of files)
+    while ((res = fs::list(path, page, arr)) > 0)
     {
-        for (const auto& item : arr)
+        for (uint8_t i = 0; i < res; i++)
         {
-            bool is_dir = (item.fattrib & AM_DIR) != 0;
+            FILINFO& item   = arr[i];
+            bool     is_dir = (item.fattrib & AM_DIR) != 0;
             printf("%s%s\r\n", item.fname, is_dir ? "/" : "");
         }
         page++;
     }
-    printf("\r\n");
 
-    return SD_RES::OK;
+    return StatusCode::OK;
 };
+
+}  // namespace stm_sd

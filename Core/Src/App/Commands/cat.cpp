@@ -4,22 +4,29 @@
 #include "hal_init.hpp"
 #include "utils.hpp"
 
-CmdExec cat_exec = [](const etl::vector<estring, ARGS_CAPACITY>& args)
-{
-    if (args.empty()) return SD_RES::ERR;
+namespace fs = stm_sd::filesystem;
 
-    estring path = args[0];
+namespace stm_sd
+{
+
+CmdExec cat_exec = [](const etl::vector<string, ARGS_CAPACITY>& args)
+{
+    if (args.empty()) return StatusCode::ERR;
+
+    string path = args[0];
     if (is_double_quoted(path)) path = format_str(path);
 
-    if (sd_reader.exists(path) != SD_RES::OK) return SD_RES::ERR;
-    SDFile* f = sd_reader.open_file(path, FA_READ);
-    if (!f) return SD_RES::ERR;
+    if (!fs::exists(path)) return StatusCode::ERR;
+    File* f = fs::open(path, FA_READ);
+    if (!f) return StatusCode::ERR;
 
     etl::string<BLOCK_SIZE> read_buf;
-    while (f->read(read_buf) != SD_RES::ERR) printf("%s", read_buf.c_str());
+    while (f->read(read_buf)) printf("%s", read_buf.c_str());
     printf("\r\n");
 
-    if (sd_reader.close_file(f) != SD_RES::OK) return SD_RES::ERR;
+    if (fs::close(f) != StatusCode::OK) return StatusCode::ERR;
 
-    return SD_RES::OK;
+    return StatusCode::OK;
 };
+
+}  // namespace stm_sd

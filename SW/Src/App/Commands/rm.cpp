@@ -14,12 +14,8 @@ CmdExec rm_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& args)
 
     for (const auto& arg : args)
     {
-        if (fs::is_directory(arg.c_str()))
-            continue;
-        else
-        {
-            if (!fs::remove(arg.c_str())) return SD_RES::ERR;
-        }
+        if (fs::is_directory(arg.c_str())) continue;
+        if (!fs::remove(arg.c_str())) return SD_RES::ERR;
     }
 
     return SD_RES::OK;

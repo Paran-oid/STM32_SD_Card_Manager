@@ -7,8 +7,8 @@
 
 struct TestResult
 {
-    bool    passed;
-    estring msg;
+    bool           passed;
+    stm_sd::string msg;
 };
 
 void run_tests();

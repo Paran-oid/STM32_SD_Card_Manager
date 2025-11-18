@@ -11,48 +11,69 @@ extern "C"
 #include "etl/string.h"
 #include "utils.hpp"
 
-constexpr uint8_t  MAX_FILE_HANDLES = 4;
-constexpr uint8_t  PAGE_SIZE        = 16;  // 16 entities can be read at a time
-constexpr uint8_t  MAX_LABEL_SIZE   = 32;
-constexpr uint16_t MAX_WD_SIZE      = 256;
+namespace stm_sd
+{
 
-class SDFile
+inline constexpr uint8_t  MAX_FILE_HANDLES = 4;
+inline constexpr uint8_t  MAX_LABEL_SIZE   = 32;
+inline constexpr uint16_t MAX_DIR_SIZE     = 256;
+inline constexpr uint8_t  PAGE_SIZE        = 16;
+
+using path = etl::string<MAX_DIR_SIZE>;
+
+enum class SDFileSystem
+{
+    FAT   = FM_FAT,
+    FAT32 = FM_FAT32,
+    EXFAT = FM_EXFAT,
+    ANY   = FM_ANY,
+    SFD   = FM_SFD
+};
+
+enum class SDType
+{
+    SDSC,
+    SDHC,
+    SDXC
+};
+
+class File
 {
    private:
-    etl::string<100> m_path;
-    FIL              m_fil;
+    string m_path;
+    FIL    m_fil;
 
    public:
-    SDFile() = delete;
+    File() = delete;
 
-    SDFile(const etl::string<100>& path) : m_path {path}
+    File(const string&) : m_path {}
     {
     }
 
-    ~SDFile() = default;
+    ~File() = default;
 
     void write(uint8_t);
 
     template <size_t N>
-    SD_RES read(etl::string<N>& str)
+    uint32_t read(etl::string<N>& str)
     {
         char buf[N - 1];  // must be char[] because f_read works that way
         UINT bytes_read = 0;
 
         FRESULT fres = f_read(&m_fil, buf, N - 1, &bytes_read);
-        if (fres != FR_OK || bytes_read == 0) return SD_RES::ERR;
+        if (fres != FR_OK) return 0;
 
         str.assign(buf);
         str[bytes_read] = '\0';  // content of files don't null terminate
-        return SD_RES::OK;
+        return bytes_read;
     }
 
-    SD_RES write(estring txt);
+    StatusCode write(const string&);
 
-    SD_RES seek(uint32_t offset);
-    SD_RES truncate();
+    StatusCode seek(uint32_t);
+    StatusCode truncate();
 
-    SD_RES rename(estring old_path, estring new_path);
+    StatusCode rename(const string&, const string&);
 
     // getters and setters
 
@@ -67,63 +88,48 @@ class SDFile
         return &m_fil;
     }
 
-    estring path() const
+    const string& path() const
     {
         return m_path;
     }
 };
 
-class MicroSDHandler
+// singleton namespace (like std::filesystem)
+namespace filesystem
 {
-   private:
-    SPI_HandleTypeDef& m_hspi;
 
-    FATFS m_fs;
+void       init(SPI_HandleTypeDef& hspi);
+StatusCode mount();
+bool       is_mounted();
+StatusCode unmount();
 
-    etl::array<etl::unique_ptr<SDFile>, MAX_FILE_HANDLES> m_file_handles;
+File*      open(const string& path, uint8_t mode);  // open file
+StatusCode close(File* file);                       // close file
+StatusCode remove(const string& path, bool recursive = false);
 
-   public:
-    enum class SDType
-    {
-        SDSC,
-        SDHC,
-        SDXC
-    };
+StatusCode format(SDFileSystem fmt);
 
-    MicroSDHandler() = delete;
+File*      open(const path& p, uint8_t mode);
+StatusCode close(File* file);
 
-    MicroSDHandler(SPI_HandleTypeDef& hspi) : m_hspi {hspi}
-    {
-    }
+bool       exists(const string& path);
+StatusCode mkdir(const path& p);
 
-    ~MicroSDHandler() = default;
+int8_t     list(const path& dir_p, uint8_t page, etl::array<FILINFO, PAGE_SIZE>& out);
+StatusCode delete_(const path& p, bool recursive);
 
-    SD_RES mount();
-    SD_RES is_mounted() const;
-    SD_RES unmount();
+uint64_t total_space();
+uint64_t free_space();
 
-    // File and directory Management
-    SDFile* open_file(const estring& path, uint8_t mode);
-    SD_RES  close_file(SDFile* file);
+bool is_file(const path& p);
+bool is_directory(const path& p);
 
-    bool exists(const estring& path);
-    SD_RES mkdir(const estring& path);
+etl::string<MAX_LABEL_SIZE> label();
+StatusCode                  set_label(const etl::string<MAX_LABEL_SIZE>&);
 
-    SD_RES list(const estring& dir_path, uint8_t page, etl::array<FILINFO, PAGE_SIZE>& out);
-    SD_RES delete_(const estring& path,
-                   bool           recursive = false);  // both a file and directory can be passed
+string     cwd();
+StatusCode chdir(const string& p);
 
-    uint64_t total_space() const;
-    uint64_t free_space() const;
+}  // namespace filesystem
 
-    bool is_file(const estring& path);
-    bool is_directory(const estring& path);
-
-    // getters and setters
-
-    SD_RES                      set_label(const etl::string<MAX_LABEL_SIZE>& new_label);
-    etl::string<MAX_LABEL_SIZE> label();
-
-    SD_RES  chdir(const estring& dir);
-    estring cwd();
-};
+}  // namespace stm_sd

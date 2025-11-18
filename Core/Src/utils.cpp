@@ -2,45 +2,19 @@
 
 #include "printf.h"
 
-void die(estring msg)
+namespace stm_sd
 {
-    etl::string<255> sdsad;
+
+// \r\n passed after message
+void die(const string& msg)
+{
     printf("%s\r\n", msg.c_str());
     Error_Handler();
 }
 
-bool is_double_quoted(estring s)
+size_t find_outside_quotes(const string& s, char c, size_t start, size_t length)
 {
-    if (s.size() >= 2 && s.front() == '\"' && s.back() == '\"') return true;
-    return false;
-}
-
-bool is_esc_seq(char c)
-{
-    switch (c)
-    {
-        case '\n':
-        case '\r':
-        case '\t':
-        case '\v':
-        case '\f':
-        case '\b':
-        case '\a':
-        case '\\':
-        case '\'':
-        case '\"':
-        case '\?':
-        case '\0':
-            return true;
-        default:
-            return false;
-    }
-    return false;
-}
-
-size_t find_outside_quotes(estring s, char c, size_t start, size_t length)
-{
-    size_t end = length == estring::npos ? s.size() : length - start;
+    size_t end = length == string::npos ? s.size() : length - start;
 
     bool in_quotes = false;
     for (size_t i = start; i < end && i < s.size(); i++)
@@ -56,18 +30,18 @@ size_t find_outside_quotes(estring s, char c, size_t start, size_t length)
         }
     }
 
-    return estring::npos;
+    return string::npos;
 }
 
-estring format_str(const estring& s)
+string format_str(const string& s)
 {
     if (!is_double_quoted(s)) return "";
     return s.substr(1, s.size() - 2);  // get rid of double quotes for the string
 }
 
-estring unescape(estring s)
+string unescape(const string& s)
 {
-    estring res;
+    string res;
     for (uint8_t i = 0; i < s.size(); i++)
     {
         char c = s[i];
@@ -121,3 +95,5 @@ estring unescape(estring s)
     }
     return res;
 }
+
+}  // namespace stm_sd

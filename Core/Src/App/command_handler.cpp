@@ -2,6 +2,9 @@
 
 #include "utils.hpp"
 
+namespace stm_sd
+{
+
 /*
  * HOW TO ADD A FUNCTIONALITY:
  * - add enum for it
@@ -30,7 +33,7 @@ etl::unordered_map<CommandType, CmdExec, static_cast<size_t>(CommandType::COMMAN
                  {CommandType::CLEAR, clear_exec}, {CommandType::PWD, pwd_exec},
                  {CommandType::MKDIR, mkdir_exec}, {CommandType::RMDIR, rmdir_exec}};
 
-static CommandType check_command_type(const estring& item)
+static CommandType check_command_type(const string& item)
 {
     if (item == "cat") return CommandType::CAT;
     if (item == "echo") return CommandType::ECHO;
@@ -45,21 +48,21 @@ static CommandType check_command_type(const estring& item)
     return CommandType::NONE;
 }
 
-void handle_command(const estring& str)
+void handle_command(const string& str)
 {
-    etl::vector<estring, ARGS_CAPACITY> args;
-    estring                             cmd;
-    size_t                              start = 0, end = 0;
+    etl::vector<string, ARGS_CAPACITY> args;
+    string                             cmd;
+    size_t                             start = 0, end = 0;
 
     size_t pos_space = find_outside_quotes(str, ' ');
-    if (pos_space != estring::npos)
+    if (pos_space != string::npos)
     {
         cmd   = str.substr(0, pos_space);
         start = end = pos_space + 1;
-        while ((end = find_outside_quotes(str, ' ', start)) != estring::npos)
+        while ((end = find_outside_quotes(str, ' ', start)) != string::npos)
         {
             if (args.size() == args.capacity()) die("too many arguments entered...");
-            estring item = str.substr(start, end - start);
+            string item = str.substr(start, end - start);
             args.push_back(item);
             start = end + 1;
         }
@@ -79,7 +82,9 @@ void handle_command(const estring& str)
         return;
     }
 
-    SD_RES res = it->second(args);
-    if (res != SD_RES::OK) printf("error occured...\r\n");
+    StatusCode res = it->second(args);
+    if (res != StatusCode::OK) printf("error occured...\r\n");
     return;
 }
+
+}  // namespace stm_sd

@@ -4,12 +4,19 @@
 #include "hal_init.hpp"
 #include "utils.hpp"
 
-// it works only for relative paths
-CmdExec cd_exec = [](const etl::vector<estring, ARGS_CAPACITY>& args)
-{
-    const estring& path = args[0];
-    if (sd_reader.exists(path) != SD_RES::OK) return SD_RES::ERR;
-    if (!sd_reader.is_directory(path)) return SD_RES::ERR;
+namespace fs = stm_sd::filesystem;
 
-    return sd_reader.chdir(path);
+namespace stm_sd
+{
+
+// it works only for relative paths
+CmdExec cd_exec = [](const etl::vector<string, ARGS_CAPACITY>& args)
+{
+    const string& path = args[0];
+    if (!fs::exists(path)) return StatusCode::ERR;
+    if (!fs::is_directory(path)) return StatusCode::ERR;
+
+    return fs::chdir(path);
 };
+
+}  // namespace stm_sd

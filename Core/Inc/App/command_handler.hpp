@@ -6,7 +6,10 @@
 #include "etl/vector.h"
 #include "utils.hpp"
 
-constexpr uint16_t ARGS_CAPACITY = 10;  // max number of items inside args buf inside the function
+namespace stm_sd
+{
+
+inline constexpr uint8_t ARGS_CAPACITY = 10;  // max number of items passed inside input buf
 
 enum class CommandType
 {
@@ -24,10 +27,12 @@ enum class CommandType
     COMMANDS_COUNT
 };
 
-using CmdExec = SD_RES (*)(const etl::vector<estring, ARGS_CAPACITY>&);
+using CmdExec = StatusCode (*)(const etl::vector<string, ARGS_CAPACITY>&);
 
 // defined in command_handler.cpp
 extern etl::unordered_map<CommandType, CmdExec, static_cast<size_t>(CommandType::COMMANDS_COUNT)>
     cmd_table;
 
-void handle_command(const estring& str);
+void handle_command(const string& str);
+
+}  // namespace stm_sd

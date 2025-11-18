@@ -2,6 +2,10 @@
 #include "printf.h"
 #include "tests.hpp"
 
+using namespace stm_sd;
+
+namespace fs = stm_sd::filesystem;
+
 TestResult test_sd_read_write(bool display)
 {
     /*
@@ -12,28 +16,28 @@ TestResult test_sd_read_write(bool display)
         *- seek works or not
     */
 
-    if (sd_reader.mount()) return {false, "couldn't mount micro sd card"};
+    if (fs::mount() != StatusCode::OK) return {false, "couldn't mount micro sd card"};
 
-    estring path = "test.txt";
+    string path = "test.txt";
 
-    SDFile* file = sd_reader.open_file(path, FA_READ | FA_WRITE);
+    File* file = fs::open(path, FA_READ | FA_WRITE);
     if (!file) return {false, "couldn't create file"};
 
     constexpr size_t  scap = 50;
     etl::string<scap> s;
 
-    if (file->write("hello world!")) return {false, "couldn't write to file..."};
-    if (file->seek(0)) return {false, "couldn't return to start of file"};
-    if (file->read(s)) return {false, "couldn't read file"};
+    if (file->write("hello world!") != StatusCode::OK) return {false, "couldn't write to file..."};
+    if (file->seek(0) != StatusCode::OK) return {false, "couldn't return to start of file"};
+    if (file->read(s) <= 0) return {false, "couldn't read file"};
 
     if (display)
     {
-        etl::array<estring, 5> msgs = {"content of ", path, "is:\r\n", s, "\r\n\r\n"};
+        etl::array<string, 5> msgs = {"content of ", path, "is:\r\n", s, "\r\n\r\n"};
         for (auto msg : msgs) printf("%s", msg.c_str());
     }
 
-    if (sd_reader.close_file(file)) return {false, "close file failed"};
-    if (sd_reader.unmount()) return {false, "unmount failed"};
+    if (fs::close(file) != StatusCode::OK) return {false, "close file failed"};
+    if (fs::unmount() != StatusCode::OK) return {false, "unmount failed"};
 
     return {true, ""};
 }
