@@ -8,9 +8,6 @@
 - delete file
 - move and rename files
 
-- start using more widespread conventional c++ naming patterns
-
-- recursive directory listing
 - copy files between sd and pc
 - file search and filter
 

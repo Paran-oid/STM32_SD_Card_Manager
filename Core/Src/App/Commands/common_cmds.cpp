@@ -9,14 +9,14 @@ namespace fs = stm_sd::filesystem;
 
 namespace stm_sd
 {
-CmdExec clear_exec = [](const etl::vector<string, ARGS_CAPACITY>& args)
+CmdExec clear_exec = [](const CmdArgs& args)
 {
     (void) args;
     printf("\033[2J\033[H\r\n");
     return StatusCode::OK;
 };
 
-CmdExec pwd_exec = [](const etl::vector<string, ARGS_CAPACITY>& args)
+CmdExec pwd_exec = [](const CmdArgs& args)
 {
     (void) args;
     printf("%s\r\n", fs::cwd().c_str());

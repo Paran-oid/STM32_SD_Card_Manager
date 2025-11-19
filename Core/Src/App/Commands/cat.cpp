@@ -9,7 +9,7 @@ namespace fs = stm_sd::filesystem;
 namespace stm_sd
 {
 
-CmdExec cat_exec = [](const etl::vector<string, ARGS_CAPACITY>& args)
+CmdExec cat_exec = [](const CmdArgs& args)
 {
     if (args.empty()) return StatusCode::ERR;
 
@@ -20,6 +20,7 @@ CmdExec cat_exec = [](const etl::vector<string, ARGS_CAPACITY>& args)
     File* f = fs::open(path, FA_READ);
     if (!f) return StatusCode::ERR;
 
+    //* in reality we read BLOCK_SIZE - 1 chars at a time
     etl::string<BLOCK_SIZE> read_buf;
     while (f->read(read_buf)) printf("%s", read_buf.c_str());
     printf("\r\n");

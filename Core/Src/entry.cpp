@@ -43,6 +43,9 @@ void setup()
 
 void loop()
 {
+    // TODO: don't let user enter unallowd characters for filenames
+    // TODO: make sure all variables are initialized and not just declared (var x NO --> var x = 0
+    // ;(or {}) YES)
     uart2.scan(s);
     s = stm_sd::unescape(s);
     stm_sd::handle_command(s);

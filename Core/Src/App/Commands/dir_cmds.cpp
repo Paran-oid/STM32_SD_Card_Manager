@@ -11,7 +11,7 @@ namespace fs = stm_sd::filesystem;
 namespace stm_sd
 {
 
-CmdExec mkdir_exec = [](const etl::vector<string, ARGS_CAPACITY>& args)
+CmdExec mkdir_exec = [](const CmdArgs& args)
 {
     if (args.empty()) return StatusCode::ERR;
 
@@ -23,7 +23,7 @@ CmdExec mkdir_exec = [](const etl::vector<string, ARGS_CAPACITY>& args)
     return StatusCode::OK;
 };
 
-CmdExec rmdir_exec = [](const etl::vector<string, ARGS_CAPACITY>& args)
+CmdExec rmdir_exec = [](const CmdArgs& args)
 {
     if (args.empty()) return StatusCode::ERR;
 

@@ -10,7 +10,7 @@ namespace fs = stm_sd::filesystem;
 namespace stm_sd
 {
 
-CmdExec echo_exec = [](const etl::vector<string, ARGS_CAPACITY>& args)
+CmdExec echo_exec = [](const CmdArgs& args)
 {
     if (args.empty())
     {

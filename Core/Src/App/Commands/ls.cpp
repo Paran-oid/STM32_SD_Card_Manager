@@ -9,9 +9,9 @@ namespace fs = stm_sd::filesystem;
 namespace stm_sd
 {
 
-CmdExec ls_exec = [](const etl::vector<string, ARGS_CAPACITY>& args)
+CmdExec ls_exec = [](const CmdArgs& args)
 {
-    etl::string<SSIZE> path;
+    string path;
     if (args.empty())
         path = ".";
     else

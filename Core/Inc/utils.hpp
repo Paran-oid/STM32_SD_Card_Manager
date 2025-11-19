@@ -11,7 +11,7 @@ extern "C"
 namespace stm_sd
 {
 
-// inline constexpr to make sure it's declared only once
+// inline constexpr to make sure constexpr elements are declared only once
 
 inline constexpr uint16_t SSIZE      = 256U;
 inline constexpr uint16_t BLOCK_SIZE = 512U;
@@ -31,6 +31,13 @@ size_t find_outside_quotes(
     size_t length = string::npos);   // find function but works only outside quotes
 string format_str(const string& s);  //  ""foo""" -> "foo"
 string unescape(const string& s);    // test\\n -> test\n
+
+struct PathData
+{
+    string folder;
+    string filename;
+};
+PathData extract_path(const string& p);
 
 inline bool is_double_quoted(const string& s)
 {
@@ -59,6 +66,11 @@ inline bool is_esc_seq(char c)
     }
 
     return false;
+}
+
+inline bool is_flag(const string& s)
+{
+    return s.size() >= 2 && s[0] == '-' && s[1] != '-';
 }
 
 };  // namespace stm_sd

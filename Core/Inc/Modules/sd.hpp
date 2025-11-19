@@ -52,23 +52,53 @@ class File
 
     ~File() = default;
 
-    void write(uint8_t);
+    StatusCode write(const string& str);
 
     template <size_t N>
-    uint32_t read(etl::string<N>& str)
+    StatusCode write(const etl::string<N>& str)
     {
+        // TODO: make a check for written bytes to verify that all bytes were written
+        return f_write(&m_fil, str.data(), str.length(), NULL) == FR_OK ? StatusCode::OK
+                                                                        : StatusCode::ERR;
+    }
+
+    template <size_t N>
+    StatusCode write(const etl::array<uint8_t, N>& arr)
+    {
+        return f_write(&m_fil, arr.data(), arr.size(), NULL) == FR_OK ? StatusCode::OK
+                                                                      : StatusCode::ERR;
+    }
+
+    template <size_t N>
+    uint32_t read(etl::string<N>& s)
+    {
+        // for string overload we will null terminate
         char buf[N - 1];  // must be char[] because f_read works that way
         UINT bytes_read = 0;
 
         FRESULT fres = f_read(&m_fil, buf, N - 1, &bytes_read);
         if (fres != FR_OK) return 0;
 
-        str.assign(buf);
-        str[bytes_read] = '\0';  // content of files don't null terminate
+        s.assign(buf, bytes_read);
+        s[bytes_read] = '\0';
         return bytes_read;
     }
 
-    StatusCode write(const string&);
+    template <size_t N>
+    uint32_t read(etl::array<uint8_t, N>& arr)
+    {
+        char buf[N];  // must be char[] because f_read works that way
+        UINT bytes_read = 0;
+
+        FRESULT fres = f_read(&m_fil, buf, N - 1, &bytes_read);
+        if (fres != FR_OK) return 0;
+
+        for (UINT i = 0; i < bytes_read; i++)
+        {
+            arr[i] = static_cast<uint8_t>(buf[i]);
+        }
+        return bytes_read;
+    }
 
     StatusCode seek(uint32_t);
     StatusCode truncate();

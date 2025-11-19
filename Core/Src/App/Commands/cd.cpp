@@ -10,7 +10,7 @@ namespace stm_sd
 {
 
 // it works only for relative paths
-CmdExec cd_exec = [](const etl::vector<string, ARGS_CAPACITY>& args)
+CmdExec cd_exec = [](const CmdArgs& args)
 {
     const string& path = args[0];
     if (!fs::exists(path)) return StatusCode::ERR;

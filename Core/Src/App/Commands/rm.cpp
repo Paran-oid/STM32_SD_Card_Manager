@@ -9,15 +9,27 @@ namespace fs = stm_sd::filesystem;
 namespace stm_sd
 {
 
-CmdExec rm_exec = [](const etl::vector<string, ARGS_CAPACITY>& args)
+CmdExec rm_exec = [](const CmdArgs& args)
 {
     if (args.empty()) return StatusCode::ERR;
 
+    bool is_recursive = false;
     for (const auto& arg : args)
     {
-        // TODO: start handling flags
-        if (fs::is_directory(arg)) continue;
-        if (fs::remove(arg) != StatusCode::OK) return StatusCode::ERR;
+        if (is_flag(arg))
+        {
+            for (auto it = arg.begin() + 1; it != arg.end(); it++)
+            {
+                char c = *it;
+                if (c == 'r') is_recursive = true;
+            }
+        }
+    }
+
+    for (const auto& arg : args)
+    {
+        if (is_flag(arg)) continue;
+        if (fs::remove(arg, is_recursive) != StatusCode::OK) return StatusCode::ERR;
     }
 
     return StatusCode::OK;

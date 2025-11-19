@@ -1,6 +1,7 @@
 #include "utils.hpp"
 
 #include "printf.h"
+#include "sd.hpp"
 
 namespace stm_sd
 {
@@ -94,6 +95,14 @@ string unescape(const string& s)
         res += c;
     }
     return res;
+}
+
+PathData extract_path(const path& p)
+{
+    size_t pos_slash = p.find_last_of("/\\");
+    if (pos_slash == path::npos) return {"", p};
+    
+    return {p.substr(0, pos_slash), p.substr(pos_slash + 1)};
 }
 
 }  // namespace stm_sd

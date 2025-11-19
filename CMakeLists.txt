@@ -68,6 +68,7 @@ target_sources(
           ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/ls.cpp
           ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/cd.cpp
           ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/dir_cmds.cpp
+          ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/touch.cpp
           #
           # Test-related
           #

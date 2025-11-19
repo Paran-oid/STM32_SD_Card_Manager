@@ -23,15 +23,18 @@ enum class CommandType
     PWD,      // prints current working directory
     MKDIR,    // creates a new directory(or more)
     RMDIR,    // deletes a directory(or more)
+    TOUCH,    // create empty file(s)(have to make it update timestamp too at some point)
     NONE,     // undefined
     COMMANDS_COUNT
 };
 
-using CmdExec = StatusCode (*)(const etl::vector<string, ARGS_CAPACITY>&);
+using CmdArgs = etl::vector<string, ARGS_CAPACITY>;
+using CmdExec = StatusCode (*)(const CmdArgs&);
+using CmdExecMap =
+    etl::unordered_map<CommandType, CmdExec, static_cast<size_t>(CommandType::COMMANDS_COUNT)>;
 
 // defined in command_handler.cpp
-extern etl::unordered_map<CommandType, CmdExec, static_cast<size_t>(CommandType::COMMANDS_COUNT)>
-    cmd_table;
+extern CmdExecMap cmd_table;
 
 void handle_command(const string& str);
 

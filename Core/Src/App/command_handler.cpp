@@ -25,13 +25,14 @@ extern CmdExec clear_exec;
 extern CmdExec pwd_exec;
 extern CmdExec mkdir_exec;
 extern CmdExec rmdir_exec;
+extern CmdExec touch_exec;
 
-etl::unordered_map<CommandType, CmdExec, static_cast<size_t>(CommandType::COMMANDS_COUNT)>
-    cmd_table = {{CommandType::CAT, cat_exec},     {CommandType::ECHO, echo_exec},
-                 {CommandType::LS, ls_exec},       {CommandType::RM, rm_exec},
-                 {CommandType::CP, cp_exec},       {CommandType::CD, cd_exec},
-                 {CommandType::CLEAR, clear_exec}, {CommandType::PWD, pwd_exec},
-                 {CommandType::MKDIR, mkdir_exec}, {CommandType::RMDIR, rmdir_exec}};
+CmdExecMap cmd_table = {{CommandType::CAT, cat_exec},     {CommandType::ECHO, echo_exec},
+                        {CommandType::LS, ls_exec},       {CommandType::RM, rm_exec},
+                        {CommandType::CP, cp_exec},       {CommandType::CD, cd_exec},
+                        {CommandType::CLEAR, clear_exec}, {CommandType::PWD, pwd_exec},
+                        {CommandType::MKDIR, mkdir_exec}, {CommandType::RMDIR, rmdir_exec},
+                        {CommandType::TOUCH, touch_exec}};
 
 static CommandType check_command_type(const string& item)
 {
@@ -45,14 +46,15 @@ static CommandType check_command_type(const string& item)
     if (item == "pwd") return CommandType::PWD;
     if (item == "mkdir") return CommandType::MKDIR;
     if (item == "rmdir") return CommandType::RMDIR;
+    if (item == "touch") return CommandType::TOUCH;
     return CommandType::NONE;
 }
 
 void handle_command(const string& str)
 {
-    etl::vector<string, ARGS_CAPACITY> args;
-    string                             cmd;
-    size_t                             start = 0, end = 0;
+    CmdArgs args;
+    string  cmd;
+    size_t  start = 0, end = 0;
 
     size_t pos_space = find_outside_quotes(str, ' ');
     if (pos_space != string::npos)
@@ -84,7 +86,6 @@ void handle_command(const string& str)
 
     StatusCode res = it->second(args);
     if (res != StatusCode::OK) printf("error occured...\r\n");
-    return;
 }
 
 }  // namespace stm_sd
