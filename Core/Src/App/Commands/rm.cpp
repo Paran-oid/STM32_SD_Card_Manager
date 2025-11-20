@@ -1,6 +1,7 @@
+#include <etl/string.h>
+#include <etl/vector.h>
+
 #include "command_handler.hpp"
-#include "etl/string.h"
-#include "etl/vector.h"
 #include "filesystem.hpp"
 #include "hal_init.hpp"
 #include "utils.hpp"

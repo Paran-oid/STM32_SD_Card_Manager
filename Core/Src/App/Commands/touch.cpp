@@ -1,5 +1,6 @@
 #include "command_handler.hpp"
 #include "filesystem.hpp"
+#include "status.hpp"
 
 namespace fs = stm_sd::filesystem;
 

@@ -3,16 +3,18 @@
 /***************************************************************
  * Includes
  ***************************************************************/
-#include "defs.hpp"
-#include "etl/functional.h"
-#include "etl/string.h"
-#include "etl/unordered_map.h"
-#include "etl/vector.h"
-#include "status.hpp"
-#include "utils.hpp"
+#include <etl/string.h>
+#include <etl/unordered_map.h>
+#include <etl/vector.h>
 
+#include "defs.hpp"
 namespace stm_sd
 {
+
+/***************************************************************
+ * Forward Declarations
+ ***************************************************************/
+enum class status : uint8_t;
 
 /***************************************************************
  * Public Typedefs / Structs

@@ -9,10 +9,12 @@ extern "C"
 #include "main.h"
 }
 
+#include <etl/array.h>
+#include <etl/memory.h>
+#include <etl/string.h>
+
 #include "defs.hpp"
-#include "etl/array.h"
-#include "etl/memory.h"
-#include "etl/string.h"
+#include "filesystem.hpp"
 #include "status.hpp"
 #include "utils.hpp"
 
@@ -34,6 +36,7 @@ enum file_mode : uint8_t
     open_always   = FA_OPEN_ALWAYS,
     open_append   = FA_OPEN_APPEND
 };
+
 /***************************************************************
  * File Class for file-related Operations
  ***************************************************************/
@@ -51,12 +54,30 @@ class file
      * Constructors / Destructor
      ***********************************************************/
     file() = delete;
-
-    file(const string&) : m_path {}
+    file(const string& path) : m_path {path}
     {
     }
-
-    ~file() = default;
+    file(file&& f) noexcept : m_path {etl::move(f.m_path)}, m_fil {f.m_fil}
+    {
+        f.m_fil.obj.fs = nullptr;
+    };
+    file(const file& f) = delete;
+    file& operator=(file&& f) noexcept
+    {
+        if (this != &f)
+        {
+            if (m_fil.obj.fs) f_close(&m_fil);
+            m_path         = etl::move(f.m_path);
+            m_fil          = f.m_fil;
+            f.m_fil.obj.fs = nullptr;
+        }
+        return *this;
+    }
+    file& operator=(const file& f) = delete;
+    ~file()
+    {
+        if (m_fil.obj.fs) f_close(&m_fil);
+    }
 
     /***********************************************************
      * Public Methods
@@ -76,6 +97,8 @@ class file
     status truncate();
 
     status rename(const string&, const string&);
+
+    bool is_open();
 
     /***********************************************************
      * Getters/Setters

@@ -9,16 +9,22 @@ extern "C"
 #include "main.h"
 }
 
+#include <etl/array.h>
+#include <etl/memory.h>
+#include <etl/string.h>
+
 #include "defs.hpp"
-#include "etl/array.h"
-#include "etl/memory.h"
-#include "etl/string.h"
 #include "file.hpp"
 #include "status.hpp"
 #include "utils.hpp"
 
 namespace stm_sd
 {
+
+/***************************************************************
+ * Forward Declarations
+ ***************************************************************/
+class file;
 
 // SD file system
 enum class sdfs : uint8_t
@@ -54,6 +60,7 @@ status unmount();
 
 file*  open(const string&, uint8_t);  // returns a file handle
 status close(file*);                  // close file
+status copy(const string&, const string&, uint8_t);
 status remove(const string&, bool = false);
 status rename(const string&, const string&);
 

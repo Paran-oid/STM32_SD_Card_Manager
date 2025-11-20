@@ -3,15 +3,11 @@
 extern "C"
 {
 #include "ff.h"
+#include "main.h"
 }
 
 namespace stm_sd
 {
-
-/**
- * @brief
- *
- */
 
 enum class status : uint8_t
 {

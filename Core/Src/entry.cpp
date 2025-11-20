@@ -4,11 +4,12 @@ extern "C"
 #include "main.h"
 }
 
+#include <etl/array.h>
+#include <etl/format_spec.h>
+#include <etl/string.h>
+#include <etl/to_string.h>
+
 #include "command_handler.hpp"
-#include "etl/array.h"
-#include "etl/format_spec.h"
-#include "etl/string.h"
-#include "etl/to_string.h"
 #include "filesystem.hpp"
 #include "hal_init.hpp"
 #include "printf.h"

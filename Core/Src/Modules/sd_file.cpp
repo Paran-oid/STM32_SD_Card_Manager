@@ -28,4 +28,9 @@ status file::rename(const string& old_path, const string& new_path)
     return map_fresult(f_rename(old_path.c_str(), new_path.c_str()));
 }
 
+bool file::is_open()
+{
+    return m_fil.obj.fs != nullptr;
+}
+
 }  // namespace stm_sd

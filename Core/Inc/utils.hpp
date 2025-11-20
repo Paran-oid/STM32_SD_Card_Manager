@@ -6,12 +6,17 @@ extern "C"
 #include "main.h"
 }
 
+#include <etl/string.h>
+
 #include "defs.hpp"
-#include "etl/string.h"
 #include "status.hpp"
 
 namespace stm_sd
 {
+
+/***********************************************************
+ * Forward Declarations
+ ***********************************************************/
 
 /***********************************************************
  * Public typedefs / structs
@@ -25,6 +30,7 @@ struct PathData
 /***************************************************************
  * Function Declarations
  ***************************************************************/
+
 void   die(const string&);
 status fail(const string&);
 

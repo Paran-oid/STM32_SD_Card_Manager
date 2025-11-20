@@ -1,5 +1,7 @@
 #include "command_handler.hpp"
 
+#include "defs.hpp"
+#include "status.hpp"
 #include "utils.hpp"
 
 namespace stm_sd

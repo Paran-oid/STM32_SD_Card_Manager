@@ -1,6 +1,7 @@
 #include "filesystem.hpp"
 
-#include "etl/memory.h"
+#include <etl/memory.h>
+
 #include "ffconf.h"
 #include "file.hpp"
 #include "hal_init.hpp"
@@ -15,11 +16,11 @@ namespace filesystem
 // Internal static state
 // --------------------------------------------------
 
-using FilePtr = etl::unique_ptr<file>;
+using file_ptr = etl::unique_ptr<file>;
 
-static FATFS                                 m_fs;
-static SPI_HandleTypeDef                     m_hspi;
-static etl::array<FilePtr, MAX_FILE_HANDLES> m_file_handles;
+static FATFS                                  m_fs;
+static SPI_HandleTypeDef                      m_hspi;
+static etl::array<file_ptr, MAX_FILE_HANDLES> m_file_handles;
 
 void init(SPI_HandleTypeDef& hspi)
 {
@@ -50,31 +51,125 @@ file* open(const string& path, uint8_t mode)
         {
             handle = etl::unique_ptr<file>(new file(path));
             if ((fres = f_open(handle->fil(), path.c_str(), mode)) == FR_OK) return handle.get();
-            printf("%s\r\n", status_message(map_fresult(fres)));
 
-            handle.reset();  // free the object
+            printf("%s\r\n", status_message(map_fresult(fres)));
+            handle.reset();  // automatically frees the memory
         }
     }
     return nullptr;
 }
 
-status close(file* file)
+status close(file* f)
 {
-    if (!file) return status::err;
+    if (!f) return status::err;
 
-    for (auto& h : m_file_handles)
+    for (auto& handle : m_file_handles)
     {
-        if (h && file->path() == h->path())
+        if (handle && handle.get() == f)
         {
-            FRESULT fres = f_close(file->fil());
+            FRESULT fres = f_close(f->fil());
             if (fres != FR_OK) return map_fresult(fres);
 
-            h.reset();
+            handle.reset();  // destroy file object
             return status::ok;
         }
     }
 
     return status::invalid_parameter;
+}
+
+status copy(const string& src, const string& dst, uint8_t modes)
+{
+    if (!exists(src.c_str())) return fail("src is empty");
+
+    status  stat;
+    FRESULT fres;
+
+    bool is_dst_dir = is_directory(dst);
+    bool is_src_dir = is_directory(src);
+
+    bool dst_exists = exists(dst.c_str());
+    if (dst_exists && (modes & OVERWRITE) == 0)
+        return fail("overwrite flag not enabled for overwriting the destination");
+    if (dst_exists) remove(dst);
+
+    if ((!is_src_dir && !is_dst_dir) || (!is_src_dir && is_dst_dir))
+    {
+        // copy(write) content of a file into another (or into a new/existing directory)
+
+        PathData pdst = extract_path(dst);
+        PathData psrc = extract_path(src);
+
+        string cdst = dst;  // copy from dst
+
+        file* fsrc = open(src, FA_OPEN_EXISTING | FA_READ);
+        if (!fsrc) return status::err;
+
+        if (!exists(pdst.folder)) mkdir(pdst.folder);
+        if (pdst.filename.empty())
+        {
+            // folder directory, we get rid of the last / so that fatfs acknowledges the path
+            cdst.resize(cdst.size() - 1);
+        }
+
+        file* fdst;
+        if (is_directory(cdst))
+        {
+            // we are adding src file to a directory
+
+            string ndst = pdst.folder;
+            ndst.append("/").append(psrc.filename);
+            fdst = open(ndst, FA_CREATE_ALWAYS | FA_WRITE);  // dst_folder/src_filename
+        }
+        else
+        {
+            // we are simply going to copy(write) data to another file
+            fdst = open(cdst, FA_CREATE_ALWAYS | FA_WRITE);
+        }
+
+        if (!fdst) return status::err;
+
+        etl::array<uint8_t, BLOCK_SIZE> rbuf = {};
+        while (fsrc->read(rbuf))
+        {
+            if ((stat = fdst->write(rbuf)) != status::ok) return stat;
+        }
+
+        if ((stat = close(fdst)) != status::ok) return stat;
+        if ((stat = close(fsrc)) != status::ok) return stat;
+    }
+
+    else if (is_src_dir && is_dst_dir)
+    {
+        // put a directory inside another directory
+        DIR src_dir;
+        if ((fres = f_opendir(&src_dir, src.c_str())) != FR_OK) return map_fresult(fres);
+
+        FILINFO fno;
+        for (;;)
+        {
+            if ((fres = f_readdir(&src_dir, &fno)) != FR_OK) return map_fresult(fres);
+            if (!fno.fname[0]) break;
+            if (strcmp(fno.fname, ".") == 0 || strcmp(fno.fname, "..") == 0) continue;
+
+            string src_child = src;
+            src_child.append("/").append(fno.fname);
+
+            string dst_child = dst;
+            dst_child.append("/").append(fno.fname);
+
+            if ((stat = copy(src_child, dst_child, modes)) != status::ok) return stat;
+        }
+
+        f_closedir(&src_dir);
+    }
+    else
+    {
+        return fail(
+            "moving a directory into a file is unlogical");  // can't move a directory into a file
+    }
+
+    return status::ok;
 }
 
 status remove(const string& s, bool recursive)

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "etl/string.h"
+#include <etl/string.h>
+
 #include "utils.hpp"
 
 //! WARNING: HAL FOR C++ MUST BE INITIALIZED BEFORE ANY TEST GETS EXECUTED!
