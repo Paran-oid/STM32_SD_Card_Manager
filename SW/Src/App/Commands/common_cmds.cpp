@@ -17,8 +17,7 @@ CmdExec clear_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& ar
 CmdExec pwd_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& args)
 {
     (void) args;
-    // printf("%s\r\n", sd_reader.cwd().data()); // already exists in stm32 code
-    fs::path cwd = fs::current_path();
-    printf("%s\r\n", cwd.string().data());
+    // printf("%s\r\n", sd_reader.cwd().c_str()); // already exists in stm32 code
+    printf("%s\r\n", g_cwd.c_str());
     return SD_RES::OK;
 };

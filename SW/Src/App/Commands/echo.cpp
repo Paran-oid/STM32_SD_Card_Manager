@@ -38,7 +38,7 @@ CmdExec echo_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& arg
             output_str += temp;
             if (etl::next(it) != args.end()) output_str += " ";
         }
-        printf("%s", output_str.data());
+        printf("%s", output_str.c_str());
         printf("\r\n");
     }
     else
@@ -63,11 +63,11 @@ CmdExec echo_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& arg
 
         etl::string<SSIZE> output_file = args[static_cast<size_t>(idx_symb + 1)];
 
-        std::ofstream file(output_file.data(),
+        std::ofstream file(output_file.c_str(),
                            append_symb != args.end() ? std::ios::app : std::ios::out);
         if (!file.is_open()) return SD_RES::ERR;
 
-        file << content.data();
+        file << content.c_str();
 
         file.close();
     }

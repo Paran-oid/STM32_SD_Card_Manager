@@ -21,6 +21,7 @@
 
 #include "fatfs.h"
 
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -319,7 +320,7 @@ static void MX_GPIO_Init(void)
 int _write(int file, char* ptr, int len)
 {
     (void) file;
-    HAL_UART_Transmit(&huart2, (const uint8_t*) ptr, len, 100);
+    HAL_UART_Transmit(&huart2, (const uint8_t*) ptr, (uint16_t) len, 100);
     return len;
 }
 /* USER CODE END 4 */

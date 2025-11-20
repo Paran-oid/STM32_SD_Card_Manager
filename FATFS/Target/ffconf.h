@@ -141,7 +141,7 @@
 /
 /  This option has no effect when _LFN_UNICODE == 0. */
 
-#define _FS_RPATH       0 /* 0 to 2 */
+#define _FS_RPATH       2 /* 0 to 2 */
 /* This option configures support of relative path.
 /
 /   0: Disable relative path and remove related functions.
@@ -226,7 +226,7 @@
 /  _NORTC_MDAY and _NORTC_YEAR have no effect.
 /  These options have no effect at read-only configuration (_FS_READONLY = 1). */
 
-#define _FS_LOCK    2     /* 0:Disable or >=1:Enable */
+#define _FS_LOCK    16     /* 0:Disable or >=1:Enable */
 /* The option _FS_LOCK switches file lock function to control duplicated file open
 /  and illegal operation to open objects. This option must be 0 when _FS_READONLY
 /  is 1.

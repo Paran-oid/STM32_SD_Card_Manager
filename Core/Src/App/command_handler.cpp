@@ -1,60 +1,66 @@
 #include "command_handler.hpp"
 
+#include "defs.hpp"
+#include "status.hpp"
 #include "utils.hpp"
 
-/*
- * HOW TO ADD A FUNCTIONALITY:
- * - modify COMMANDS_COUNT (usually just increment as much as needed)
- * - add extern declaration for functions (and define it somewhere)
- * - add enum for it
- * - add it to the cmd_table unordered_map
- * - pass it in check_command_type function
- */
+namespace stm_sd
+{
 
 // each of these is defined in their respective .cpp file (some may be shared inside
 // common_cmds.cpp)
-extern CmdExec cat_exec;
-extern CmdExec echo_exec;
-extern CmdExec ls_exec;
-extern CmdExec rm_exec;
-extern CmdExec cp_exec;
-extern CmdExec cd_exec;
-extern CmdExec clear_exec;
-extern CmdExec pwd_exec;
+extern cmd_exec cat_exec;
+extern cmd_exec echo_exec;
+extern cmd_exec ls_exec;
+extern cmd_exec rm_exec;
+extern cmd_exec cp_exec;
+extern cmd_exec cd_exec;
+extern cmd_exec clear_exec;
+extern cmd_exec pwd_exec;
+extern cmd_exec mkdir_exec;
+extern cmd_exec rmdir_exec;
+extern cmd_exec touch_exec;
+extern cmd_exec mv_exec;
 
-etl::unordered_map<CommandType, CmdExec, COMMANDS_COUNT> cmd_table = {
-    {CommandType::CAT, cat_exec},     {CommandType::ECHO, echo_exec}, {CommandType::LS, ls_exec},
-    {CommandType::RM, rm_exec},       {CommandType::CP, cp_exec},     {CommandType::CD, cd_exec},
-    {CommandType::CLEAR, clear_exec}, {CommandType::PWD, pwd_exec}};
+cmd_exec_map cmd_table = {{command_type::cat, cat_exec},     {command_type::echo, echo_exec},
+                          {command_type::ls, ls_exec},       {command_type::rm, rm_exec},
+                          {command_type::cp, cp_exec},       {command_type::cd, cd_exec},
+                          {command_type::clear, clear_exec}, {command_type::pwd, pwd_exec},
+                          {command_type::mkdir, mkdir_exec}, {command_type::rmdir, rmdir_exec},
+                          {command_type::touch, touch_exec}, {command_type::mv, mv_exec}};
 
-static CommandType check_command_type(const etl::string<SSIZE>& item)
+static command_type check_command_type(const string& item)
 {
-    if (item == "cat") return CommandType::CAT;
-    if (item == "echo") return CommandType::ECHO;
-    if (item == "ls") return CommandType::LS;
-    if (item == "rm") return CommandType::RM;
-    if (item == "cp") return CommandType::CP;
-    if (item == "cd") return CommandType::CD;
-    if (item == "clear") return CommandType::CLEAR;
-    if (item == "pwd") return CommandType::PWD;
-    return CommandType::NONE;
+    if (item == "cat") return command_type::cat;
+    if (item == "echo") return command_type::echo;
+    if (item == "ls") return command_type::ls;
+    if (item == "rm") return command_type::rm;
+    if (item == "cp") return command_type::cp;
+    if (item == "cd") return command_type::cd;
+    if (item == "clear") return command_type::clear;
+    if (item == "pwd") return command_type::pwd;
+    if (item == "mkdir") return command_type::mkdir;
+    if (item == "rmdir") return command_type::rmdir;
+    if (item == "touch") return command_type::touch;
+    if (item == "mv") return command_type::mv;
+    return command_type::none;
 }
 
-void handle_command(const etl::string<SSIZE>& str)
+void handle_command(const string& str)
 {
-    etl::vector<etl::string<SSIZE>, ARGS_CAPACITY> args;
-    etl::string<SSIZE>                             cmd;
-    size_t                                         start = 0, end = 0;
+    cmd_args args;
+    string   cmd;
+    size_t   start = 0, end = 0;
 
-    size_t pos_space = str.find(' ');
-    if (pos_space != etl::string<SSIZE>::npos)
+    size_t pos_space = find_outside_quotes(str, ' ');
+    if (pos_space != string::npos)
     {
         cmd   = str.substr(0, pos_space);
         start = end = pos_space + 1;
-        while ((end = str.find(' ', start)) != etl::string<SSIZE>::npos)
+        while ((end = find_outside_quotes(str, ' ', start)) != string::npos)
         {
             if (args.size() == args.capacity()) die("too many arguments entered...");
-            etl::string<SSIZE> item = str.substr(start, end - start);
+            string item = str.substr(start, end - start);
             args.push_back(item);
             start = end + 1;
         }
@@ -66,17 +72,17 @@ void handle_command(const etl::string<SSIZE>& str)
         cmd = str;
     }
 
-    CommandType cmd_type = check_command_type(cmd);
-    (void) cmd_type;
-    auto it = cmd_table.find(cmd_type);
+    command_type cmd_type = check_command_type(cmd);
+    auto         it       = cmd_table.find(cmd_type);
     if (it == cmd_table.end())
     {
         printf("command not found\r\n");
         return;
     }
 
-    printf("\r\n");
-    SD_RES res = it->second(args);
-    if (res == SD_RES::OK) printf("\r\n");
-    return;
+    status      res = it->second(args);
+    const char* msg = status_message(res);
+    printf("%s%s", msg, strcmp(msg, "") != 0 ? "\r\n" : "");
 }
+
+}  // namespace stm_sd

@@ -57,7 +57,7 @@ target_sources(
           ${CMAKE_SOURCE_DIR}/Core/Src/entry.cpp
           ${CMAKE_SOURCE_DIR}/Core/Src/utils.cpp
           ${CMAKE_SOURCE_DIR}/Core/Src/Modules/sd_file.cpp
-          ${CMAKE_SOURCE_DIR}/Core/Src/Modules/sd_reader.cpp
+          ${CMAKE_SOURCE_DIR}/Core/Src/Modules/filesystem.cpp
           ${CMAKE_SOURCE_DIR}/Core/Src/App/hal_init.cpp
           ${CMAKE_SOURCE_DIR}/Core/Src/App/command_handler.cpp
           ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/echo.cpp
@@ -67,6 +67,9 @@ target_sources(
           ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/cp.cpp
           ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/ls.cpp
           ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/cd.cpp
+          ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/dir_cmds.cpp
+          ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/touch.cpp
+          ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/mv.cpp
           #
           # Test-related
           #
@@ -101,8 +104,23 @@ target_compile_definitions(
              SCA_GPIO SCA_SPI SCA_PTIMER SCA_UART)
 
 # Add flags
-target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Wextra -fno-rtti
-                                                     -fno-exceptions)
+target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Wall -Wextra
+                                                     -Werror -Wunused -Os)
+
+target_compile_options(
+  ${CMAKE_PROJECT_NAME}
+  PRIVATE # Debug: enable debug info
+          $<$<CONFIG:Debug>:-O0
+          -g3
+          -Wall
+          -Wextra
+          -fstack-protector-strong>
+          # Release: optimize for size
+          $<$<CONFIG:Release>:-Os
+          -DNDEBUG
+          -ffunction-sections
+          -Wall
+          -Wextra>)
 
 # Remove wrong libob.a library dependency when using cpp files
 list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)

@@ -1,14 +1,15 @@
 #pragma once
 
-#include "etl/string_view.h"
+#include <etl/string.h>
+
 #include "utils.hpp"
 
 //! WARNING: HAL FOR C++ MUST BE INITIALIZED BEFORE ANY TEST GETS EXECUTED!
 
 struct TestResult
 {
-    bool             passed;
-    etl::string_view msg;
+    bool           passed;
+    stm_sd::string msg;
 };
 
 void run_tests();

@@ -12,16 +12,15 @@ CmdExec cat_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& args
     etl::string<SSIZE> path = args[0];
     if (isstring(args[0])) path = format_str(path);
 
-    std::ifstream f(path.data());  // TODO: use some kind of function that checks the existence of a
-                                   // ;file instead of trying to open it...
+    std::ifstream f(path.c_str());  // TODO: use some kind of function that checks the existence of
+                                    // a ;file instead of trying to open it...
     if (!f.is_open()) return SD_RES::ERR;
 
-    std::string readbuf;
+    std::string readbuf;  // have to use std::string to ready from getline
     while (std::getline(f, readbuf))
     {
-        printf("%s", readbuf.data());
+        printf("%s\n", readbuf.c_str());
     }
-    printf("\r\n");
 
     f.close();
 

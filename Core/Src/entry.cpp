@@ -4,11 +4,13 @@ extern "C"
 #include "main.h"
 }
 
+#include <etl/array.h>
+#include <etl/format_spec.h>
+#include <etl/string.h>
+#include <etl/to_string.h>
+
 #include "command_handler.hpp"
-#include "etl/array.h"
-#include "etl/format_spec.h"
-#include "etl/string.h"
-#include "etl/to_string.h"
+#include "filesystem.hpp"
 #include "hal_init.hpp"
 #include "printf.h"
 #include "sca/iwdg.hpp"
@@ -16,9 +18,14 @@ extern "C"
 #include "tests.hpp"
 #include "utils.hpp"
 
-etl::string<SSIZE> uart_input_buf;
-
 #define TESTING_ 0
+
+using stm_sd::string, stm_sd::status, stm_sd::hal_init_all, stm_sd::die;
+
+namespace fs = stm_sd::filesystem;
+
+// uart input buf
+string s;
 
 void setup()
 {
@@ -28,15 +35,18 @@ void setup()
     run_tests();  // to configure tests modify run_tests in tests.cpp inside Tests folder
 #endif
 
-    if (sd_reader.mount() != SD_RES::OK) die("error mounting drive\r\n");
-    if (sd_reader.label().empty()) die("invalid label...\r\n");  // set label
-    // if (sd_reader.unmount() != SD_RES::OK) die("unmount failed...\r\n");
+    if (fs::mount() != status::ok) die("couldn't mount SD Card");
+    if (fs::label().empty()) die("invalid label...");  // must be manually put to set the label
 
     printf("=======STM32 MICRO SD CARD READER READY!=======\r\n");
 }
 
 void loop()
 {
-    uart2.scan(uart_input_buf);
-    handle_command(uart_input_buf);
+    // TODO: don't let user enter unallowd characters for filenames
+    // TODO: make sure all variables are initialized and not just declared (var x NO --> var x = 0
+    // ;(or {}) YES)
+    uart2.scan(s);
+    s = stm_sd::unescape(s);
+    stm_sd::handle_command(s);
 }

@@ -1,21 +1,38 @@
+#include <etl/string.h>
+#include <etl/vector.h>
+
 #include "command_handler.hpp"
-#include "etl/string.h"
-#include "etl/vector.h"
+#include "file.hpp"
+#include "filesystem.hpp"
 #include "hal_init.hpp"
 #include "utils.hpp"
 
-CmdExec cat_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& args)
+namespace fs = stm_sd::filesystem;
+
+namespace stm_sd
 {
-    if (args.empty()) return SD_RES::ERR;
 
-    const etl::string<SSIZE>& path = args[0];
-    if (sd_reader.exists(path) != SD_RES::OK) return SD_RES::ERR;
+cmd_exec cat_exec = [](const cmd_args& args)
+{
+    if (args.empty()) return fail("args can't be empty");
 
-    SDFile* f = sd_reader.open_file(path, FA_READ);
-    if (!f) return SD_RES::ERR;
+    status stat;
 
-    etl::string<SSIZE> read_buf;
-    while (f->read(read_buf) != SD_RES::ERR) printf("%s", read_buf.data());
+    string path = args[0];
+    if (is_double_quoted(path)) path = format_str(path);
 
-    return SD_RES::OK;
+    if (!fs::exists(path)) return status::no_file;
+    file* f = fs::open(path, file_mode::read);
+    if (!f) return status::err;
+
+    //* in reality we read BLOCK_SIZE - 1 chars at a time
+    etl::string<BLOCK_SIZE> read_buf;
+    while (f->read(read_buf)) printf("%s", read_buf.c_str());
+    printf("\r\n");
+
+    if ((stat = fs::close(f)) != status::ok) return stat;
+
+    return status::ok;
 };
+
+}  // namespace stm_sd

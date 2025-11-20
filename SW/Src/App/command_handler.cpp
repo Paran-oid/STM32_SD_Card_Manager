@@ -4,11 +4,11 @@
 
 /*
  * HOW TO ADD A FUNCTIONALITY:
- * - modify COMMANDS_COUNT (usually just increment as much as needed)
+ * - add it's enum in the header file
  * - add extern declaration for functions (and define it somewhere)
- * - add enum for it
  * - add it to the cmd_table unordered_map
  * - pass it in check_command_type function
+ * - if a new .cpp file is created don't forget to add it to the cmake
  */
 
 // each of these is defined in their respective .cpp file (some may be shared inside
@@ -21,11 +21,17 @@ extern CmdExec cp_exec;
 extern CmdExec cd_exec;
 extern CmdExec clear_exec;
 extern CmdExec pwd_exec;
+extern CmdExec mkdir_exec;
+extern CmdExec rmdir_exec;
 
-etl::unordered_map<CommandType, CmdExec, COMMANDS_COUNT> cmd_table = {
-    {CommandType::CAT, cat_exec},     {CommandType::ECHO, echo_exec}, {CommandType::LS, ls_exec},
-    {CommandType::RM, rm_exec},       {CommandType::CP, cp_exec},     {CommandType::CD, cd_exec},
-    {CommandType::CLEAR, clear_exec}, {CommandType::PWD, pwd_exec}};
+etl::string<SSIZE> g_cwd;  // exists just for SW
+
+etl::unordered_map<CommandType, CmdExec, static_cast<size_t>(CommandType::COMMANDS_COUNT)>
+    cmd_table = {{CommandType::CAT, cat_exec},     {CommandType::ECHO, echo_exec},
+                 {CommandType::LS, ls_exec},       {CommandType::RM, rm_exec},
+                 {CommandType::CP, cp_exec},       {CommandType::CD, cd_exec},
+                 {CommandType::CLEAR, clear_exec}, {CommandType::PWD, pwd_exec},
+                 {CommandType::MKDIR, mkdir_exec}, {CommandType::RMDIR, rmdir_exec}};
 
 static CommandType check_command_type(const etl::string<SSIZE>& item)
 {
@@ -37,6 +43,8 @@ static CommandType check_command_type(const etl::string<SSIZE>& item)
     if (item == "cd") return CommandType::CD;
     if (item == "clear") return CommandType::CLEAR;
     if (item == "pwd") return CommandType::PWD;
+    if (item == "mkdir") return CommandType::MKDIR;
+    if (item == "rmdir") return CommandType::RMDIR;
     return CommandType::NONE;
 }
 

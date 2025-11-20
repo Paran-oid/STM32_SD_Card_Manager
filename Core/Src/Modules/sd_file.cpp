@@ -1,26 +1,36 @@
-#include "sd.hpp"
+#include "file.hpp"
 
-SD_RES SDFile::write(etl::string_view txt)
+namespace stm_sd
 {
-    return f_write(&m_fil, txt.data(), txt.length(), NULL) == FR_OK ? SD_RES::OK : SD_RES::ERR;
+
+status file::write(const char* s)
+{
+    return map_fresult(f_write(&m_fil, s, strlen(s), NULL));
 }
 
-SD_RES SDFile::seek(uint32_t offset)
+status file::seek(uint32_t offset)
 {
-    return f_lseek(&m_fil, offset) == FR_OK ? SD_RES::OK : SD_RES::ERR;
+    return map_fresult(f_lseek(&m_fil, offset));
 }
 
-SD_RES SDFile::truncate()
+status file::truncate()
 {
-    return f_truncate(&m_fil) == FR_OK ? SD_RES::OK : SD_RES::ERR;
+    return map_fresult(f_truncate(&m_fil));
 }
 
-uint32_t SDFile::size() const
+uint32_t file::size() const
 {
     return f_size(&m_fil);
 }
 
-SD_RES SDFile::rename(etl::string_view old_path, etl::string_view new_path)
+status file::rename(const string& old_path, const string& new_path)
 {
-    return f_rename(old_path.data(), new_path.data()) == FR_OK ? SD_RES::OK : SD_RES::ERR;
+    return map_fresult(f_rename(old_path.c_str(), new_path.c_str()));
 }
+
+bool file::is_open()
+{
+    return m_fil.obj.fs != nullptr;
+}
+
+}  // namespace stm_sd
