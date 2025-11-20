@@ -1,18 +1,15 @@
 #pragma once
 
+/***************************************************************
+ * Includes
+ ***************************************************************/
 extern "C"
 {
 #include "main.h"
 }
 
-#include "sd.hpp"
-
-/***********************************************************
- * Public defines
- ***********************************************************/
-
 /***************************************************************
- * Forward declarations
+ * Forward Declarations
  ***************************************************************/
 namespace sca
 {
@@ -28,9 +25,8 @@ class iwdg;
 }  // namespace sca
 
 /***************************************************************
- * HAL generated variables in main.c
+ * HAL Generated Variables from "main.c"
  ***************************************************************/
-
 extern SPI_HandleTypeDef hspi1;
 
 extern TIM_HandleTypeDef htim2;
@@ -38,20 +34,19 @@ extern TIM_HandleTypeDef htim2;
 extern UART_HandleTypeDef huart2;
 
 /***************************************************************
- * Exported C++ converted peripherals
+ * Exported C++ Converted Peripherals
  ***************************************************************/
-
 extern sca::spi spi1;
 
 extern sca::ptimer<uint32_t> tim2;
 
 extern sca::uart uart2;
 
+namespace stm_sd
+{
 /***************************************************************
- * Exported objects
- ***************************************************************/
-
-/***************************************************************
- * Function declarations
+ * Function Declarations
  ***************************************************************/
 void hal_init_all();
+
+}  // namespace stm_sd

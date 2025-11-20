@@ -9,6 +9,7 @@ extern "C"
 #include "etl/format_spec.h"
 #include "etl/string.h"
 #include "etl/to_string.h"
+#include "filesystem.hpp"
 #include "hal_init.hpp"
 #include "printf.h"
 #include "sca/iwdg.hpp"
@@ -18,7 +19,7 @@ extern "C"
 
 #define TESTING_ 0
 
-using stm_sd::string;
+using stm_sd::string, stm_sd::status, stm_sd::hal_init_all, stm_sd::die;
 
 namespace fs = stm_sd::filesystem;
 
@@ -33,10 +34,8 @@ void setup()
     run_tests();  // to configure tests modify run_tests in tests.cpp inside Tests folder
 #endif
 
-    fs::init(hspi1);
-
-    if (fs::mount() != stm_sd::StatusCode::OK) stm_sd::die("couldn't mount SD Card");
-    if (fs::label().empty()) stm_sd::die("invalid label...");  // set label
+    if (fs::mount() != status::ok) die("couldn't mount SD Card");
+    if (fs::label().empty()) die("invalid label...");  // must be manually put to set the label
 
     printf("=======STM32 MICRO SD CARD READER READY!=======\r\n");
 }

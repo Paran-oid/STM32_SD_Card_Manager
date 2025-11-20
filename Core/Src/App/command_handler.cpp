@@ -5,56 +5,50 @@
 namespace stm_sd
 {
 
-/*
- * HOW TO ADD A FUNCTIONALITY:
- * - add enum for it
- * - add extern declaration for functions (and define it somewhere)
- * - add it to the cmd_table unordered_map
- * - pass it in check_command_type function
- */
-
 // each of these is defined in their respective .cpp file (some may be shared inside
 // common_cmds.cpp)
-extern CmdExec cat_exec;
-extern CmdExec echo_exec;
-extern CmdExec ls_exec;
-extern CmdExec rm_exec;
-extern CmdExec cp_exec;
-extern CmdExec cd_exec;
-extern CmdExec clear_exec;
-extern CmdExec pwd_exec;
-extern CmdExec mkdir_exec;
-extern CmdExec rmdir_exec;
-extern CmdExec touch_exec;
+extern cmd_exec cat_exec;
+extern cmd_exec echo_exec;
+extern cmd_exec ls_exec;
+extern cmd_exec rm_exec;
+extern cmd_exec cp_exec;
+extern cmd_exec cd_exec;
+extern cmd_exec clear_exec;
+extern cmd_exec pwd_exec;
+extern cmd_exec mkdir_exec;
+extern cmd_exec rmdir_exec;
+extern cmd_exec touch_exec;
+extern cmd_exec mv_exec;
 
-CmdExecMap cmd_table = {{CommandType::CAT, cat_exec},     {CommandType::ECHO, echo_exec},
-                        {CommandType::LS, ls_exec},       {CommandType::RM, rm_exec},
-                        {CommandType::CP, cp_exec},       {CommandType::CD, cd_exec},
-                        {CommandType::CLEAR, clear_exec}, {CommandType::PWD, pwd_exec},
-                        {CommandType::MKDIR, mkdir_exec}, {CommandType::RMDIR, rmdir_exec},
-                        {CommandType::TOUCH, touch_exec}};
+cmd_exec_map cmd_table = {{command_type::cat, cat_exec},     {command_type::echo, echo_exec},
+                          {command_type::ls, ls_exec},       {command_type::rm, rm_exec},
+                          {command_type::cp, cp_exec},       {command_type::cd, cd_exec},
+                          {command_type::clear, clear_exec}, {command_type::pwd, pwd_exec},
+                          {command_type::mkdir, mkdir_exec}, {command_type::rmdir, rmdir_exec},
+                          {command_type::touch, touch_exec}, {command_type::mv, mv_exec}};
 
-static CommandType check_command_type(const string& item)
+static command_type check_command_type(const string& item)
 {
-    if (item == "cat") return CommandType::CAT;
-    if (item == "echo") return CommandType::ECHO;
-    if (item == "ls") return CommandType::LS;
-    if (item == "rm") return CommandType::RM;
-    if (item == "cp") return CommandType::CP;
-    if (item == "cd") return CommandType::CD;
-    if (item == "clear") return CommandType::CLEAR;
-    if (item == "pwd") return CommandType::PWD;
-    if (item == "mkdir") return CommandType::MKDIR;
-    if (item == "rmdir") return CommandType::RMDIR;
-    if (item == "touch") return CommandType::TOUCH;
-    return CommandType::NONE;
+    if (item == "cat") return command_type::cat;
+    if (item == "echo") return command_type::echo;
+    if (item == "ls") return command_type::ls;
+    if (item == "rm") return command_type::rm;
+    if (item == "cp") return command_type::cp;
+    if (item == "cd") return command_type::cd;
+    if (item == "clear") return command_type::clear;
+    if (item == "pwd") return command_type::pwd;
+    if (item == "mkdir") return command_type::mkdir;
+    if (item == "rmdir") return command_type::rmdir;
+    if (item == "touch") return command_type::touch;
+    if (item == "mv") return command_type::mv;
+    return command_type::none;
 }
 
 void handle_command(const string& str)
 {
-    CmdArgs args;
-    string  cmd;
-    size_t  start = 0, end = 0;
+    cmd_args args;
+    string   cmd;
+    size_t   start = 0, end = 0;
 
     size_t pos_space = find_outside_quotes(str, ' ');
     if (pos_space != string::npos)
@@ -76,16 +70,17 @@ void handle_command(const string& str)
         cmd = str;
     }
 
-    CommandType cmd_type = check_command_type(cmd);
-    auto        it       = cmd_table.find(cmd_type);
+    command_type cmd_type = check_command_type(cmd);
+    auto         it       = cmd_table.find(cmd_type);
     if (it == cmd_table.end())
     {
         printf("command not found\r\n");
         return;
     }
 
-    StatusCode res = it->second(args);
-    if (res != StatusCode::OK) printf("error occured...\r\n");
+    status      res = it->second(args);
+    const char* msg = status_message(res);
+    printf("%s%s", msg, strcmp(msg, "") != 0 ? "\r\n" : "");
 }
 
 }  // namespace stm_sd

@@ -3,6 +3,8 @@
 #include "etl/vector.h"
 #include "hal_init.hpp"
 #include "utils.hpp"
+#include "filesystem.hpp"
+
 
 extern "C"
 {
@@ -14,23 +16,24 @@ namespace fs = stm_sd::filesystem;
 namespace stm_sd
 {
 
-constexpr uint8_t OVERWRITE = (1 << 1);
-constexpr uint8_t RECURSIVE = (1 << 2);
-
-extern CmdExec rm_exec;
+extern cmd_exec rm_exec;
 
 // TODO: start using path and string types accordingly
 
 // TODO: make a filesystem class and add this function there
-StatusCode copy(const string& src, const string& dst, uint8_t modes)
+status copy(const string& src, const string& dst, uint8_t modes)
 {
-    if (!fs::exists(src.c_str())) return StatusCode::ERR;
+    if (!fs::exists(src.c_str())) return fail("src is empty");
+
+    status  stat;
+    FRESULT fres;
 
     bool is_dst_dir = fs::is_directory(dst);
     bool is_src_dir = fs::is_directory(src);
 
     bool dst_exists = fs::exists(dst.c_str());
-    if (dst_exists && (modes & OVERWRITE) == 0) return StatusCode::ERR;
+    if (dst_exists && (modes & OVERWRITE) == 0)
+        return fail("overwrite flag not enabled for overwriting the destination");
     if (dst_exists) rm_exec({dst});
 
     if ((!is_src_dir && !is_dst_dir) || (!is_src_dir && is_dst_dir))
@@ -42,8 +45,8 @@ StatusCode copy(const string& src, const string& dst, uint8_t modes)
 
         string cdst = dst;  // copy from dst
 
-        File* fsrc = fs::open(src, FA_OPEN_EXISTING | FA_READ);
-        if (!fsrc) return StatusCode::ERR;
+        file* fsrc = fs::open(src, FA_OPEN_EXISTING | FA_READ);
+        if (!fsrc) return status::err;
 
         if (!fs::exists(pdst.folder)) fs::mkdir(pdst.folder);
         if (pdst.filename.empty())
@@ -52,7 +55,7 @@ StatusCode copy(const string& src, const string& dst, uint8_t modes)
             cdst.resize(cdst.size() - 1);
         }
 
-        File* fdst;
+        file* fdst;
         if (fs::is_directory(cdst))
         {
             // we are adding src file to a directory
@@ -67,28 +70,28 @@ StatusCode copy(const string& src, const string& dst, uint8_t modes)
             fdst = fs::open(cdst, FA_CREATE_ALWAYS | FA_WRITE);
         }
 
-        if (!fdst) return StatusCode::ERR;
+        if (!fdst) return status::err;
 
         etl::array<uint8_t, BLOCK_SIZE> rbuf = {};
         while (fsrc->read(rbuf))
         {
-            if (fdst->write(rbuf) != StatusCode::OK) return StatusCode::ERR;
+            if ((stat = fdst->write(rbuf)) != status::ok) return stat;
         }
 
-        if (fs::close(fdst) != StatusCode::OK) return StatusCode::ERR;
-        if (fs::close(fsrc) != StatusCode::OK) return StatusCode::ERR;
+        if ((stat = fs::close(fdst)) != status::ok) return stat;
+        if ((stat = fs::close(fsrc)) != status::ok) return stat;
     }
 
     else if (is_src_dir && is_dst_dir)
     {
         // put a directory inside another directory
         DIR src_dir;
-        if (f_opendir(&src_dir, src.c_str()) != FR_OK) return StatusCode::ERR;
+        if ((fres = f_opendir(&src_dir, src.c_str())) != FR_OK) return map_fresult(fres);
 
         FILINFO fno;
         for (;;)
         {
-            if (f_readdir(&src_dir, &fno) != FR_OK) return StatusCode::ERR;
+            if ((fres = f_readdir(&src_dir, &fno)) != FR_OK) return map_fresult(fres);
             if (!fno.fname[0]) break;
             if (strcmp(fno.fname, ".") == 0 || strcmp(fno.fname, "..") == 0) continue;
 
@@ -98,26 +101,23 @@ StatusCode copy(const string& src, const string& dst, uint8_t modes)
             string dst_child = dst;
             dst_child.append("/").append(fno.fname);
 
-            // TODO: fix the problem here of child getting nullptr returned (files), maybe cuz lots
-            // ;of file handles??
-            if (copy(src_child, dst_child, modes) != StatusCode::OK) return StatusCode::ERR;
-
-            // TODO: make it copy directories inside src too
+            if ((stat = copy(src_child, dst_child, modes)) != status::ok) return stat;
         }
 
         f_closedir(&src_dir);
     }
     else
     {
-        return StatusCode::ERR;  // can't move a directory into a file
+        return fail(
+            "moving a directory into a file is unlogical");  // can't move a directory into a file
     }
 
-    return StatusCode::OK;
+    return status::ok;
 }
 
-CmdExec cp_exec = [](const CmdArgs& args)
+cmd_exec cp_exec = [](const cmd_args& args)
 {
-    if (args.empty() || args.size() != 2) return StatusCode::ERR;
+    if (args.size() != 2) return fail("2 arguments must be passed");
 
     bool is_recursive = false;
     for (const auto& arg : args)
@@ -134,7 +134,7 @@ CmdExec cp_exec = [](const CmdArgs& args)
 
     const string& src = args[0];
     const string& dst = args[1];
-    if (!fs::exists(src.c_str())) return StatusCode::ERR;
+    if (!fs::exists(src.c_str())) return status::no_file;
 
     if (fs::is_directory(dst.c_str()))
     {
@@ -149,11 +149,12 @@ CmdExec cp_exec = [](const CmdArgs& args)
     else
     {
         if (fs::is_directory(src.c_str()) || !is_recursive)
-            return StatusCode::ERR;  // can't copy directory into a file and/or recursive flag is
-                                     // needed
+            return fail(
+                "recursive flag needed to copy directories");  // can't copy directory into a file
+                                                               // and/or recursive flag is needed
         copy(src.c_str(), dst.c_str(), OVERWRITE);
     }
-    return StatusCode::OK;
+    return status::ok;
 };
 
 }  // namespace stm_sd

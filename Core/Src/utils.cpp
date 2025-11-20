@@ -1,7 +1,7 @@
 #include "utils.hpp"
 
+#include "filesystem.hpp"
 #include "printf.h"
-#include "sd.hpp"
 
 namespace stm_sd
 {
@@ -11,6 +11,12 @@ void die(const string& msg)
 {
     printf("%s\r\n", msg.c_str());
     Error_Handler();
+}
+
+status fail(const string& msg)
+{
+    printf("%s\r\n", msg.c_str());
+    return status::err;
 }
 
 size_t find_outside_quotes(const string& s, char c, size_t start, size_t length)
@@ -97,11 +103,11 @@ string unescape(const string& s)
     return res;
 }
 
-PathData extract_path(const path& p)
+PathData extract_path(const string& p)
 {
     size_t pos_slash = p.find_last_of("/\\");
-    if (pos_slash == path::npos) return {"", p};
-    
+    if (pos_slash == string::npos) return {"", p};
+
     return {p.substr(0, pos_slash), p.substr(pos_slash + 1)};
 }
 

@@ -1,7 +1,9 @@
+#include "filesystem.hpp"
+
 #include "etl/memory.h"
 #include "ffconf.h"
+#include "file.hpp"
 #include "hal_init.hpp"
-#include "sd.hpp"
 
 namespace stm_sd
 {
@@ -13,7 +15,7 @@ namespace filesystem
 // Internal static state
 // --------------------------------------------------
 
-using FilePtr = etl::unique_ptr<File>;
+using FilePtr = etl::unique_ptr<file>;
 
 static FATFS                                 m_fs;
 static SPI_HandleTypeDef                     m_hspi;
@@ -24,9 +26,9 @@ void init(SPI_HandleTypeDef& hspi)
     m_hspi = hspi;
 }
 
-StatusCode mount()
+status mount()
 {
-    return (f_mount(&m_fs, "", 1) == FR_OK) ? StatusCode::OK : StatusCode::ERR;
+    return map_fresult(f_mount(&m_fs, "", 1));
 }
 
 bool is_mounted()
@@ -34,103 +36,115 @@ bool is_mounted()
     return m_fs.fs_type != 0;
 }
 
-StatusCode unmount()
+status unmount()
 {
-    return (f_mount(NULL, "", 1) == FR_OK) ? StatusCode::OK : StatusCode::ERR;
+    return map_fresult(f_mount(NULL, "", 1));
 }
 
-File* open(const string& path, uint8_t mode)
+file* open(const string& path, uint8_t mode)
 {
-    for (auto& h : m_file_handles)
+    FRESULT fres;
+    for (auto& handle : m_file_handles)
     {
-        if (!h)
+        if (!handle)
         {
-            h = etl::unique_ptr<File>(new File(path));
-            if (f_open(h->fil(), path.c_str(), mode) == FR_OK) return h.get();
+            handle = etl::unique_ptr<file>(new file(path));
+            if ((fres = f_open(handle->fil(), path.c_str(), mode)) == FR_OK) return handle.get();
+            printf("%s\r\n", status_message(map_fresult(fres)));
 
-            h.reset();
+            handle.reset();  // free the object
         }
     }
     return nullptr;
 }
 
-StatusCode close(File* file)
+status close(file* file)
 {
-    if (!file) return StatusCode::ERR;
+    if (!file) return status::err;
 
     for (auto& h : m_file_handles)
     {
         if (h && file->path() == h->path())
         {
-            if (f_close(file->fil()) != FR_OK) return StatusCode::ERR;
+            FRESULT fres = f_close(file->fil());
+            if (fres != FR_OK) return map_fresult(fres);
 
             h.reset();
-            return StatusCode::OK;
+            return status::ok;
         }
     }
 
-    return StatusCode::ERR;
+    return status::invalid_parameter;
 }
 
-StatusCode remove(const string& s, bool recursive)
+status remove(const string& s, bool recursive)
 {
-    path p;
+    string p;
     p.assign(s.c_str());
 
-    if (p == "/" || p == "." || p.empty()) return StatusCode::ERR;
+    if (p == "/" || p == "." || p.empty()) return status::err;
 
     FILINFO info;
+    FRESULT fres;
+    status  stat;
     DIR     dir;
 
-    if (f_stat(p.c_str(), &info) != FR_OK) return StatusCode::ERR;
+    if (f_stat(p.c_str(), &info) != FR_OK) return status::err;
 
     // directory?
     if (info.fattrib & AM_DIR)
     {
-        if (!recursive) return StatusCode::ERR;
+        if (!recursive) return status::err;
 
-        if (f_opendir(&dir, p.c_str()) != FR_OK) return StatusCode::ERR;
+        if (f_opendir(&dir, p.c_str()) != FR_OK) return status::err;
 
         for (;;)
         {
-            if (f_readdir(&dir, &info) != FR_OK) return StatusCode::ERR;
+            if (f_readdir(&dir, &info) != FR_OK) return status::err;
 
             if (!info.fname[0]) break;
 
             if (!strcmp(info.fname, ".") || !strcmp(info.fname, "..")) continue;
 
-            path full = p;
+            string full = p;
             if (full.back() != '/') full += '/';
             full += info.fname;
 
             if (info.fattrib & AM_DIR)
             {
                 f_closedir(&dir);
-                if (remove(full, true) != StatusCode::OK) return StatusCode::ERR;
+                if ((stat = remove(full, true)) != status::ok) return stat;
 
-                if (f_opendir(&dir, p.c_str()) != FR_OK) return StatusCode::ERR;
+                fres = f_opendir(&dir, p.c_str());
+                if (fres != FR_OK) return map_fresult(fres);
             }
             else
             {
-                if (f_unlink(full.c_str()) != FR_OK) return StatusCode::ERR;
+                if (f_unlink(full.c_str()) != FR_OK) return status::err;
             }
         }
 
         f_closedir(&dir);
     }
 
-    return (f_unlink(p.c_str()) == FR_OK) ? StatusCode::OK : StatusCode::ERR;
+    return map_fresult(f_unlink(p.c_str()));
 }
 
-StatusCode format(SDFileSystem fmt)
+status rename(const string& old_name, const string& new_name)
 {
+    return map_fresult(f_rename(old_name.c_str(), new_name.c_str()));
+}
+
+status format(sdfs fmt)
+{
+    status stat;
     if (is_mounted())
     {
-        if (unmount() != StatusCode::OK) return StatusCode::ERR;
+        if ((stat = unmount()) != status::ok) return stat;
     }
 
     DWORD work[_MAX_SS];
-    if (f_mkfs("", (BYTE) fmt, 0, work, sizeof(work)) != FR_OK) return StatusCode::ERR;
+    if (f_mkfs("", (BYTE) fmt, 0, work, sizeof(work)) != FR_OK) return status::err;
 
     return mount();
 }
@@ -140,12 +154,12 @@ bool exists(const string& p)
     return f_stat(p.c_str(), nullptr) == FR_OK;
 }
 
-StatusCode mkdir(const path& p)
+status mkdir(const string& p)
 {
-    return (f_mkdir(p.c_str()) == FR_OK) ? StatusCode::OK : StatusCode::ERR;
+    return map_fresult(f_mkdir(p.c_str()));
 }
 
-int8_t list(const path& dir_p, uint8_t page, etl::array<FILINFO, PAGE_SIZE>& out)
+int8_t list(const string& dir_p, uint8_t page, etl::array<FILINFO, PAGE_SIZE>& out)
 {
     DIR dir;
     if (f_opendir(&dir, dir_p.c_str()) != FR_OK) return -1;
@@ -176,11 +190,6 @@ int8_t list(const path& dir_p, uint8_t page, etl::array<FILINFO, PAGE_SIZE>& out
     return file_read;
 }
 
-StatusCode delete_(const path& p, bool recursive)
-{
-    return remove(p.c_str(), recursive);
-}
-
 uint64_t total_space()
 {
     FATFS* pfs = nullptr;
@@ -200,7 +209,7 @@ uint64_t free_space()
     return (uint64_t) free_clusters * pfs->csize * 512;
 }
 
-bool is_file(const path& p)
+bool is_file(const string& p)
 {
     FILINFO fi;
     if (f_stat(p.c_str(), &fi) != FR_OK) return false;
@@ -208,7 +217,7 @@ bool is_file(const path& p)
     return !(fi.fattrib & AM_DIR);
 }
 
-bool is_directory(const path& p)
+bool is_directory(const string& p)
 {
     FILINFO fi;
     if (f_stat(p.c_str(), &fi) != FR_OK) return false;
@@ -216,19 +225,19 @@ bool is_directory(const path& p)
     return (fi.fattrib & AM_DIR) != 0;
 }
 
-etl::string<MAX_LABEL_SIZE> label()
+string label()
 {
     TCHAR buf[MAX_LABEL_SIZE];
     if (f_getlabel("", buf, nullptr) != FR_OK) return "";
 
-    etl::string<MAX_LABEL_SIZE> s;
+    string s;
     s.assign(buf);
     return s;
 }
 
-StatusCode set_label(const etl::string<MAX_LABEL_SIZE>& l)
+status set_label(const string& lab)
 {
-    return (f_setlabel(l.c_str()) == FR_OK) ? StatusCode::OK : StatusCode::ERR;
+    return map_fresult(f_setlabel(lab.c_str()));
 }
 
 string cwd()
@@ -242,9 +251,9 @@ string cwd()
     return s;
 }
 
-StatusCode chdir(const string& p)
+status chdir(const string& p)
 {
-    return (f_chdir(p.c_str()) == FR_OK) ? StatusCode::OK : StatusCode::ERR;
+    return map_fresult(f_chdir(p.c_str()));
 }
 
 }  // namespace filesystem

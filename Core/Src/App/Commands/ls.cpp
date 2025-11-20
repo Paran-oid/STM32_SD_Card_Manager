@@ -1,6 +1,7 @@
 #include "command_handler.hpp"
 #include "etl/string.h"
 #include "etl/vector.h"
+#include "filesystem.hpp"
 #include "hal_init.hpp"
 #include "utils.hpp"
 
@@ -9,7 +10,7 @@ namespace fs = stm_sd::filesystem;
 namespace stm_sd
 {
 
-CmdExec ls_exec = [](const CmdArgs& args)
+cmd_exec ls_exec = [](const cmd_args& args)
 {
     string path;
     if (args.empty())
@@ -34,7 +35,7 @@ CmdExec ls_exec = [](const CmdArgs& args)
         page++;
     }
 
-    return StatusCode::OK;
+    return status::ok;
 };
 
 }  // namespace stm_sd

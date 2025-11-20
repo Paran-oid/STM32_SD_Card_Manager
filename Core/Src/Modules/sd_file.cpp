@@ -1,32 +1,31 @@
-#include "sd.hpp"
+#include "file.hpp"
 
 namespace stm_sd
 {
 
-StatusCode File::write(const string& str)
+status file::write(const char* s)
 {
-    return f_write(&m_fil, str.data(), str.length(), NULL) == FR_OK ? StatusCode::OK
-                                                                    : StatusCode::ERR;
+    return map_fresult(f_write(&m_fil, s, strlen(s), NULL));
 }
 
-StatusCode File::seek(uint32_t offset)
+status file::seek(uint32_t offset)
 {
-    return f_lseek(&m_fil, offset) == FR_OK ? StatusCode::OK : StatusCode::ERR;
+    return map_fresult(f_lseek(&m_fil, offset));
 }
 
-StatusCode File::truncate()
+status file::truncate()
 {
-    return f_truncate(&m_fil) == FR_OK ? StatusCode::OK : StatusCode::ERR;
+    return map_fresult(f_truncate(&m_fil));
 }
 
-uint32_t File::size() const
+uint32_t file::size() const
 {
     return f_size(&m_fil);
 }
 
-StatusCode File::rename(const string& old_path, const string& new_path)
+status file::rename(const string& old_path, const string& new_path)
 {
-    return f_rename(old_path.c_str(), new_path.c_str()) == FR_OK ? StatusCode::OK : StatusCode::ERR;
+    return map_fresult(f_rename(old_path.c_str(), new_path.c_str()));
 }
 
 }  // namespace stm_sd
