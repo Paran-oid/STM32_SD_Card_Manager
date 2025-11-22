@@ -3,15 +3,14 @@
 #include <iostream>
 
 #include "command_handler.hpp"
-#include "etl/string.h"
 #include "utils.hpp"
 
 #define TESTING_ 0
 
 namespace fs = std::filesystem;
 
-etl::string<SSIZE> sinput;       // pass to handle_command
-char               tbuf[SSIZE];  // to use for input
+stm_sd::string sinput;               // pass to handle_command
+char           tbuf[stm_sd::SSIZE];  // to use for input
 
 void setup()
 {
@@ -20,13 +19,13 @@ void setup()
 #endif
 
     printf("=======STM32 MICRO SD CARD READER READY!=======\r\n");
-    g_cwd.assign(fs::current_path().string().c_str());
+    stm_sd::g_cwd.assign(fs::current_path().string().c_str());
 }
 
 void loop()
 {
-    std::cin.getline(tbuf, SSIZE);
+    std::cin.getline(tbuf, stm_sd::SSIZE);
     sinput.assign(tbuf);
-    sinput = unescape(sinput.c_str());
-    handle_command(sinput);
+    sinput = stm_sd::unescape(sinput.c_str());
+    stm_sd::handle_command(sinput);
 }

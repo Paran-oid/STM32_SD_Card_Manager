@@ -1,19 +1,21 @@
 #include <filesystem>
 
 #include "command_handler.hpp"
-#include "etl/string.h"
 #include "etl/vector.h"
-#include "utils.hpp"
+#include "status.hpp"
 
 namespace fs = std::filesystem;
 
-CmdExec cp_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& args)
+namespace stm_sd
 {
-    if (args.empty() || args.size() != 2) return SD_RES::ERR;
 
-    const etl::string<SSIZE>& src = args[0];
-    const etl::string<SSIZE>& dst = args[1];
-    if (!fs::exists(src.c_str())) return SD_RES::ERR;
+cmd_exec cp_exec = [](const cmd_args& args)
+{
+    if (args.empty() || args.size() != 2) return status::err;
+
+    const string& src = args[0];
+    const string& dst = args[1];
+    if (!fs::exists(src.c_str())) return status::err;
 
     if (fs::is_directory(dst.c_str()))
     {
@@ -28,9 +30,11 @@ CmdExec cp_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& args)
     else
     {
         if (fs::is_directory(src.c_str()))
-            return SD_RES::ERR;  // can't copy directory into a file???
+            return status::err;  // can't copy directory into a file???
         fs::copy_file(src.c_str(), dst.c_str(), fs::copy_options::overwrite_existing);
     }
 
-    return SD_RES::OK;
+    return status::ok;
 };
+
+}  // namespace stm_sd

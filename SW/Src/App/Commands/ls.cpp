@@ -1,15 +1,17 @@
 #include <filesystem>
 
 #include "command_handler.hpp"
-#include "etl/string.h"
 #include "etl/vector.h"
-#include "utils.hpp"
+#include "status.hpp"
 
 namespace fs = std::filesystem;
 
-CmdExec ls_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& args)
+namespace stm_sd
 {
-    etl::string<SSIZE> path;
+
+cmd_exec ls_exec = [](const cmd_args& args)
+{
+    string path;
     if (args.empty())
         path = "./";
     else
@@ -21,7 +23,7 @@ CmdExec ls_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& args)
     {
         for (const auto& entry : fs::directory_iterator(dir_path))
         {
-            etl::string<SSIZE> out;
+            string out;
             if (entry.is_regular_file())
             {
                 out = entry.path().string().substr(2).c_str();
@@ -40,5 +42,7 @@ CmdExec ls_exec = [](const etl::vector<etl::string<SSIZE>, ARGS_CAPACITY>& args)
     }
     printf("\r\n");
 
-    return SD_RES::OK;
+    return status::ok;
 };
+
+}  // namespace stm_sd

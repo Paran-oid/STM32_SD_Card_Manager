@@ -1,43 +1,23 @@
 #include "utils.hpp"
 
-void die(etl::string<SSIZE> msg)
+namespace stm_sd
+{
+
+void die(const string& msg)
 {
     printf("%s\r\n", msg.c_str());
     for (;;);
 }
 
-bool isstring(etl::string<SSIZE> s)
+status fail(const string& msg)
 {
-    if (s.size() >= 2 && s.front() == '\"' && s.back() == '\"') return true;
-    return false;
+    printf("%s\r\n", msg.c_str());
+    return status::err;
 }
 
-bool isescseq(char c)
+size_t find_outside_quotes(const string& s, char c, size_t start, size_t length)
 {
-    switch (c)
-    {
-        case '\n':
-        case '\r':
-        case '\t':
-        case '\v':
-        case '\f':
-        case '\b':
-        case '\a':
-        case '\\':
-        case '\'':
-        case '\"':
-        case '\?':
-        case '\0':
-            return true;
-        default:
-            return false;
-    }
-    return false;
-}
-
-size_t find_outside_quotes(etl::string<SSIZE> s, char c, size_t start, size_t length)
-{
-    size_t end = length == etl::string<SSIZE>::npos ? s.size() : length - start;
+    size_t end = length == string::npos ? s.size() : length - start;
 
     bool in_quotes = false;
     for (size_t i = start; i < end && i < s.size(); i++)
@@ -53,18 +33,18 @@ size_t find_outside_quotes(etl::string<SSIZE> s, char c, size_t start, size_t le
         }
     }
 
-    return etl::string<SSIZE>::npos;
+    return string::npos;
 }
 
-etl::string<SSIZE> format_str(const etl::string<SSIZE>& s)
+string format_str(const string& s)
 {
-    if (!isstring(s)) return "";
+    if (!is_double_quoted(s)) return "";
     return s.substr(1, s.size() - 2);  // get rid of double quotes for the string
 }
 
-etl::string<SSIZE> unescape(etl::string<SSIZE> s)
+string unescape(const string& s)
 {
-    etl::string<SSIZE> res;
+    string res;
     for (uint8_t i = 0; i < s.size(); i++)
     {
         char c = s[i];
@@ -118,3 +98,13 @@ etl::string<SSIZE> unescape(etl::string<SSIZE> s)
     }
     return res;
 }
+
+PathData extract_path(const string& p)
+{
+    size_t pos_slash = p.find_last_of("/\\");
+    if (pos_slash == string::npos) return {"", p};
+
+    return {p.substr(0, pos_slash), p.substr(pos_slash + 1)};
+}
+
+}  // namespace stm_sd

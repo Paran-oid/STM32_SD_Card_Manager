@@ -22,6 +22,8 @@ target_sources(
           ${CMAKE_SOURCE_DIR}/Src/App/Commands/cp.cpp
           ${CMAKE_SOURCE_DIR}/Src/App/Commands/ls.cpp
           ${CMAKE_SOURCE_DIR}/Src/App/Commands/dir_cmds.cpp
+          ${CMAKE_SOURCE_DIR}/Src/App/Commands/touch.cpp
+          ${CMAKE_SOURCE_DIR}/Src/App/Commands/mv.cpp
           ${CMAKE_SOURCE_DIR}/Src/App/Commands/cd.cpp)
 
 target_include_directories(
