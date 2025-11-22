@@ -41,7 +41,7 @@ cd path/dir1
 
 ## Contributing
 
-Pull requests are welcome! Preferably creation of an issue before-hand would be great too.
+Pull requests are welcome! Preferably the creation of an issue before-hand would be great too.
 
 ## License
 
