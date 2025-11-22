@@ -1,8 +1,12 @@
 # STM32 SD Card Manager
 
+
+
 STM32 SD Card Manager is a program written in C++ for turning an STM32L476RG into a bridge for writing data from a PC to an SD Card through UART.
 
 The commands are heavily inspired from the Linux CLI commands(cd, ls, echo, cat, ...)
+
+Communication of the SD card and STM32 is established through SPI.
 
 ## Examples
 
