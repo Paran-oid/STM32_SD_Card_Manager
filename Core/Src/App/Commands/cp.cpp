@@ -43,19 +43,24 @@ cmd_exec cp_exec = [](const cmd_args& args)
     if (fs::is_directory(dst))
     {
         bool is_src_dir = fs::is_directory(src);
+        if (is_src_dir && !is_recursive) return fail("-r must be added for copying directories");
 
         uint8_t opts = OVERWRITE;
-        if (is_src_dir) opts |= RECURSIVE;
+        if (is_src_dir)
+        {
+            opts |= RECURSIVE;
+        }
+        else
+        {
+            if (!is_filename(src)) return status::invalid_name;
+        }
 
         fs::copy(src, dst, opts);  // copies into a directory the file or even
                                    // the directory in question
     }
     else
     {
-        if (fs::is_directory(src) || !is_recursive)
-            return fail(
-                "recursive flag needed to copy directories");  // can't copy directory into a file
-                                                               // and/or recursive flag is needed
+        if (fs::is_directory(src)) return fail("impossible to copy a directory into a file");
         fs::copy(src, dst, OVERWRITE);
     }
     return status::ok;

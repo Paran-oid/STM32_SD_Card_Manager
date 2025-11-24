@@ -16,20 +16,25 @@ cmd_exec cat_exec = [](const cmd_args& args)
 {
     if (args.empty()) return fail("args can't be empty");
 
-    status stat;
-    string path = args[0];
-    if (is_double_quoted(path)) path = format_str(path);
+    for (const auto& arg : args)
+    {
+        status stat;
+        string path = arg;
 
-    if (!fs::exists(path)) return status::no_file;
-    file* f = fs::open(path, file_mode::read);
-    if (!f) return status::err;
+        if (!is_filename(path)) return fail("unvalid filename");
+        if (is_double_quoted(path)) path = format_str(path);
 
-    //* in reality we read BLOCK_SIZE - 1 chars at a time
-    etl::string<BLOCK_SIZE> read_buf;
-    while (f->read(read_buf)) printf("%s", read_buf.c_str());
-    printf("\r\n");
+        if (!fs::exists(path)) return status::no_file;
+        file* f = fs::open(path, file_mode::read);
+        if (!f) return status::err;
 
-    if ((stat = fs::close(f)) != status::ok) return stat;
+        //* in reality we read BLOCK_SIZE - 1 chars at a time
+        etl::string<BLOCK_SIZE> read_buf;
+        while (f->read(read_buf)) printf("%s", read_buf.c_str());
+        printf("\r\n");
+
+        if ((stat = fs::close(f)) != status::ok) return stat;
+    }
 
     return status::ok;
 };

@@ -13,6 +13,7 @@ cmd_exec touch_exec = [](const cmd_args& args)
 
     for (const auto& arg : args)
     {
+        if (!is_filename(arg)) return status::invalid_name;
         file* f = fs::open(arg, FA_CREATE_NEW);
         if (f) fs::close(f);
     }

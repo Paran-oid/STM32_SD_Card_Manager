@@ -103,7 +103,7 @@ string unescape(const string& s)
     return res;
 }
 
-PathData extract_path(const string& p)
+path_data extract_path(const string& p)
 {
     size_t pos_slash = p.find_last_of("/\\");
     if (pos_slash == string::npos) return {"", p};
@@ -111,12 +111,19 @@ PathData extract_path(const string& p)
     return {p.substr(0, pos_slash), p.substr(pos_slash + 1)};
 }
 
-bool is_valid_filename(const string& s)
+bool is_filename(const string& path)
 {
+    path_data pd = extract_path(path);
+    if (pd.filename.empty()) return false;
+
     const std::string invalid_chars = "/\\:*?\"<>|";
-    for (char c : s)
+    for (char c : pd.filename)
     {
-        if (s.find(c) != string::npos) return false;
+        size_t idx = pd.filename.find(c);
+        if (idx == string::npos)
+        {
+            return false;
+        }
     }
     return true;
 }
