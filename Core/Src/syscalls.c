@@ -210,7 +210,7 @@ static int starm_getc(FILE* file)
 static FILE __stdio = FDEV_SETUP_STREAM(starm_putc, starm_getc, NULL, _FDEV_SETUP_RW);
 
 // Assign the standard stream pointers (stdin, stdout, stderr) to the initialized stream.
-// Picolibc uses these pointers for standard I/O operations (printf, scanf, etc.).
+// Picolibc uses these pointers for standard I/O operations (printf_, scanf, etc.).
 FILE* const stdin = &__stdio;
 __strong_reference(stdin, stdout);
 __strong_reference(stdin, stderr);

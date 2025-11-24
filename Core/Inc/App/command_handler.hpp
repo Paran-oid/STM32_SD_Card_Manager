@@ -8,6 +8,7 @@
 #include <etl/vector.h>
 
 #include "defs.hpp"
+#include "printf.h"
 namespace stm_sd
 {
 

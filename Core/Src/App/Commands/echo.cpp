@@ -17,7 +17,7 @@ cmd_exec echo_exec = [](const cmd_args& args)
 {
     if (args.empty())
     {
-        printf("\r\n");
+        printf_("\r\n");
         return status::ok;
     }
 
@@ -48,7 +48,7 @@ cmd_exec echo_exec = [](const cmd_args& args)
             output_str += temp;
             if (etl::next(it) != args.end()) output_str += " ";
         }
-        printf("%s\r\n", output_str.c_str());
+        printf_("%s\r\n", output_str.c_str());
     }
     else
     {

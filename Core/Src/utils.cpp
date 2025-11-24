@@ -9,13 +9,13 @@ namespace stm_sd
 // \r\n passed after message
 void die(const string& msg)
 {
-    printf("%s\r\n", msg.c_str());
+    printf_("%s\r\n", msg.c_str());
     Error_Handler();
 }
 
 status fail(const string& msg)
 {
-    printf("%s\r\n", msg.c_str());
+    printf_("%s\r\n", msg.c_str());
     return status::err;
 }
 

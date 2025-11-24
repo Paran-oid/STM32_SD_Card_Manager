@@ -38,7 +38,7 @@ void setup()
     if (fs::mount() != status::ok) die("couldn't mount SD Card");
     if (fs::label().empty()) die("invalid label...");  // must be manually put to set the label
 
-    printf("=======STM32 MICRO SD CARD READER READY!=======\r\n");
+    printf_("=======STM32 MICRO SD CARD READER READY!=======\r\n");
 }
 
 void loop()

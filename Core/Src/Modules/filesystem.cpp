@@ -5,6 +5,7 @@
 #include "ffconf.h"
 #include "file.hpp"
 #include "hal_init.hpp"
+#include "printf.h"
 
 namespace stm_sd
 {
@@ -39,7 +40,7 @@ bool is_mounted()
 
 status unmount()
 {
-    return map_fresult(f_mount(NULL, "", 1));
+    return map_fresult(f_mount(nullptr, "", 1));
 }
 
 file* open(const string& path, uint8_t mode)
@@ -52,7 +53,7 @@ file* open(const string& path, uint8_t mode)
         handle = etl::unique_ptr<file>(new file(path));
         if ((fres = f_open(handle->fil(), path.c_str(), mode)) == FR_OK) return handle.get();
 
-        printf("%s\r\n", status_message(map_fresult(fres)));
+        printf_("%s\r\n", status_message(map_fresult(fres)));
         handle.reset();  // automatically frees the memory
         return nullptr;
     }

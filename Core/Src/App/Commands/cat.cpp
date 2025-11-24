@@ -82,8 +82,8 @@ cmd_exec cat_exec = [](const cmd_args& args)
         }
         else
         {
-            while (f->read(read_buf)) printf("%s", read_buf.c_str());
-            printf("\r\n");
+            while (f->read(read_buf)) printf_("%s", read_buf.c_str());
+            printf_("\r\n");
         }
 
         if ((stat = fs::close(f)) != status::ok) return stat;

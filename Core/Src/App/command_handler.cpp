@@ -88,13 +88,13 @@ void handle_command(const string& str)
     auto         it       = cmd_table.find(cmd_type);
     if (it == cmd_table.end())
     {
-        printf("command not found\r\n");
+        printf_("command not found\r\n");
         return;
     }
 
     status      res = it->second(args);
     const char* msg = status_message(res);
-    printf("%s%s", msg, strcmp(msg, "") != 0 ? "\r\n" : "");  // add new line if msg is filled
+    printf_("%s%s", msg, strcmp(msg, "") != 0 ? "\r\n" : "");  // add new line if msg is filled
 }
 
 }  // namespace stm_sd
