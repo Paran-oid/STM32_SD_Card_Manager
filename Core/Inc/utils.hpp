@@ -185,6 +185,6 @@ inline const char* stm_sd::status_message(status s)
         case status::invalid_parameter:
             return "invalid parameter";
         default:
-            return "unknown error";
+            return "";
     }
 }

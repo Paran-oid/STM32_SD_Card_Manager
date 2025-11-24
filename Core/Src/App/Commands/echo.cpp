@@ -74,7 +74,7 @@ cmd_exec echo_exec = [](const cmd_args& args)
         file* file = fs::open(output_file_path, open_mode);
         if (!file) return status::err;
 
-        if (write_symb) file->truncate();  // set to start of file
+        if (write_symb != args.end()) file->truncate();  // set to start of file
         if ((stat = file->write(content)) != status::ok) return stat;
 
         if ((stat = fs::close(file)) != status::ok) return stat;

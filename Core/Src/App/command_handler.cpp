@@ -94,7 +94,7 @@ void handle_command(const string& str)
 
     status      res = it->second(args);
     const char* msg = status_message(res);
-    printf("%s%s", msg, strcmp(msg, "") != 0 ? "\r\n" : "");
+    printf("%s%s", msg, strcmp(msg, "") != 0 ? "\r\n" : "");  // add new line if msg is filled
 }
 
 }  // namespace stm_sd
