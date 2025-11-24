@@ -41,6 +41,7 @@ string format_str(const string&);   //  ""foo""" -> "foo"
 string unescape(const string&);     // test\\n -> test\n
 
 PathData extract_path(const string&);
+bool     is_valid_filename(const string&);
 
 inline status      map_fresult(FRESULT);
 inline const char* status_message(status);

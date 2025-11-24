@@ -25,4 +25,18 @@ cmd_exec pwd_exec = [](const cmd_args& args)
     return status::ok;
 };
 
+cmd_exec free_space_exec = [](const cmd_args& args)
+{
+    (void) args;
+    printf("%.2fGB\r\n", static_cast<double>(fs::free_space()) / BYTES_PER_GB);
+    return status::ok;
+};
+
+cmd_exec total_space_exec = [](const cmd_args& args)
+{
+    (void) args;
+    printf("%.2fGB\r\n", static_cast<double>(fs::free_space()) / BYTES_PER_GB);
+    return status::ok;
+};
+
 }  // namespace stm_sd

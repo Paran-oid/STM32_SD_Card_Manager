@@ -82,8 +82,8 @@ status copy(const string& src, const string& dst, uint8_t modes)
 {
     if (!exists(src.c_str())) return fail("src is empty");
 
-    status  stat;
-    FRESULT fres;
+    status  stat = status::ok;
+    FRESULT fres = FR_OK;
 
     bool is_dst_dir = is_directory(dst);
     bool is_src_dir = is_directory(src);

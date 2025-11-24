@@ -111,4 +111,14 @@ PathData extract_path(const string& p)
     return {p.substr(0, pos_slash), p.substr(pos_slash + 1)};
 }
 
+bool is_valid_filename(const string& s)
+{
+    const std::string invalid_chars = "/\\:*?\"<>|";
+    for (char c : s)
+    {
+        if (s.find(c) != string::npos) return false;
+    }
+    return true;
+}
+
 }  // namespace stm_sd

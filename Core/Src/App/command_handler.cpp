@@ -21,13 +21,23 @@ extern cmd_exec mkdir_exec;
 extern cmd_exec rmdir_exec;
 extern cmd_exec touch_exec;
 extern cmd_exec mv_exec;
+extern cmd_exec free_space_exec;
+extern cmd_exec total_space_exec;
 
-cmd_exec_map cmd_table = {{command_type::cat, cat_exec},     {command_type::echo, echo_exec},
-                          {command_type::ls, ls_exec},       {command_type::rm, rm_exec},
-                          {command_type::cp, cp_exec},       {command_type::cd, cd_exec},
-                          {command_type::clear, clear_exec}, {command_type::pwd, pwd_exec},
-                          {command_type::mkdir, mkdir_exec}, {command_type::rmdir, rmdir_exec},
-                          {command_type::touch, touch_exec}, {command_type::mv, mv_exec}};
+cmd_exec_map cmd_table = {{command_type::cat, cat_exec},
+                          {command_type::echo, echo_exec},
+                          {command_type::ls, ls_exec},
+                          {command_type::rm, rm_exec},
+                          {command_type::cp, cp_exec},
+                          {command_type::cd, cd_exec},
+                          {command_type::clear, clear_exec},
+                          {command_type::pwd, pwd_exec},
+                          {command_type::mkdir, mkdir_exec},
+                          {command_type::rmdir, rmdir_exec},
+                          {command_type::touch, touch_exec},
+                          {command_type::mv, mv_exec},
+                          {command_type::free_space, free_space_exec},
+                          {command_type::total_space, total_space_exec}};
 
 static command_type check_command_type(const string& item)
 {
@@ -43,13 +53,15 @@ static command_type check_command_type(const string& item)
     if (item == "rmdir") return command_type::rmdir;
     if (item == "touch") return command_type::touch;
     if (item == "mv") return command_type::mv;
+    if (item == "free_space") return command_type::free_space;
+    if (item == "total_space") return command_type::total_space;
     return command_type::none;
 }
 
 void handle_command(const string& str)
 {
-    cmd_args args;
-    string   cmd;
+    cmd_args args  = {};
+    string   cmd   = "";
     size_t   start = 0, end = 0;
 
     size_t pos_space = find_outside_quotes(str, ' ');

@@ -17,7 +17,6 @@ cmd_exec cat_exec = [](const cmd_args& args)
     if (args.empty()) return fail("args can't be empty");
 
     status stat;
-
     string path = args[0];
     if (is_double_quoted(path)) path = format_str(path);
 
