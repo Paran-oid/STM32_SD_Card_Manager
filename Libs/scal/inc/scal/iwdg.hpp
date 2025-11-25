@@ -7,7 +7,7 @@ extern "C"
 
 #include "defs.hpp"
 
-namespace sca
+namespace scal
 {
 
 #ifdef SCA_IWDG
@@ -42,4 +42,4 @@ class iwdg
 
 #endif
 
-}  // namespace sca
+}  // namespace scal

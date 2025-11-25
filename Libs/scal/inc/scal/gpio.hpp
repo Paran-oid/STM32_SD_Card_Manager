@@ -5,7 +5,7 @@ extern "C"
 #include "stm32l4xx.h"
 }
 
-namespace sca
+namespace scal
 {
 
 #ifdef SCA_GPIO
@@ -70,4 +70,4 @@ class gpio
 
 #endif
 
-}  // namespace sca
+}  // namespace scal

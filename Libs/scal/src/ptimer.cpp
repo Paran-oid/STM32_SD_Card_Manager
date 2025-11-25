@@ -1,10 +1,10 @@
-#include "sca/ptimer.hpp"
+#include "scal/ptimer.hpp"
 
 #include <etl/limits.h>
 
-#include "sca/gpio.hpp"
+#include "scal/gpio.hpp"
 
-namespace sca
+namespace scal
 {
 
 #ifdef SCA_PTIMER
@@ -121,4 +121,4 @@ SCA_RES ptimer<T>::stop_pwm(uint8_t channel)
 
 #endif
 
-}  // namespace sca
+}  // namespace scal

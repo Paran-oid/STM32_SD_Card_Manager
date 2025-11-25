@@ -10,7 +10,7 @@ extern "C"
 
 #include "defs.hpp"
 
-namespace sca
+namespace scal
 {
 
 #ifdef SCA_UART
@@ -85,4 +85,4 @@ class uart
 
 #endif
 
-}  // namespace sca
+}  // namespace scal

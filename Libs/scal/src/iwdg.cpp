@@ -1,6 +1,6 @@
-#include "sca/iwdg.hpp"
+#include "scal/iwdg.hpp"
 
-namespace sca
+namespace scal
 {
 
 #ifdef SCA_IWDG
@@ -12,4 +12,4 @@ SCA_RES iwdg::refresh()
 
 #endif
 
-}  // namespace sca
+}  // namespace scal

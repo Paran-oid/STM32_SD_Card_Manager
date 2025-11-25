@@ -1,6 +1,6 @@
-#include "sca/gpio.hpp"
+#include "scal/gpio.hpp"
 
-namespace sca
+namespace scal
 {
 
 #ifdef SCA_GPIO
@@ -32,4 +32,4 @@ GPIOState gpio::get_state() const
 
 #endif
 
-}  // namespace sca
+}  // namespace scal

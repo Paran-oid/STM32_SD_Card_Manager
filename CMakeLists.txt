@@ -103,8 +103,8 @@ target_compile_definitions(
 )
 
 target_compile_definitions(
-  sca PUBLIC # Add user defined symbols for cpp abstraction library
-             SCA_GPIO SCA_SPI SCA_PTIMER SCA_UART)
+  scal PUBLIC # Add user defined symbols for cpp abstraction library
+              SCA_GPIO SCA_SPI SCA_PTIMER SCA_UART)
 
 # Add flags
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Wall -Wextra
@@ -131,4 +131,4 @@ list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
 # Add linked libraries
 target_link_libraries(
   ${CMAKE_PROJECT_NAME} stm32cubemx etl::etl # Add user defined libraries
-  sca printf)
+  scal printf)

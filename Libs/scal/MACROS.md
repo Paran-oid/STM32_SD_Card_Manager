@@ -1,9 +1,9 @@
 # Configurable Macros
 
-The sca library provides several optional features that can be enabled by defining the corresponding macros in your main CMakeLists.txt file. These macros allow you to selectively include functionality such as SPI, UART, GPIO, timers, and the watchdog.
+The scal library provides several optional features that can be enabled by defining the corresponding macros in your main CMakeLists.txt file. These macros allow you to selectively include functionality such as SPI, UART, GPIO, timers, and the watchdog.
 
 ```
-target_compile_definitions(sca PUBLIC
+target_compile_definitions(scal PUBLIC
     SCA_GPIO
     SCA_IWDG
     SCA_SPI

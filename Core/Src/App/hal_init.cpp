@@ -1,16 +1,16 @@
 #include "hal_init.hpp"
 
 #include "filesystem.hpp"
-#include "sca/iwdg.hpp"
-#include "sca/ptimer.hpp"
-#include "sca/spi.hpp"
-#include "sca/uart.hpp"
+#include "scal/iwdg.hpp"
+#include "scal/ptimer.hpp"
+#include "scal/spi.hpp"
+#include "scal/uart.hpp"
 
 namespace fs = stm_sd::filesystem;
 
-sca::spi              spi1  = {hspi1};
-sca::ptimer<uint32_t> tim2  = {htim2};
-sca::uart             uart2 = {huart2};
+scal::spi              spi1  = {hspi1};
+scal::ptimer<uint32_t> tim2  = {htim2};
+scal::uart             uart2 = {huart2};
 
 namespace stm_sd
 {

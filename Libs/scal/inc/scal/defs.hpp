@@ -1,6 +1,6 @@
 #pragma once
 
-namespace sca
+namespace scal
 {
 
 enum SCA_RES

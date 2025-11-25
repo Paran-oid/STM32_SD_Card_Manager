@@ -1,5 +1,5 @@
-#include "sca/uart.hpp"
-namespace sca
+#include "scal/uart.hpp"
+namespace scal
 {
 
 #ifdef SCA_UART
@@ -40,4 +40,4 @@ SCA_RES uart::receive(uint8_t& rx, bool wait_forever)
 
 #endif
 
-}  // namespace sca
+}  // namespace scal

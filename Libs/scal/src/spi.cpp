@@ -1,6 +1,6 @@
-#include "sca/spi.hpp"
+#include "scal/spi.hpp"
 
-namespace sca
+namespace scal
 {
 
 #ifdef SCA_SPI
@@ -41,4 +41,4 @@ SCA_RES spi::send_and_receive(etl::span<const uint8_t> tx, etl::span<uint8_t>& r
 
 #endif
 
-}  // namespace sca
+}  // namespace scal

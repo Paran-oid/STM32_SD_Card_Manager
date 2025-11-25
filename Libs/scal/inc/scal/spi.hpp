@@ -10,7 +10,7 @@ extern "C"
 
 #include "defs.hpp"
 
-namespace sca
+namespace scal
 {
 
 #ifdef SCA_SPI
@@ -40,4 +40,4 @@ class spi
 
 #endif
 
-}  // namespace sca
+}  // namespace scal

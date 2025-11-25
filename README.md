@@ -56,4 +56,4 @@ Pull requests are welcome! Preferably the creation of an issue before-hand would
 - [Embedded Template Library (ETL)](https://www.etlcpp.com/)
 - [Lee Ji-hoon for ready to use SD Card Module code in FATFS/ folder](https://blog.naver.com/eziya76/221188701172)
 - [eyalroz / printf](https://github.com/eyalroz/printf)
-- [STM32 C++ Abstraction library](https://github.com/Paran-oid/sca)
+- [STM32 C++ Abstraction library](https://github.com/Paran-oid/scal)

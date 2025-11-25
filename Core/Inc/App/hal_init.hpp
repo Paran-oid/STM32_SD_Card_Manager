@@ -11,7 +11,7 @@ extern "C"
 /***************************************************************
  * Forward Declarations
  ***************************************************************/
-namespace sca
+namespace scal
 {
 
 class uart;
@@ -22,7 +22,7 @@ class ptimer;
 
 class iwdg;
 
-}  // namespace sca
+}  // namespace scal
 
 /***************************************************************
  * HAL Generated Variables from "main.c"
@@ -36,11 +36,11 @@ extern UART_HandleTypeDef huart2;
 /***************************************************************
  * Exported C++ Converted Peripherals
  ***************************************************************/
-extern sca::spi spi1;
+extern scal::spi spi1;
 
-extern sca::ptimer<uint32_t> tim2;
+extern scal::ptimer<uint32_t> tim2;
 
-extern sca::uart uart2;
+extern scal::uart uart2;
 
 namespace stm_sd
 {

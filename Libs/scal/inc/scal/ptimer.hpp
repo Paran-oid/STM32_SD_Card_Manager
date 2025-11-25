@@ -10,7 +10,7 @@ extern "C"
 #include "defs.hpp"
 #include "gpio.hpp"
 
-namespace sca
+namespace scal
 {
 
 #ifdef SCA_PTIMER
@@ -96,4 +96,4 @@ class ptimer
 
 #endif
 
-}  // namespace sca
+}  // namespace scal
