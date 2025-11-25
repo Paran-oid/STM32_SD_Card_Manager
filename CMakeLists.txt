@@ -43,6 +43,9 @@ add_executable(${CMAKE_PROJECT_NAME})
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)
 
+# this must be enabled in gcc-arm-none-eabi.cmake set(CMAKE_EXE_LINKER_FLAGS
+# "${CMAKE_EXE_LINKER_FLAGS} -u _printf_float")
+
 # Link directories setup
 target_link_directories(
   ${CMAKE_PROJECT_NAME} PRIVATE # Add user defined library search paths

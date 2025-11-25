@@ -14,14 +14,28 @@ namespace stm_sd
 cmd_exec clear_exec = [](const cmd_args& args)
 {
     (void) args;
-    printf("\033[2J\033[H\r\n");
+    printf_("\033[2J\033[H\r\n");
     return status::ok;
 };
 
 cmd_exec pwd_exec = [](const cmd_args& args)
 {
     (void) args;
-    printf("%s\r\n", fs::cwd().c_str());
+    printf_("%s\r\n", fs::cwd().c_str());
+    return status::ok;
+};
+
+cmd_exec free_space_exec = [](const cmd_args& args)
+{
+    (void) args;
+    printf_("%.2fGB\r\n", static_cast<double>(fs::free_space()) / BYTES_PER_GB);
+    return status::ok;
+};
+
+cmd_exec total_space_exec = [](const cmd_args& args)
+{
+    (void) args;
+    printf_("%.2fGB\r\n", static_cast<double>(fs::free_space()) / BYTES_PER_GB);
     return status::ok;
 };
 

@@ -38,14 +38,11 @@ void setup()
     if (fs::mount() != status::ok) die("couldn't mount SD Card");
     if (fs::label().empty()) die("invalid label...");  // must be manually put to set the label
 
-    printf("=======STM32 MICRO SD CARD READER READY!=======\r\n");
+    printf_("=======STM32 MICRO SD CARD READER READY!=======\r\n");
 }
 
 void loop()
 {
-    // TODO: don't let user enter unallowd characters for filenames
-    // TODO: make sure all variables are initialized and not just declared (var x NO --> var x = 0
-    // ;(or {}) YES)
     uart2.scan(s);
     s = stm_sd::unescape(s);
     stm_sd::handle_command(s);

@@ -17,7 +17,7 @@ cmd_exec echo_exec = [](const cmd_args& args)
 {
     if (args.empty())
     {
-        printf("\r\n");
+        printf_("\r\n");
         return status::ok;
     }
 
@@ -36,7 +36,7 @@ cmd_exec echo_exec = [](const cmd_args& args)
     else if (append_symb != args.end())
         open_mode = FA_OPEN_APPEND | FA_WRITE;
 
-    // just write content
+    // just output content
     if (write_symb == args.end() && append_symb == args.end())
     {
         etl::string<SSIZE * CMD_HANDLER_ARGS_CAPACITY> output_str;
@@ -48,7 +48,7 @@ cmd_exec echo_exec = [](const cmd_args& args)
             output_str += temp;
             if (etl::next(it) != args.end()) output_str += " ";
         }
-        printf("%s\r\n", output_str.c_str());
+        printf_("%s\r\n", output_str.c_str());
     }
     else
     {
@@ -69,10 +69,12 @@ cmd_exec echo_exec = [](const cmd_args& args)
             if (i != (idx_symb - 1)) content += " ";
         }
 
-        string output_file = args[static_cast<size_t>(idx_symb + 1)];
-        file*  file        = fs::open(output_file, open_mode);
+        string output_file_path = args[static_cast<size_t>(idx_symb + 1)];
+        if (!is_filename(output_file_path)) return status::invalid_name;
+        file* file = fs::open(output_file_path, open_mode);
+        if (!file) return status::err;
 
-        if (write_symb) file->truncate();  // set to start of file
+        if (write_symb != args.end()) file->truncate();  // set to start of file
         if ((stat = file->write(content)) != status::ok) return stat;
 
         if ((stat = fs::close(file)) != status::ok) return stat;

@@ -5,6 +5,7 @@
 #include "ffconf.h"
 #include "file.hpp"
 #include "hal_init.hpp"
+#include "printf.h"
 
 namespace stm_sd
 {
@@ -39,7 +40,7 @@ bool is_mounted()
 
 status unmount()
 {
-    return map_fresult(f_mount(NULL, "", 1));
+    return map_fresult(f_mount(nullptr, "", 1));
 }
 
 file* open(const string& path, uint8_t mode)
@@ -47,14 +48,14 @@ file* open(const string& path, uint8_t mode)
     FRESULT fres;
     for (auto& handle : m_file_handles)
     {
-        if (!handle)
-        {
-            handle = etl::unique_ptr<file>(new file(path));
-            if ((fres = f_open(handle->fil(), path.c_str(), mode)) == FR_OK) return handle.get();
+        if (handle) continue;
 
-            printf("%s\r\n", status_message(map_fresult(fres)));
-            handle.reset();  // automatically frees the memory
-        }
+        handle = etl::unique_ptr<file>(new file(path));
+        if ((fres = f_open(handle->fil(), path.c_str(), mode)) == FR_OK) return handle.get();
+
+        printf_("%s\r\n", status_message(map_fresult(fres)));
+        handle.reset();  // automatically frees the memory
+        return nullptr;
     }
     return nullptr;
 }
@@ -82,8 +83,8 @@ status copy(const string& src, const string& dst, uint8_t modes)
 {
     if (!exists(src.c_str())) return fail("src is empty");
 
-    status  stat;
-    FRESULT fres;
+    status  stat = status::ok;
+    FRESULT fres = FR_OK;
 
     bool is_dst_dir = is_directory(dst);
     bool is_src_dir = is_directory(src);
@@ -97,8 +98,8 @@ status copy(const string& src, const string& dst, uint8_t modes)
     {
         // copy(write) content of a file into another (or into a new/existing directory)
 
-        PathData pdst = extract_path(dst);
-        PathData psrc = extract_path(src);
+        path_data pdst = extract_path(dst);
+        path_data psrc = extract_path(src);
 
         string cdst = dst;  // copy from dst
 

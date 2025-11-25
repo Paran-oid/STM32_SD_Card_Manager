@@ -8,6 +8,7 @@
 #include <etl/vector.h>
 
 #include "defs.hpp"
+#include "printf.h"
 namespace stm_sd
 {
 
@@ -23,26 +24,32 @@ enum class command_type : uint8_t
 {
     /*
      * HOW TO ADD A FUNCTIONALITY:
+     * .hpp(this file):
      * - add enum for it
+     *
+     * .cpp(implementation of this .hpp)
      * - add extern declaration for functions (and define it somewhere)
      * - add it to the cmd_table unordered_map
      * - pass it in check_command_type function
+     *
      */
 
-    cat = 0,    // read to file
-    echo,       // write to a file
-    ls,         // list contents of a directory
-    rm,         // delete a file/dir
-    cp,         // move and/or rename file
-    cd,         // enter a directory
-    clear,      // clears terminal
-    pwd,        // prints current working directory
-    mkdir,      // creates a new directory(or more)
-    rmdir,      // deletes a directory(or more)
-    touch,      // create empty file(s)(have to make it update timestamp too at some point)
-    mv,         // move (and/or rename) a file
-    none,       // undefined
-    total_size  // returns number of command types including none
+    cat = 0,      // read to file
+    echo,         // write to a file
+    ls,           // list contents of a directory
+    rm,           // delete a file/dir
+    cp,           // move and/or rename file
+    cd,           // enter a directory
+    clear,        // clears terminal
+    pwd,          // prints current working directory
+    mkdir,        // creates a new directory(or more)
+    rmdir,        // deletes a directory(or more)
+    touch,        // create empty file(s)(have to make it update timestamp too at some point)
+    mv,           // move (and/or rename) a file
+    free_space,   // remaining free space of the sd card
+    total_space,  // total space inside the sd card
+    none,         // undefined
+    total_size    // returns number of command types including none
 };
 
 using cmd_args = etl::vector<string, CMD_HANDLER_ARGS_CAPACITY>;

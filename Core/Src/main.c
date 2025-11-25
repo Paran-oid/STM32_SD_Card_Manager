@@ -21,7 +21,6 @@
 
 #include "fatfs.h"
 
-
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -59,6 +58,7 @@ static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_TIM2_Init(void);
+
 /* USER CODE BEGIN PFP */
 /* USER CODE END PFP */
 
@@ -315,13 +315,9 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
-// needed for printf imported library to work (for embedded)
-int _write(int file, char* ptr, int len)
+void putchar_(char c)
 {
-    (void) file;
-    HAL_UART_Transmit(&huart2, (const uint8_t*) ptr, (uint16_t) len, 100);
-    return len;
+    HAL_UART_Transmit(&huart2, (const uint8_t*) &c, 1, 100);
 }
 /* USER CODE END 4 */
 
@@ -351,7 +347,7 @@ void assert_failed(uint8_t* file, uint32_t line)
 {
     /* USER CODE BEGIN 6 */
     /* User can add his own implementation to report the file name and line number,
-       ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+       ex: printf_("Wrong parameters value: file %s on line %d\r\n", file, line) */
     /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */

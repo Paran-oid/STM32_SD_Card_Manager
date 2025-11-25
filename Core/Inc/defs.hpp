@@ -39,6 +39,8 @@ inline constexpr uint8_t  MAX_LABEL_SIZE   = 32U;
 inline constexpr uint16_t MAX_DIR_SIZE     = 256U;
 inline constexpr uint8_t  PAGE_SIZE        = 16U;
 
+inline constexpr uint64_t BYTES_PER_GB = 1024.0 * 1024.0 * 1024.0;
+
 inline constexpr uint8_t OVERWRITE = (1 << 1);
 inline constexpr uint8_t RECURSIVE = (1 << 2);
 

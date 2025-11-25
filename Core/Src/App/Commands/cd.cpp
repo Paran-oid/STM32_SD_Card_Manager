@@ -15,8 +15,8 @@ namespace stm_sd
 cmd_exec cd_exec = [](const cmd_args& args)
 {
     const string& path = args[0];
-    if (!fs::exists(path)) return status::err;
-    if (!fs::is_directory(path)) return status::err;
+    if (!fs::exists(path)) return fail("path doesn't exist...");
+    if (!fs::is_directory(path)) return fail("can't cd to a file");
 
     return fs::chdir(path);
 };

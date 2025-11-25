@@ -59,7 +59,7 @@ bool   is_mounted();
 status unmount();
 
 file*  open(const string&, uint8_t);  // returns a file handle
-status close(file*);                  // close file
+status close(file*);                    // close file
 status copy(const string&, const string&, uint8_t);
 status remove(const string&, bool = false);
 status rename(const string&, const string&);

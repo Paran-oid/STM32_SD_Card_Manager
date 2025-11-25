@@ -31,7 +31,7 @@ cmd_exec ls_exec = [](const cmd_args& args)
         {
             FILINFO& item   = arr[i];
             bool     is_dir = (item.fattrib & AM_DIR) != 0;
-            printf("%s%s\r\n", item.fname, is_dir ? "/" : "");
+            printf_("%s%s\r\n", item.fname, is_dir ? "/" : "");
         }
         page++;
     }

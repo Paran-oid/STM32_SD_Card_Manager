@@ -21,7 +21,7 @@ namespace stm_sd
 /***********************************************************
  * Public typedefs / structs
  ***********************************************************/
-struct PathData
+struct path_data
 {
     string folder;
     string filename;
@@ -40,10 +40,12 @@ size_t find_outside_quotes(
 string format_str(const string&);   //  ""foo""" -> "foo"
 string unescape(const string&);     // test\\n -> test\n
 
-PathData extract_path(const string&);
+path_data extract_path(const string&);
 
 inline status      map_fresult(FRESULT);
 inline const char* status_message(status);
+
+bool is_filename(const string&);
 
 inline bool is_double_quoted(const string&);
 inline bool is_esc_seq(char);
@@ -183,6 +185,6 @@ inline const char* stm_sd::status_message(status s)
         case status::invalid_parameter:
             return "invalid parameter";
         default:
-            return "unknown error";
+            return "";
     }
 }

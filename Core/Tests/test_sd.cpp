@@ -33,7 +33,7 @@ TestResult test_sd_read_write(bool display)
     if (display)
     {
         etl::array<string, 5> msgs = {"content of ", path, "is:\r\n", s, "\r\n\r\n"};
-        for (auto msg : msgs) printf("%s", msg.c_str());
+        for (auto msg : msgs) printf_("%s", msg.c_str());
     }
 
     if (fs::close(file) != status::ok) return {false, "close file failed"};
