@@ -73,6 +73,8 @@ target_sources(
           ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/dir_cmds.cpp
           ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/touch.cpp
           ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/mv.cpp
+          ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/send.cpp
+          ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/receive.cpp
           #
           # Test-related
           #

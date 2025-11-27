@@ -20,6 +20,8 @@ extern cmd_exec mkdir_exec;
 extern cmd_exec rmdir_exec;
 extern cmd_exec touch_exec;
 extern cmd_exec mv_exec;
+extern cmd_exec send_exec;
+extern cmd_exec receive_exec;
 
 string g_cwd;  // exists just for SW
 
@@ -28,22 +30,25 @@ cmd_exec_map cmd_table = {{command_type::cat, cat_exec},     {command_type::echo
                           {command_type::cp, cp_exec},       {command_type::cd, cd_exec},
                           {command_type::clear, clear_exec}, {command_type::pwd, pwd_exec},
                           {command_type::mkdir, mkdir_exec}, {command_type::rmdir, rmdir_exec},
-                          {command_type::touch, touch_exec}, {command_type::mv, mv_exec}};
+                          {command_type::touch, touch_exec}, {command_type::mv, mv_exec},
+                          {command_type::send, send_exec},   {command_type::receive, receive_exec}};
 
 static command_type check_command_type(const string& item)
 {
-    if (item == "cat") return command_type::cat;
-    if (item == "echo") return command_type::echo;
-    if (item == "ls") return command_type::ls;
-    if (item == "rm") return command_type::rm;
-    if (item == "cp") return command_type::cp;
-    if (item == "cd") return command_type::cd;
-    if (item == "clear") return command_type::clear;
-    if (item == "pwd") return command_type::pwd;
-    if (item == "mkdir") return command_type::mkdir;
-    if (item == "rmdir") return command_type::rmdir;
-    if (item == "touch") return command_type::touch;
-    if (item == "mv") return command_type::mv;
+    static const std::unordered_map<std::string, command_type> command_map = {
+        {"cat", command_type::cat},     {"echo", command_type::echo},
+        {"ls", command_type::ls},       {"rm", command_type::rm},
+        {"cp", command_type::cp},       {"cd", command_type::cd},
+        {"clear", command_type::clear}, {"pwd", command_type::pwd},
+        {"mkdir", command_type::mkdir}, {"rmdir", command_type::rmdir},
+        {"touch", command_type::touch}, {"mv", command_type::mv},
+        {"send", command_type::send},   {"receive", command_type::receive}};
+
+    auto it = command_map.find(item.c_str());
+    if (it != command_map.end())
+    {
+        return it->second;
+    }
     return command_type::none;
 }
 

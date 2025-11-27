@@ -9,6 +9,8 @@
 
 namespace fs = std::filesystem;
 
+//! MUST BE UPDATED!
+
 stm_sd::string sinput;               // pass to handle_command
 char           tbuf[stm_sd::SSIZE];  // to use for input
 

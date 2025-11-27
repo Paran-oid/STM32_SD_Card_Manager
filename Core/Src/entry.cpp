@@ -46,4 +46,5 @@ void loop()
     uart2.scan(s);
     s = stm_sd::unescape(s);
     stm_sd::handle_command(s);
+    // TODO: fix backspace not working
 }

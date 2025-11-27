@@ -30,7 +30,7 @@ enum class command_type : uint8_t
      * .cpp(implementation of this .hpp)
      * - add extern declaration for functions (and define it somewhere)
      * - add it to the cmd_table unordered_map
-     * - pass it in check_command_type function
+     * - map it in check_command static function with it's string representation
      *
      */
 
@@ -48,14 +48,16 @@ enum class command_type : uint8_t
     mv,           // move (and/or rename) a file
     free_space,   // remaining free space of the sd card
     total_space,  // total space inside the sd card
+    send,         // send files from pc to sd card and vice versa
+    receive,      // receive files from pc to sd card and vice versa
     none,         // undefined
-    total_size    // returns number of command types including none
+    count_cmds    // returns number of command types including none
 };
 
 using cmd_args = etl::vector<string, CMD_HANDLER_ARGS_CAPACITY>;
 using cmd_exec = status (*)(const cmd_args&);
 using cmd_exec_map =
-    etl::unordered_map<command_type, cmd_exec, static_cast<size_t>(command_type::total_size)>;
+    etl::unordered_map<command_type, cmd_exec, static_cast<size_t>(command_type::count_cmds)>;
 
 /***************************************************************
  * Exported Objects
