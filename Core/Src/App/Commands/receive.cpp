@@ -1,6 +1,7 @@
 #include "command_handler.hpp"
 #include "etl/to_arithmetic.h"
 #include "hal_init.hpp"
+#include "scal/uart.hpp"
 #include "status.hpp"
 #include "utils.hpp"
 
@@ -26,12 +27,17 @@ CmdExec receiveExec = [](const CmdArgs& args)
     printf_(CLEAR_CMD);
     printf_("### WAITING FOR DATA TO BE SENT! ###\r\n");
 
-    char c;
+    uint8_t c;
     do
     {
-        auto res = HAL_UART_Receive(&huart2, (uint8_t*) &c, 1, timeoutMS);
-        if (res != HAL_OK) return fail("didn't receive anything...");
-        printf_("%#X ", c);
+        auto res = uart2.receive(c, timeoutMS);
+        if (res != HAL_OK)
+        {
+            return fail("didn't receive anything...");
+        }
+        // uart2.send(c);
+        uart2.send("0x3 ");
+
         c = 0;  // reset
     } while (true);
 

@@ -8,9 +8,9 @@
 
 namespace fs = stm_sd::filesystem;
 
-scal::spi              spi1  = {hspi1};
-scal::ptimer<uint32_t> tim2  = {htim2};
-scal::uart             uart2 = {huart2};
+scal::SPI              spi1  = {hspi1};
+scal::PTimer<uint32_t> tim2  = {htim2};
+scal::UART             uart2 = {huart2};
 
 namespace stm_sd
 {

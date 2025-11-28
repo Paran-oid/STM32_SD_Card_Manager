@@ -34,13 +34,13 @@ CmdExecMap     cmdTable = {{CommandType::CAT, catExec},     {CommandType::ECHO, 
 static CommandType check_command_type(const string& item)
 {
     static const std::unordered_map<std::string, CommandType> commandMap = {
-        {"CAT", CommandType::CAT},     {"ECHO", CommandType::ECHO},
-        {"LS", CommandType::LS},       {"RM", CommandType::RM},
-        {"CP", CommandType::CP},       {"CD", CommandType::CD},
-        {"CLEAR", CommandType::CLEAR}, {"PWD", CommandType::PWD},
-        {"MKDIR", CommandType::MKDIR}, {"RMDIR", CommandType::RMDIR},
-        {"TOUCH", CommandType::TOUCH}, {"MV", CommandType::MV},
-        {"SEND", CommandType::SEND},   {"RECEIVE", CommandType::RECEIVE}};
+        {"cat", CommandType::CAT},     {"echo", CommandType::ECHO},
+        {"ls", CommandType::LS},       {"rm", CommandType::RM},
+        {"cp", CommandType::CP},       {"cd", CommandType::CD},
+        {"clear", CommandType::CLEAR}, {"pwd", CommandType::PWD},
+        {"mkdir", CommandType::MKDIR}, {"rmdir", CommandType::RMDIR},
+        {"touch", CommandType::TOUCH}, {"mv", CommandType::MV},
+        {"send", CommandType::SEND},   {"receive", CommandType::RECEIVE}};
 
     auto it = commandMap.find(item.c_str());
     if (it != commandMap.end())

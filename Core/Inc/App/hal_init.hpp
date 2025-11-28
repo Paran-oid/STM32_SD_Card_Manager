@@ -14,13 +14,11 @@ extern "C"
 namespace scal
 {
 
-class uart;
-class spi;
+class UART;
+class SPI;
 
 template <typename T>
-class ptimer;
-
-class iwdg;
+class PTimer;
 
 }  // namespace scal
 
@@ -36,11 +34,11 @@ extern UART_HandleTypeDef huart2;
 /***************************************************************
  * Exported C++ Converted Peripherals
  ***************************************************************/
-extern scal::spi spi1;
+extern scal::SPI spi1;
 
-extern scal::ptimer<uint32_t> tim2;
+extern scal::PTimer<uint32_t> tim2;
 
-extern scal::uart uart2;
+extern scal::UART uart2;
 
 namespace stm_sd
 {
