@@ -40,12 +40,12 @@ CmdExec catExec = [](const CmdArgs& args)
         // assign flags for file
         uint8_t openMode = 0;
         if (writeSymb != args.end())
-            openMode = FA_OPEN_ALWAYS | FA_WRITE;
+            openMode = FOPEN_ALWAYS | FWRITE;
         else if (appendSymb != args.end())
-            openMode = FA_OPEN_APPEND | FA_WRITE;
+            openMode = FOPEN_ALWAYS | FWRITE;
 
         string outputFilePath = args[static_cast<size_t>(idxSymb + 1)];
-        fres                    = fs::open(outputFilePath, openMode);
+        fres                  = fs::open(outputFilePath, openMode);
         if (!fres) return Status::ERR;
         if (writeSymb != args.end()) fres->truncate();  // set to start of file
 
@@ -69,7 +69,7 @@ CmdExec catExec = [](const CmdArgs& args)
             if (hasWrittenToFile) fs::close(fres);
             return Status::NO_FILE;
         }
-        File* f = fs::open(path, FileMode::READ);
+        File* f = fs::open(path, FREAD);
         if (!f) return Status::ERR;
 
         //* in reality we read BLOCK_SIZE - 1 chars at a time

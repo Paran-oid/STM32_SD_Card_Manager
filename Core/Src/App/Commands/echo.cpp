@@ -32,9 +32,9 @@ CmdExec echoExec = [](const CmdArgs& args)
 
     uint8_t openMode;
     if (writeSymb != args.end())
-        openMode = FA_OPEN_ALWAYS | FA_WRITE;
+        openMode = FOPEN_ALWAYS | FWRITE;
     else if (appendSymb != args.end())
-        openMode = FA_OPEN_APPEND | FA_WRITE;
+        openMode = FOPEN_APPEND | FWRITE;
 
     // just output content
     if (writeSymb == args.end() && appendSymb == args.end())

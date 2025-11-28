@@ -21,7 +21,7 @@ TestResult test_sd_read_write(bool display)
 
     string path = "test.txt";
 
-    File* file = fs::open(path, FA_READ | FA_WRITE);
+    File* file = fs::open(path, FREAD | FWRITE);
     if (!file) return {false, "couldn't create file"};
 
     string s = {};

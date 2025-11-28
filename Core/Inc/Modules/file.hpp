@@ -27,14 +27,28 @@ namespace stm_sd
 
 enum FileMode : uint8_t
 {
-    READ  = FA_READ,
-    WRITE = FA_WRITE,
+    // Specifies read access to the file. Data can be read from the file.
+    FREAD = FA_READ,
 
-    OPEN_EXISTING = FA_OPEN_EXISTING,
-    CREATE_NEW    = FA_CREATE_NEW,
-    CREATE_ALWAYS = FA_CREATE_ALWAYS,
-    OPEN_ALWAYS   = FA_OPEN_ALWAYS,
-    OPEN_APPEND   = FA_OPEN_APPEND
+    // Specifies write access to the file. Data can be written to the file. Combine with FA_READ for
+    // read-write access.
+    FWRITE = FA_WRITE,
+
+    // Opens the file. The function fails if the file does not exist. (Default behavior)
+    FOPEN_EXISTING = FA_OPEN_EXISTING,
+
+    // Creates a new file. If the file exists, it is truncated and overwritten.
+    FCREATE_ALWAYS = FA_CREATE_ALWAYS,
+
+    // Creates a new file. The function fails if the file already exists.
+    FCREATE_NEW = FA_CREATE_NEW,
+
+    // Opens the file. If it does not exist, a new file is created.
+    FOPEN_ALWAYS = FA_OPEN_ALWAYS,
+
+    // Same as OPEN_ALWAYS, except the read/write pointer is set at the end of the file (append
+    // mode).
+    FOPEN_APPEND = FA_OPEN_APPEND
 };
 
 /***************************************************************

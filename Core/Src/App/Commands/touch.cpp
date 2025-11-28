@@ -14,7 +14,7 @@ CmdExec touchExec = [](const CmdArgs& args)
     for (const auto& arg : args)
     {
         if (!isFilename(arg)) return Status::INVALID_NAME;
-        File* f = fs::open(arg, FA_CREATE_NEW);
+        File* f = fs::open(arg, FCREATE_NEW);
         if (f) fs::close(f);
     }
 

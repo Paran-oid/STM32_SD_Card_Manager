@@ -103,7 +103,7 @@ Status copy(const string& src, const string& dst, uint8_t modes)
 
         string cdst = dst;  // copy from dst
 
-        File* fsrc = open(src, FA_OPEN_EXISTING | FA_READ);
+        File* fsrc = open(src, FOPEN_EXISTING | FREAD);
         if (!fsrc) return Status::ERR;
 
         if (!exists(pdst.folder)) mkdir(pdst.folder);
@@ -120,12 +120,12 @@ Status copy(const string& src, const string& dst, uint8_t modes)
 
             string ndst = pdst.folder;
             ndst.append("/").append(psrc.filename);
-            fdst = open(ndst, FA_CREATE_ALWAYS | FA_WRITE);  // dst_folder/src_filename
+            fdst = open(ndst, FCREATE_ALWAYS | FWRITE);  // dst_folder/src_filename
         }
         else
         {
             // we are simply going to copy(write) data to another file
-            fdst = open(cdst, FA_CREATE_ALWAYS | FA_WRITE);
+            fdst = open(cdst, FCREATE_ALWAYS | FWRITE);
         }
 
         if (!fdst) return Status::ERR;
@@ -262,7 +262,7 @@ int8_t list(const string& dir_p, uint8_t page, etl::array<FILINFO, PAGE_SIZE>& o
     DIR dir;
     if (f_opendir(&dir, dir_p.c_str()) != FR_OK) return -1;
 
-    uint16_t filesRead  = 0;
+    uint16_t filesRead = 0;
     uint16_t pageStart = PAGE_SIZE * page;
     uint16_t pageEnd   = PAGE_SIZE * (page + 1);
 

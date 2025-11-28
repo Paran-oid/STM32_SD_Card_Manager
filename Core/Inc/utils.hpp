@@ -46,6 +46,7 @@ inline Status      mapFRESULT(FRESULT);
 inline const char* statusMessageMap(Status);
 
 bool isFilename(const string&);
+bool isValidPath(const string&);
 
 inline bool isDoubleQuoted(const string&);
 inline bool isEscSeq(char);
