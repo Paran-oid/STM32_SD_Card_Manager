@@ -7,52 +7,47 @@
 #include "hal_init.hpp"
 #include "utils.hpp"
 
-extern "C"
-{
-#include "fatfs.h"
-}
-
 namespace fs = stm_sd::filesystem;
 
 namespace stm_sd
 {
 
-extern cmd_exec rm_exec;
+extern CmdExec rmExec;
 
-cmd_exec cp_exec = [](const cmd_args& args)
+CmdExec cpExec = [](const CmdArgs& args)
 {
     if (args.size() != 2) return fail("2 arguments must be passed");
 
-    bool is_recursive = false;
+    bool isRecursive = false;
     for (const auto& arg : args)
     {
-        if (is_flag(arg))
+        if (isFlag(arg))
         {
             for (auto it = arg.begin() + 1; it != arg.end(); it++)
             {
                 char c = *it;
-                if (c == 'r') is_recursive = true;
+                if (c == 'r') isRecursive = true;
             }
         }
     }
 
     const string& src = args[0];
     const string& dst = args[1];
-    if (!fs::exists(src)) return status::no_file;
+    if (!fs::exists(src)) return Status::NO_FILE;
 
-    if (fs::is_directory(dst))
+    if (fs::isDirectory(dst))
     {
-        bool is_src_dir = fs::is_directory(src);
-        if (is_src_dir && !is_recursive) return fail("-r must be added for copying directories");
+        bool isSrcDir = fs::isDirectory(src);
+        if (isSrcDir && !isRecursive) return fail("-r must be added for copying directories");
 
         uint8_t opts = OVERWRITE;
-        if (is_src_dir)
+        if (isSrcDir)
         {
             opts |= RECURSIVE;
         }
         else
         {
-            if (!is_filename(src)) return status::invalid_name;
+            if (!isFilename(src)) return Status::INVALID_NAME;
         }
 
         fs::copy(src, dst, opts);  // copies into a directory the file or even
@@ -60,10 +55,10 @@ cmd_exec cp_exec = [](const cmd_args& args)
     }
     else
     {
-        if (fs::is_directory(src)) return fail("impossible to copy a directory into a file");
+        if (fs::isDirectory(src)) return fail("impossible to copy a directory into a file");
         fs::copy(src, dst, OVERWRITE);
     }
-    return status::ok;
+    return Status::OK;
 };
 
 }  // namespace stm_sd

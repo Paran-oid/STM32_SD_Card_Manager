@@ -13,74 +13,74 @@ namespace fs = stm_sd::filesystem;
 namespace stm_sd
 {
 
-cmd_exec echo_exec = [](const cmd_args& args)
+CmdExec echoExec = [](const CmdArgs& args)
 {
     if (args.empty())
     {
         printf_("\r\n");
-        return status::ok;
+        return Status::OK;
     }
 
-    status stat;
+    Status stat;
 
     // > and >> are only used for echo just for simplicity's sake
-    auto write_symb  = etl::find(args.begin(), args.end(), ">");
-    auto append_symb = etl::find(args.begin(), args.end(), ">>");
+    auto writeSymb  = etl::find(args.begin(), args.end(), ">");
+    auto appendSymb = etl::find(args.begin(), args.end(), ">>");
 
-    if (write_symb != args.end() && append_symb != args.end())
+    if (writeSymb != args.end() && appendSymb != args.end())
         return fail(">> and > together are not allowed");
 
-    uint8_t open_mode;
-    if (write_symb != args.end())
-        open_mode = FA_OPEN_ALWAYS | FA_WRITE;
-    else if (append_symb != args.end())
-        open_mode = FA_OPEN_APPEND | FA_WRITE;
+    uint8_t openMode;
+    if (writeSymb != args.end())
+        openMode = FA_OPEN_ALWAYS | FA_WRITE;
+    else if (appendSymb != args.end())
+        openMode = FA_OPEN_APPEND | FA_WRITE;
 
     // just output content
-    if (write_symb == args.end() && append_symb == args.end())
+    if (writeSymb == args.end() && appendSymb == args.end())
     {
-        etl::string<SSIZE * CMD_HANDLER_ARGS_CAPACITY> output_str;
-        string                                         temp;
+        etl::string<SSIZE * CMD_HANDLER_ARGS_CAPACITY> outputStr;
+        string temp;  // this gets modified and then added to outputStr
         for (auto it = args.begin(); it != args.end(); it++)
         {
             temp = *it;
-            if (is_double_quoted(temp)) temp = format_str(temp);
-            output_str += temp;
-            if (etl::next(it) != args.end()) output_str += " ";
+            if (isDoubleQuoted(temp)) temp = formatStr(temp);
+            outputStr += temp;
+            if (etl::next(it) != args.end()) outputStr += " ";
         }
-        printf_("%s\r\n", output_str.c_str());
+        printf_("%s\r\n", outputStr.c_str());
     }
     else
     {
-        ptrdiff_t idx_symb =
-            etl::distance(args.begin(), write_symb != args.end() ? write_symb : append_symb);
-        if (((idx_symb - 1) < 0) || (idx_symb + 1) > static_cast<ptrdiff_t>(args.size()))
-            return status::err;
+        ptrdiff_t symbIdx =
+            etl::distance(args.begin(), writeSymb != args.end() ? writeSymb : appendSymb);
+        if (((symbIdx - 1) < 0) || (symbIdx + 1) > static_cast<ptrdiff_t>(args.size()))
+            return Status::ERR;
 
         string content, temp;
-        for (uint8_t i = 0; i < idx_symb; i++)
+        for (uint8_t i = 0; i < symbIdx; i++)
         {
-            if (is_double_quoted(args[i]))
-                temp = format_str(args[i]);
+            if (isDoubleQuoted(args[i]))
+                temp = formatStr(args[i]);
             else
                 temp = args[i];
 
             content += temp;
-            if (i != (idx_symb - 1)) content += " ";
+            if (i != (symbIdx - 1)) content += " ";
         }
 
-        string output_file_path = args[static_cast<size_t>(idx_symb + 1)];
-        if (!is_filename(output_file_path)) return status::invalid_name;
-        file* file = fs::open(output_file_path, open_mode);
-        if (!file) return status::err;
+        string outputFilePath = args[static_cast<size_t>(symbIdx + 1)];
+        if (!isFilename(outputFilePath)) return Status::INVALID_NAME;
+        File* file = fs::open(outputFilePath, openMode);
+        if (!file) return Status::ERR;
 
-        if (write_symb != args.end()) file->truncate();  // set to start of file
-        if ((stat = file->write(content)) != status::ok) return stat;
+        if (writeSymb != args.end()) file->truncate();  // set to start of file
+        if ((stat = file->write(content)) != Status::OK) return stat;
 
-        if ((stat = fs::close(file)) != status::ok) return stat;
+        if ((stat = fs::close(file)) != Status::OK) return stat;
     }
 
-    return status::ok;
+    return Status::OK;
 };
 
 }  // namespace stm_sd

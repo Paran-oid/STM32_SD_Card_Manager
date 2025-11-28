@@ -13,32 +13,32 @@ namespace fs = stm_sd::filesystem;
 namespace stm_sd
 {
 
-cmd_exec mkdir_exec = [](const cmd_args& args)
+CmdExec mkdirExec = [](const CmdArgs& args)
 {
     if (args.empty()) return fail("args are not allowed to be empty");
 
-    status stat;
+    Status stat;
     for (const auto& arg : args)
     {
-        if ((stat = fs::mkdir(arg)) != status::ok) return stat;
+        if ((stat = fs::mkdir(arg)) != Status::OK) return stat;
     }
 
-    return status::ok;
+    return Status::OK;
 };
 
-cmd_exec rmdir_exec = [](const cmd_args& args)
+CmdExec rmdirExec = [](const CmdArgs& args)
 {
     if (args.empty()) return fail("args are not allowed to be empty");
 
-    status stat;
+    Status stat;
     for (const auto& arg : args)
     {
-        if (!fs::exists(arg)) return status::no_file;
-        if (!fs::is_directory(arg)) return fail("only directories should be passed");
-        if ((stat = fs::remove(arg, true)) != status::ok) return stat;
+        if (!fs::exists(arg)) return Status::NO_FILE;
+        if (!fs::isDirectory(arg)) return fail("only directories should be passed");
+        if ((stat = fs::remove(arg, true)) != Status::OK) return stat;
     }
 
-    return status::ok;
+    return Status::OK;
 };
 
 }  // namespace stm_sd

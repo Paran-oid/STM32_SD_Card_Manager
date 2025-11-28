@@ -15,12 +15,12 @@ namespace stm_sd
 /***************************************************************
  * Forward Declarations
  ***************************************************************/
-enum class status : uint8_t;
+enum class Status : uint8_t;
 
 /***************************************************************
  * Public Typedefs / Structs
  ***************************************************************/
-enum class command_type : uint8_t
+enum class CommandType : uint8_t
 {
     /*
      * HOW TO ADD A FUNCTIONALITY:
@@ -34,39 +34,39 @@ enum class command_type : uint8_t
      *
      */
 
-    cat = 0,      // read to file
-    echo,         // write to a file
-    ls,           // list contents of a directory
-    rm,           // delete a file/dir
-    cp,           // move and/or rename file
-    cd,           // enter a directory
-    clear,        // clears terminal
-    pwd,          // prints current working directory
-    mkdir,        // creates a new directory(or more)
-    rmdir,        // deletes a directory(or more)
-    touch,        // create empty file(s)(have to make it update timestamp too at some point)
-    mv,           // move (and/or rename) a file
-    free_space,   // remaining free space of the sd card
-    total_space,  // total space inside the sd card
-    send,         // send files from pc to sd card and vice versa
-    receive,      // receive files from pc to sd card and vice versa
-    none,         // undefined
-    count_cmds    // returns number of command types including none
+    CAT = 0,      // read to file
+    ECHO,         // write to a file
+    LS,           // list contents of a directory
+    RM,           // delete a file/dir
+    CP,           // move and/or rename file
+    CD,           // enter a directory
+    CLEAR,        // clears terminal
+    PWD,          // prints current working directory
+    MKDIR,        // creates a new directory(or more)
+    RMDIR,        // deletes a directory(or more)
+    TOUCH,        // create empty file(s)(have to make it update timestamp too at some point)
+    MV,           // move (and/or rename) a file
+    FREE_SPACE,   // remaining free space of the sd card
+    TOTAL_SPACE,  // total space inside the sd card
+    SEND,         // send files from pc to sd card and vice versa
+    RECEIVE,      // receive files from pc to sd card and vice versa
+    NONE,         // undefined
+    COUNT         // returns number of command types including none
 };
 
-using cmd_args = etl::vector<string, CMD_HANDLER_ARGS_CAPACITY>;
-using cmd_exec = status (*)(const cmd_args&);
-using cmd_exec_map =
-    etl::unordered_map<command_type, cmd_exec, static_cast<size_t>(command_type::count_cmds)>;
+using CmdArgs = etl::vector<string, CMD_HANDLER_ARGS_CAPACITY>;
+using CmdExec = Status (*)(const CmdArgs&);
+using CmdExecMap =
+    etl::unordered_map<CommandType, CmdExec, static_cast<size_t>(CommandType::COUNT)>;
 
 /***************************************************************
  * Exported Objects
  ***************************************************************/
-extern cmd_exec_map cmd_table;  // defined in command_handler.cpp
+extern CmdExecMap cmdTable;  // defined in command_handler.cpp
 
 /***************************************************************
  * Function Declarations
  ***************************************************************/
-void handle_command(const string&);
+void handleCommand(const string&);
 
 }  // namespace stm_sd

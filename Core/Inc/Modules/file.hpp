@@ -25,22 +25,22 @@ namespace stm_sd
  * Public Typedefs / Structs
  ***************************************************************/
 
-enum file_mode : uint8_t
+enum FileMode : uint8_t
 {
-    read  = FA_READ,
-    write = FA_WRITE,
+    READ  = FA_READ,
+    WRITE = FA_WRITE,
 
-    open_existing = FA_OPEN_EXISTING,
-    create_new    = FA_CREATE_NEW,
-    create_always = FA_CREATE_ALWAYS,
-    open_always   = FA_OPEN_ALWAYS,
-    open_append   = FA_OPEN_APPEND
+    OPEN_EXISTING = FA_OPEN_EXISTING,
+    CREATE_NEW    = FA_CREATE_NEW,
+    CREATE_ALWAYS = FA_CREATE_ALWAYS,
+    OPEN_ALWAYS   = FA_OPEN_ALWAYS,
+    OPEN_APPEND   = FA_OPEN_APPEND
 };
 
 /***************************************************************
  * File Class for file-related Operations
  ***************************************************************/
-class file
+class File
 {
     /***********************************************************
      * Private Members
@@ -52,16 +52,16 @@ class file
     /***********************************************************
      * Constructors / Destructor
      ***********************************************************/
-    file() = delete;
-    file(const string& path) : m_path {path}
+    File() = delete;
+    File(const string& path) : m_path {path}
     {
     }
-    file(file&& f) noexcept : m_path {etl::move(f.m_path)}, m_fil {f.m_fil}
+    File(File&& f) noexcept : m_path {etl::move(f.m_path)}, m_fil {f.m_fil}
     {
         f.m_fil.obj.fs = nullptr;
     };
-    file(const file& f) = delete;
-    file& operator=(file&& f) noexcept
+    File(const File& f) = delete;
+    File& operator=(File&& f) noexcept
     {
         if (this != &f)
         {
@@ -72,8 +72,8 @@ class file
         }
         return *this;
     }
-    file& operator=(const file& f) = delete;
-    ~file()
+    File& operator=(const File& f) = delete;
+    ~File()
     {
         if (m_fil.obj.fs) f_close(&m_fil);
     }
@@ -82,20 +82,20 @@ class file
      * Public Methods
      ***********************************************************/
     template <size_t N>
-    status write(const etl::string<N>&);
+    Status write(const etl::string<N>&);
     template <size_t N>
-    status write(const etl::array<uint8_t, N>&);
-    status write(const char*);
+    Status write(const etl::array<uint8_t, N>&);
+    Status write(const char*);
 
     template <size_t N>
     uint32_t read(etl::string<N>&);
     template <size_t N>
     uint32_t read(etl::array<uint8_t, N>&);
 
-    status seek(uint32_t);
-    status truncate();
+    Status seek(uint32_t);
+    Status truncate();
 
-    status rename(const string&, const string&);
+    Status rename(const string&, const string&);
 
     bool is_open();
 
@@ -123,51 +123,51 @@ class file
  * Template/Inline Functions/Methods Declarations
  ***********************************************************/
 template <size_t N>
-status file::write(const etl::string<N>& s)
+Status File::write(const etl::string<N>& s)
 {
-    unsigned int bytes_written = 0;
-    FRESULT      res           = f_write(&m_fil, s.data(), s.length(), &bytes_written);
-    if (res != FR_OK || bytes_written != s.length()) return map_fresult(res);
+    unsigned int bytesWritten = 0;
+    FRESULT      res          = f_write(&m_fil, s.data(), s.length(), &bytesWritten);
+    if (res != FR_OK || bytesWritten != s.length()) return mapFRESULT(res);
 
-    return status::ok;
+    return Status::OK;
 }
 
 template <size_t N>
-status file::write(const etl::array<uint8_t, N>& arr)
+Status File::write(const etl::array<uint8_t, N>& arr)
 {
-    return f_write(&m_fil, arr.data(), arr.size(), NULL) == FR_OK ? status::ok : status::err;
+    return f_write(&m_fil, arr.data(), arr.size(), NULL) == FR_OK ? Status::OK : Status::ERR;
 }
 
 template <size_t N>
-uint32_t file::read(etl::array<uint8_t, N>& arr)
+uint32_t File::read(etl::array<uint8_t, N>& arr)
 {
     char         buf[N];  // must be char[] because f_read works that way
-    unsigned int bytes_read;
+    unsigned int bytesRead;
 
-    FRESULT fres = f_read(&m_fil, buf, N - 1, &bytes_read);
+    FRESULT fres = f_read(&m_fil, buf, N - 1, &bytesRead);
     if (fres != FR_OK) return 0;
 
-    for (uint32_t i = 0; i < bytes_read; i++)
+    for (uint32_t i = 0; i < bytesRead; i++)
     {
         arr[i] = static_cast<uint8_t>(buf[i]);
     }
 
-    return bytes_read;
+    return bytesRead;
 }
 
 template <size_t N>
-uint32_t file::read(etl::string<N>& s)
+uint32_t File::read(etl::string<N>& s)
 {
     // for string overload we will null terminate
     char         buf[N - 1];  // must be char[] because f_read works that way
-    unsigned int bytes_read = 0;
+    unsigned int bytesRead = 0;
 
-    FRESULT fres = f_read(&m_fil, buf, N - 1, &bytes_read);
+    FRESULT fres = f_read(&m_fil, buf, N - 1, &bytesRead);
     if (fres != FR_OK) return 0;
 
-    s.assign(buf, bytes_read);
-    s[bytes_read] = '\0';
-    return bytes_read;
+    s.assign(buf, bytesRead);
+    s[bytesRead] = '\0';
+    return bytesRead;
 }
 
 }  // namespace stm_sd

@@ -7,10 +7,10 @@
 namespace stm_sd
 {
 
-cmd_exec send_exec = [](const cmd_args& args)
+CmdExec sendExec = [](const CmdArgs& args)
 {
     (void) args;
-    return status::ok;
+    return Status::OK;
 };
 
 }  // namespace stm_sd

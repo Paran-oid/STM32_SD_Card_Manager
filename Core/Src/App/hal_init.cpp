@@ -15,10 +15,11 @@ scal::uart             uart2 = {huart2};
 namespace stm_sd
 {
 
-void hal_init_all()
+void HALInit()
 {
     // initialize any peripheral (start timer i.e)
-    fs::init(hspi1);
+
+    fs::init(hspi1);  // set hspi1 as spi periph for filesystem
 }
 
 }  // namespace stm_sd

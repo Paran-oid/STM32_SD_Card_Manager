@@ -24,10 +24,10 @@ namespace stm_sd
 /***************************************************************
  * Forward Declarations
  ***************************************************************/
-class file;
+class File;
 
 // SD file system
-enum class sdfs : uint8_t
+enum class SDFS : uint8_t
 {
     fat   = FM_FAT,
     fat32 = FM_FAT32,
@@ -37,7 +37,7 @@ enum class sdfs : uint8_t
 };
 
 // SD type
-enum class sd_type : uint8_t
+enum class SDType : uint8_t
 {
     sdsc,
     sdhc,
@@ -54,40 +54,40 @@ namespace filesystem
  * Public Functions
  ***********************************************************/
 void   init(SPI_HandleTypeDef&);
-status mount();
-bool   is_mounted();
-status unmount();
+Status mount();
+bool   isMounted();
+Status unmount();
 
-file*  open(const string&, uint8_t);  // returns a file handle
-status close(file*);                    // close file
-status copy(const string&, const string&, uint8_t);
-status remove(const string&, bool = false);
-status rename(const string&, const string&);
+File*  open(const string&, uint8_t);  // returns a file handle
+Status close(File*);                  // close file
+Status copy(const string&, const string&, uint8_t);
+Status remove(const string&, bool = false);
+Status rename(const string&, const string&);
 
-status format(sdfs);
+Status format(SDFS);
 
-file*  open(const string&, uint8_t);
-status close(file*);
+File*  open(const string&, uint8_t);
+Status close(File*);
 
 bool   exists(const string&);
-status mkdir(const string&);
+Status mkdir(const string&);
 
 int8_t list(const string&, uint8_t, etl::array<FILINFO, PAGE_SIZE>&);
 
-uint64_t total_space();
-uint64_t free_space();
+uint64_t totalSpace();
+uint64_t freeSpace();
 
-bool is_file(const string&);
-bool is_directory(const string&);
+bool isFile(const string&);
+bool isDirectory(const string&);
 
 /***********************************************************
  * Getters/Setters
  ***********************************************************/
 string label();
-status set_label(const string&);
+Status setLabel(const string&);
 
 string cwd();
-status chdir(const string&);
+Status chdir(const string&);
 
 }  // namespace filesystem
 

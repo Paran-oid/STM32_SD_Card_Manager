@@ -11,31 +11,31 @@ namespace fs = stm_sd::filesystem;
 namespace stm_sd
 {
 
-cmd_exec rm_exec = [](const cmd_args& args)
+CmdExec rmExec = [](const CmdArgs& args)
 {
-    if (args.empty()) return status::err;
+    if (args.empty()) return Status::ERR;
 
-    status stat;
-    bool   is_recursive = false;
+    Status stat;
+    bool   isRecursive = false;
     for (const auto& arg : args)
     {
-        if (is_flag(arg))
+        if (isFlag(arg))
         {
             for (auto it = arg.begin() + 1; it != arg.end(); it++)
             {
                 char c = *it;
-                if (c == 'r') is_recursive = true;
+                if (c == 'r') isRecursive = true;
             }
         }
     }
 
     for (const auto& arg : args)
     {
-        if (is_flag(arg)) continue;
-        if ((stat = fs::remove(arg, is_recursive)) != status::ok) return stat;
+        if (isFlag(arg)) continue;
+        if ((stat = fs::remove(arg, isRecursive)) != Status::OK) return stat;
     }
 
-    return status::ok;
+    return Status::OK;
 };
 
 }  // namespace stm_sd

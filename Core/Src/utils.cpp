@@ -13,25 +13,25 @@ void die(const string& msg)
     Error_Handler();
 }
 
-status fail(const string& msg)
+Status fail(const string& msg)
 {
     printf_("%s\r\n", msg.c_str());
-    return status::err;
+    return Status::ERR;
 }
 
-size_t find_outside_quotes(const string& s, char c, size_t start, size_t length)
+size_t findOutsideQuotes(const string& s, char c, size_t start, size_t length)
 {
     size_t end = length == string::npos ? s.size() : length - start;
 
-    bool in_quotes = false;
+    bool isInQuotes = false;
     for (size_t i = start; i < end && i < s.size(); i++)
     {
         char cur = s[i];
         if (cur == '\"' && (i == 0 || s[i - 1] != '\\'))
         {
-            in_quotes = !in_quotes;
+            isInQuotes = !isInQuotes;
         }
-        else if (cur == c && !in_quotes)
+        else if (cur == c && !isInQuotes)
         {
             return i;
         }
@@ -40,9 +40,9 @@ size_t find_outside_quotes(const string& s, char c, size_t start, size_t length)
     return string::npos;
 }
 
-string format_str(const string& s)
+string formatStr(const string& s)
 {
-    if (!is_double_quoted(s)) return "";
+    if (!isDoubleQuoted(s)) return "";
     return s.substr(1, s.size() - 2);  // get rid of double quotes for the string
 }
 
@@ -103,20 +103,20 @@ string unescape(const string& s)
     return res;
 }
 
-path_data extract_path(const string& p)
+PathData extractPath(const string& p)
 {
-    size_t pos_slash = p.find_last_of("/\\");
-    if (pos_slash == string::npos) return {"", p};
+    size_t posSlash = p.find_last_of("/\\");
+    if (posSlash == string::npos) return {"", p};
 
-    return {p.substr(0, pos_slash), p.substr(pos_slash + 1)};
+    return {p.substr(0, posSlash), p.substr(posSlash + 1)};
 }
 
-bool is_filename(const string& path)
+bool isFilename(const string& path)
 {
-    path_data pd = extract_path(path);
+    PathData pd = extractPath(path);
     if (pd.filename.empty()) return false;
 
-    const std::string invalid_chars = "/\\:*?\"<>|";
+    const std::string invalidChars = "/\\:*?\"<>|";
     for (char c : pd.filename)
     {
         size_t idx = pd.filename.find(c);

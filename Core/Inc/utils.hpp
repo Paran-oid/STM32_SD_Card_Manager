@@ -21,7 +21,7 @@ namespace stm_sd
 /***********************************************************
  * Public typedefs / structs
  ***********************************************************/
-struct path_data
+struct PathData
 {
     string folder;
     string filename;
@@ -32,24 +32,24 @@ struct path_data
  ***************************************************************/
 
 void   die(const string&);
-status fail(const string&);
+Status fail(const string&);
 
-size_t find_outside_quotes(
+size_t findOutsideQuotes(
     const string&, char, size_t = 0,
     size_t length = string::npos);  // find function but works only outside quotes
-string format_str(const string&);   //  ""foo""" -> "foo"
+string formatStr(const string&);    //  ""foo""" -> "foo"
 string unescape(const string&);     // test\\n -> test\n
 
-path_data extract_path(const string&);
+PathData extractPath(const string&);
 
-inline status      map_fresult(FRESULT);
-inline const char* status_message(status);
+inline Status      mapFRESULT(FRESULT);
+inline const char* statusMessageMap(Status);
 
-bool is_filename(const string&);
+bool isFilename(const string&);
 
-inline bool is_double_quoted(const string&);
-inline bool is_esc_seq(char);
-inline bool is_flag(const string&);
+inline bool isDoubleQuoted(const string&);
+inline bool isEscSeq(char);
+inline bool isFlag(const string&);
 
 };  // namespace stm_sd
 
@@ -57,12 +57,12 @@ inline bool is_flag(const string&);
  * Template/Inline Functions/Methods Declarations
  ***********************************************************/
 
-inline bool stm_sd::is_double_quoted(const string& s)
+inline bool stm_sd::isDoubleQuoted(const string& s)
 {
     return s.size() >= 2 && s.front() == '\"' && s.back() == '\"';
 }
 
-inline bool stm_sd::is_esc_seq(char c)
+inline bool stm_sd::isEscSeq(char c)
 {
     switch (c)
     {
@@ -86,103 +86,103 @@ inline bool stm_sd::is_esc_seq(char c)
     return false;
 }
 
-bool stm_sd::is_flag(const string& s)
+bool stm_sd::isFlag(const string& s)
 {
     return s.size() >= 2 && s[0] == '-' && s[1] != '-';
 }
 
-inline stm_sd::status stm_sd::map_fresult(FRESULT res)
+inline stm_sd::Status stm_sd::mapFRESULT(FRESULT res)
 {
     switch (res)
     {
         case FR_OK:
-            return status::ok;
+            return Status::OK;
         case FR_DISK_ERR:
-            return status::disk_err;
+            return Status::DISK_ERR;
         case FR_INT_ERR:
-            return status::int_err;
+            return Status::INT_ERR;
         case FR_NOT_READY:
-            return status::not_ready;
+            return Status::NOT_READY;
         case FR_NO_FILE:
-            return status::no_file;
+            return Status::NO_FILE;
         case FR_NO_PATH:
-            return status::no_path;
+            return Status::NO_PATH;
         case FR_INVALID_NAME:
-            return status::invalid_name;
+            return Status::INVALID_NAME;
         case FR_DENIED:
-            return status::denied;
+            return Status::DENIED;
         case FR_EXIST:
-            return status::exist;
+            return Status::EXIST;
         case FR_INVALID_OBJECT:
-            return status::invalid_object;
+            return Status::INVALID_OBJECT;
         case FR_WRITE_PROTECTED:
-            return status::write_protected;
+            return Status::WRITE_PROTECTED;
         case FR_INVALID_DRIVE:
-            return status::invalid_drive;
+            return Status::INVALID_DRIVE;
         case FR_NOT_ENABLED:
-            return status::not_enabled;
+            return Status::NOT_ENABLED;
         case FR_NO_FILESYSTEM:
-            return status::no_filesystem;
+            return Status::NO_FILESYSTEM;
         case FR_MKFS_ABORTED:
-            return status::mkfs_aborted;
+            return Status::MKFS_ABORTED;
         case FR_TIMEOUT:
-            return status::timeout;
+            return Status::TIMEOUT;
         case FR_LOCKED:
-            return status::locked;
+            return Status::LOCKED;
         case FR_NOT_ENOUGH_CORE:
-            return status::not_enough_core;
+            return Status::NOT_ENOUGH_CORE;
         case FR_TOO_MANY_OPEN_FILES:
-            return status::too_many_open_files;
+            return Status::TOO_MANY_OPEN_FILES;
         case FR_INVALID_PARAMETER:
-            return status::invalid_parameter;
+            return Status::INVALID_PARAMETER;
         default:
-            return status::err;  // fallback for unknown
+            return Status::ERR;  // fallback for unknown
     }
 }
 
-inline const char* stm_sd::status_message(status s)
+inline const char* stm_sd::statusMessageMap(Status s)
 {
     switch (s)
     {
-        case status::ok:
+        case Status::OK:
             return "";
-        case status::disk_err:
+        case Status::DISK_ERR:
             return "disk error";
-        case status::int_err:
+        case Status::INT_ERR:
             return "internal error";
-        case status::not_ready:
+        case Status::NOT_READY:
             return "not ready";
-        case status::no_file:
+        case Status::NO_FILE:
             return "file not found";
-        case status::no_path:
+        case Status::NO_PATH:
             return "path not found";
-        case status::invalid_name:
+        case Status::INVALID_NAME:
             return "invalid name";
-        case status::denied:
+        case Status::DENIED:
             return "access denied";
-        case status::exist:
+        case Status::EXIST:
             return "already exists";
-        case status::invalid_object:
+        case Status::INVALID_OBJECT:
             return "invalid object";
-        case status::write_protected:
+        case Status::WRITE_PROTECTED:
             return "write protected";
-        case status::invalid_drive:
+        case Status::INVALID_DRIVE:
             return "invalid drive";
-        case status::not_enabled:
+        case Status::NOT_ENABLED:
             return "volume not enabled";
-        case status::no_filesystem:
+        case Status::NO_FILESYSTEM:
             return "no filesystem";
-        case status::mkfs_aborted:
+        case Status::MKFS_ABORTED:
             return "format aborted";
-        case status::timeout:
+        case Status::TIMEOUT:
             return "timeout";
-        case status::locked:
+        case Status::LOCKED:
             return "locked";
-        case status::not_enough_core:
+        case Status::NOT_ENOUGH_CORE:
             return "not enough memory";
-        case status::too_many_open_files:
+        case Status::TOO_MANY_OPEN_FILES:
             return "too many open files";
-        case status::invalid_parameter:
+        case Status::INVALID_PARAMETER:
             return "invalid parameter";
         default:
             return "";

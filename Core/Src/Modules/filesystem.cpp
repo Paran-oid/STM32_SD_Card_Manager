@@ -17,94 +17,94 @@ namespace filesystem
 // Internal static state
 // --------------------------------------------------
 
-using file_ptr = etl::unique_ptr<file>;
+using file_ptr = etl::unique_ptr<File>;
 
 static FATFS                                  m_fs;
 static SPI_HandleTypeDef                      m_hspi;
-static etl::array<file_ptr, MAX_FILE_HANDLES> m_file_handles;
+static etl::array<file_ptr, MAX_FILE_HANDLES> m_fileHandles;
 
 void init(SPI_HandleTypeDef& hspi)
 {
     m_hspi = hspi;
 }
 
-status mount()
+Status mount()
 {
-    return map_fresult(f_mount(&m_fs, "", 1));
+    return mapFRESULT(f_mount(&m_fs, "", 1));
 }
 
-bool is_mounted()
+bool isMounted()
 {
     return m_fs.fs_type != 0;
 }
 
-status unmount()
+Status unmount()
 {
-    return map_fresult(f_mount(nullptr, "", 1));
+    return mapFRESULT(f_mount(nullptr, "", 1));
 }
 
-file* open(const string& path, uint8_t mode)
+File* open(const string& path, uint8_t mode)
 {
     FRESULT fres;
-    for (auto& handle : m_file_handles)
+    for (auto& handle : m_fileHandles)
     {
         if (handle) continue;
 
-        handle = etl::unique_ptr<file>(new file(path));
+        handle = etl::unique_ptr<File>(new File(path));
         if ((fres = f_open(handle->fil(), path.c_str(), mode)) == FR_OK) return handle.get();
 
-        printf_("%s\r\n", status_message(map_fresult(fres)));
+        printf_("%s\r\n", statusMessageMap(mapFRESULT(fres)));
         handle.reset();  // automatically frees the memory
         return nullptr;
     }
     return nullptr;
 }
 
-status close(file* f)
+Status close(File* f)
 {
-    if (!f) return status::err;
+    if (!f) return Status::ERR;
 
-    for (auto& handle : m_file_handles)
+    for (auto& handle : m_fileHandles)
     {
         if (handle && handle.get() == f)
         {
             FRESULT fres = f_close(f->fil());
-            if (fres != FR_OK) return map_fresult(fres);
+            if (fres != FR_OK) return mapFRESULT(fres);
 
             handle.reset();  // destroy file object
-            return status::ok;
+            return Status::OK;
         }
     }
 
-    return status::invalid_parameter;
+    return Status::INVALID_PARAMETER;
 }
 
-status copy(const string& src, const string& dst, uint8_t modes)
+Status copy(const string& src, const string& dst, uint8_t modes)
 {
     if (!exists(src.c_str())) return fail("src is empty");
 
-    status  stat = status::ok;
+    Status  stat = Status::OK;
     FRESULT fres = FR_OK;
 
-    bool is_dst_dir = is_directory(dst);
-    bool is_src_dir = is_directory(src);
+    bool isDstDir = isDirectory(dst);
+    bool isSrcDir = isDirectory(src);
 
-    bool dst_exists = exists(dst.c_str());
-    if (dst_exists && (modes & OVERWRITE) == 0)
+    bool dstExists = exists(dst.c_str());
+    if (dstExists && (modes & OVERWRITE) == 0)
         return fail("overwrite flag not enabled for overwriting the destination");
-    if (dst_exists) remove(dst);
+    if (dstExists) remove(dst);
 
-    if ((!is_src_dir && !is_dst_dir) || (!is_src_dir && is_dst_dir))
+    if ((!isSrcDir && !isDstDir) || (!isSrcDir && isDstDir))
     {
         // copy(write) content of a file into another (or into a new/existing directory)
 
-        path_data pdst = extract_path(dst);
-        path_data psrc = extract_path(src);
+        PathData pdst = extractPath(dst);
+        PathData psrc = extractPath(src);
 
         string cdst = dst;  // copy from dst
 
-        file* fsrc = open(src, FA_OPEN_EXISTING | FA_READ);
-        if (!fsrc) return status::err;
+        File* fsrc = open(src, FA_OPEN_EXISTING | FA_READ);
+        if (!fsrc) return Status::ERR;
 
         if (!exists(pdst.folder)) mkdir(pdst.folder);
         if (pdst.filename.empty())
@@ -113,8 +113,8 @@ status copy(const string& src, const string& dst, uint8_t modes)
             cdst.resize(cdst.size() - 1);
         }
 
-        file* fdst;
-        if (is_directory(cdst))
+        File* fdst;
+        if (isDirectory(cdst))
         {
             // we are adding src file to a directory
 
@@ -128,41 +128,41 @@ status copy(const string& src, const string& dst, uint8_t modes)
             fdst = open(cdst, FA_CREATE_ALWAYS | FA_WRITE);
         }
 
-        if (!fdst) return status::err;
+        if (!fdst) return Status::ERR;
 
         etl::array<uint8_t, BLOCK_SIZE> rbuf = {};
         while (fsrc->read(rbuf))
         {
-            if ((stat = fdst->write(rbuf)) != status::ok) return stat;
+            if ((stat = fdst->write(rbuf)) != Status::OK) return stat;
         }
 
-        if ((stat = close(fdst)) != status::ok) return stat;
-        if ((stat = close(fsrc)) != status::ok) return stat;
+        if ((stat = close(fdst)) != Status::OK) return stat;
+        if ((stat = close(fsrc)) != Status::OK) return stat;
     }
 
-    else if (is_src_dir && is_dst_dir)
+    else if (isSrcDir && isDstDir)
     {
         // put a directory inside another directory
-        DIR src_dir;
-        if ((fres = f_opendir(&src_dir, src.c_str())) != FR_OK) return map_fresult(fres);
+        DIR srcDir;
+        if ((fres = f_opendir(&srcDir, src.c_str())) != FR_OK) return mapFRESULT(fres);
 
         FILINFO fno;
         for (;;)
         {
-            if ((fres = f_readdir(&src_dir, &fno)) != FR_OK) return map_fresult(fres);
+            if ((fres = f_readdir(&srcDir, &fno)) != FR_OK) return mapFRESULT(fres);
             if (!fno.fname[0]) break;
             if (strcmp(fno.fname, ".") == 0 || strcmp(fno.fname, "..") == 0) continue;
 
-            string src_child = src;
-            src_child.append("/").append(fno.fname);
+            string srcChild = src;
+            srcChild.append("/").append(fno.fname);
 
-            string dst_child = dst;
-            dst_child.append("/").append(fno.fname);
+            string dstChild = dst;
+            dstChild.append("/").append(fno.fname);
 
-            if ((stat = copy(src_child, dst_child, modes)) != status::ok) return stat;
+            if ((stat = copy(srcChild, dstChild, modes)) != Status::OK) return stat;
         }
 
-        f_closedir(&src_dir);
+        f_closedir(&srcDir);
     }
     else
     {
@@ -170,33 +170,33 @@ status copy(const string& src, const string& dst, uint8_t modes)
             "moving a directory into a file is unlogical");  // can't move a directory into a file
     }
 
-    return status::ok;
+    return Status::OK;
 }
 
-status remove(const string& s, bool recursive)
+Status remove(const string& s, bool recursive)
 {
     string p;
     p.assign(s.c_str());
 
-    if (p == "/" || p == "." || p.empty()) return status::err;
+    if (p == "/" || p == "." || p.empty()) return Status::ERR;
 
     FILINFO info;
     FRESULT fres;
-    status  stat;
+    Status  stat;
     DIR     dir;
 
-    if (f_stat(p.c_str(), &info) != FR_OK) return status::err;
+    if (f_stat(p.c_str(), &info) != FR_OK) return Status::ERR;
 
     // directory?
     if (info.fattrib & AM_DIR)
     {
-        if (!recursive) return status::err;
+        if (!recursive) return Status::ERR;
 
-        if (f_opendir(&dir, p.c_str()) != FR_OK) return status::err;
+        if (f_opendir(&dir, p.c_str()) != FR_OK) return Status::ERR;
 
         for (;;)
         {
-            if (f_readdir(&dir, &info) != FR_OK) return status::err;
+            if (f_readdir(&dir, &info) != FR_OK) return Status::ERR;
 
             if (!info.fname[0]) break;
 
@@ -209,38 +209,40 @@ status remove(const string& s, bool recursive)
             if (info.fattrib & AM_DIR)
             {
                 f_closedir(&dir);
-                if ((stat = remove(full, true)) != status::ok) return stat;
+                if ((stat = remove(full, true)) != Status::OK) return stat;
 
                 fres = f_opendir(&dir, p.c_str());
-                if (fres != FR_OK) return map_fresult(fres);
+                if (fres != FR_OK) return mapFRESULT(fres);
             }
             else
             {
-                if (f_unlink(full.c_str()) != FR_OK) return status::err;
+                if (f_unlink(full.c_str()) != FR_OK) return Status::ERR;
             }
         }
 
         f_closedir(&dir);
     }
 
-    return map_fresult(f_unlink(p.c_str()));
+    return mapFRESULT(f_unlink(p.c_str()));
 }
 
-status rename(const string& old_name, const string& new_name)
+Status rename(const string& oldName, const string& newName)
 {
-    return map_fresult(f_rename(old_name.c_str(), new_name.c_str()));
+    return mapFRESULT(f_rename(oldName.c_str(), newName.c_str()));
 }
 
-status format(sdfs fmt)
+Status format(SDFS fmt)
 {
-    status stat;
-    if (is_mounted())
+    //! FIXME
+
+    Status stat;
+    if (isMounted())
     {
-        if ((stat = unmount()) != status::ok) return stat;
+        if ((stat = unmount()) != Status::OK) return stat;
     }
 
     DWORD work[_MAX_SS];
-    if (f_mkfs("", (BYTE) fmt, 0, work, sizeof(work)) != FR_OK) return status::err;
+    if (f_mkfs("", (BYTE) fmt, 0, work, sizeof(work)) != FR_OK) return Status::ERR;
 
     return mount();
 }
@@ -250,9 +252,9 @@ bool exists(const string& p)
     return f_stat(p.c_str(), nullptr) == FR_OK;
 }
 
-status mkdir(const string& p)
+Status mkdir(const string& p)
 {
-    return map_fresult(f_mkdir(p.c_str()));
+    return mapFRESULT(f_mkdir(p.c_str()));
 }
 
 int8_t list(const string& dir_p, uint8_t page, etl::array<FILINFO, PAGE_SIZE>& out)
@@ -260,12 +262,12 @@ int8_t list(const string& dir_p, uint8_t page, etl::array<FILINFO, PAGE_SIZE>& o
     DIR dir;
     if (f_opendir(&dir, dir_p.c_str()) != FR_OK) return -1;
 
-    uint16_t file_read  = 0;
-    uint16_t page_start = PAGE_SIZE * page;
-    uint16_t page_end   = PAGE_SIZE * (page + 1);
+    uint16_t filesRead  = 0;
+    uint16_t pageStart = PAGE_SIZE * page;
+    uint16_t pageEnd   = PAGE_SIZE * (page + 1);
 
     FILINFO  fno;
-    uint32_t current_file = 0;
+    uint32_t currentFile = 0;
 
     for (;;)
     {
@@ -273,20 +275,20 @@ int8_t list(const string& dir_p, uint8_t page, etl::array<FILINFO, PAGE_SIZE>& o
 
         if (!fno.fname[0]) break;
 
-        if (current_file >= page_start && current_file < page_end)
+        if (currentFile >= pageStart && currentFile < pageEnd)
         {
-            out[current_file - page_start] = fno;
-            file_read++;
+            out[currentFile - pageStart] = fno;
+            filesRead++;
         }
 
-        current_file++;
+        currentFile++;
     }
 
     f_closedir(&dir);
-    return file_read;
+    return filesRead;
 }
 
-uint64_t total_space()
+uint64_t totalSpace()
 {
     FATFS* pfs = nullptr;
 
@@ -295,17 +297,17 @@ uint64_t total_space()
     return (uint64_t) (pfs->n_fatent - 2) * pfs->csize * 512;
 }
 
-uint64_t free_space()
+uint64_t freeSpace()
 {
     FATFS* pfs = nullptr;
-    DWORD  free_clusters;
+    DWORD  freeClusters;
 
-    if (f_getfree("", &free_clusters, &pfs) != FR_OK) return 0;
+    if (f_getfree("", &freeClusters, &pfs) != FR_OK) return 0;
 
-    return (uint64_t) free_clusters * pfs->csize * 512;
+    return (uint64_t) freeClusters * pfs->csize * 512;
 }
 
-bool is_file(const string& p)
+bool isFile(const string& p)
 {
     FILINFO fi;
     if (f_stat(p.c_str(), &fi) != FR_OK) return false;
@@ -313,7 +315,7 @@ bool is_file(const string& p)
     return !(fi.fattrib & AM_DIR);
 }
 
-bool is_directory(const string& p)
+bool isDirectory(const string& p)
 {
     FILINFO fi;
     if (f_stat(p.c_str(), &fi) != FR_OK) return false;
@@ -331,9 +333,9 @@ string label()
     return s;
 }
 
-status set_label(const string& lab)
+Status setLabel(const string& lab)
 {
-    return map_fresult(f_setlabel(lab.c_str()));
+    return mapFRESULT(f_setlabel(lab.c_str()));
 }
 
 string cwd()
@@ -347,9 +349,9 @@ string cwd()
     return s;
 }
 
-status chdir(const string& p)
+Status chdir(const string& p)
 {
-    return map_fresult(f_chdir(p.c_str()));
+    return mapFRESULT(f_chdir(p.c_str()));
 }
 
 }  // namespace filesystem

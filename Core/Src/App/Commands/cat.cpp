@@ -12,44 +12,44 @@ namespace fs = stm_sd::filesystem;
 namespace stm_sd
 {
 
-cmd_exec cat_exec = [](const cmd_args& args)
+CmdExec catExec = [](const CmdArgs& args)
 {
     if (args.empty()) return fail("args can't be empty");
-    status stat;
+    Status stat;
 
     // > and >> are only used for echo just for simplicity's sake
-    auto write_symb  = etl::find(args.begin(), args.end(), ">");
-    auto append_symb = etl::find(args.begin(), args.end(), ">>");
+    auto writeSymb  = etl::find(args.begin(), args.end(), ">");
+    auto appendSymb = etl::find(args.begin(), args.end(), ">>");
 
-    bool    out_to_file = false;  // checks if we will output to a file or stdout (uart)
-    file*   fo;
-    uint8_t files_to_write = 0;
-    if (write_symb != args.end() && append_symb != args.end())
+    bool    hasWrittenToFile = false;  // checks if we will output to a file or stdout (uart)
+    File*   fres;
+    uint8_t nbFilesToWrite = 0;
+    if (writeSymb != args.end() && appendSymb != args.end())
         return fail(">> and > together are not allowed");
-    else if (write_symb != args.end() || append_symb != args.end())
+    else if (writeSymb != args.end() || appendSymb != args.end())
     {
         // find symbole >> or > index
-        ptrdiff_t idx_symb =
-            etl::distance(args.begin(), write_symb != args.end() ? write_symb : append_symb);
-        if (((idx_symb - 1) < 0) || (idx_symb + 1) > static_cast<ptrdiff_t>(args.size()))
-            return status::err;
+        ptrdiff_t idxSymb =
+            etl::distance(args.begin(), writeSymb != args.end() ? writeSymb : appendSymb);
+        if (((idxSymb - 1) < 0) || (idxSymb + 1) > static_cast<ptrdiff_t>(args.size()))
+            return Status::ERR;
         // example: cat file1 file2.txt > out.txt
         //               [0]   [1]     [2] [3]
-        files_to_write = idx_symb;
+        nbFilesToWrite = idxSymb;
 
         // assign flags for file
-        uint8_t open_mode = 0;
-        if (write_symb != args.end())
-            open_mode = FA_OPEN_ALWAYS | FA_WRITE;
-        else if (append_symb != args.end())
-            open_mode = FA_OPEN_APPEND | FA_WRITE;
+        uint8_t openMode = 0;
+        if (writeSymb != args.end())
+            openMode = FA_OPEN_ALWAYS | FA_WRITE;
+        else if (appendSymb != args.end())
+            openMode = FA_OPEN_APPEND | FA_WRITE;
 
-        string output_file_path = args[static_cast<size_t>(idx_symb + 1)];
-        fo                      = fs::open(output_file_path, open_mode);
-        if (!fo) return status::err;
-        if (write_symb != args.end()) fo->truncate();  // set to start of file
+        string outputFilePath = args[static_cast<size_t>(idxSymb + 1)];
+        fres                    = fs::open(outputFilePath, openMode);
+        if (!fres) return Status::ERR;
+        if (writeSymb != args.end()) fres->truncate();  // set to start of file
 
-        out_to_file = true;
+        hasWrittenToFile = true;
     }
 
     for (const auto& arg : args)
@@ -57,40 +57,40 @@ cmd_exec cat_exec = [](const cmd_args& args)
         if (arg == ">" || arg == ">>") break;
         string path = arg;
 
-        if (!is_filename(path))
+        if (!isFilename(path))
         {
-            if (out_to_file) fs::close(fo);
+            if (hasWrittenToFile) fs::close(fres);
             return fail("unvalid filename");
         }
-        if (is_double_quoted(path)) path = format_str(path);
+        if (isDoubleQuoted(path)) path = formatStr(path);
 
         if (!fs::exists(path))
         {
-            if (out_to_file) fs::close(fo);
-            return status::no_file;
+            if (hasWrittenToFile) fs::close(fres);
+            return Status::NO_FILE;
         }
-        file* f = fs::open(path, file_mode::read);
-        if (!f) return status::err;
+        File* f = fs::open(path, FileMode::READ);
+        if (!f) return Status::ERR;
 
         //* in reality we read BLOCK_SIZE - 1 chars at a time
-        etl::string<BLOCK_SIZE> read_buf;
-        if (out_to_file)
+        etl::string<BLOCK_SIZE> readBuf;
+        if (hasWrittenToFile)
         {
-            files_to_write--;
-            while (f->read(read_buf)) fo->write(read_buf);
-            if (files_to_write != 0) fo->write("\r\n");
+            nbFilesToWrite--;
+            while (f->read(readBuf)) fres->write(readBuf);
+            if (nbFilesToWrite != 0) fres->write("\r\n");
         }
         else
         {
-            while (f->read(read_buf)) printf_("%s", read_buf.c_str());
+            while (f->read(readBuf)) printf_("%s", readBuf.c_str());
             printf_("\r\n");
         }
 
-        if ((stat = fs::close(f)) != status::ok) return stat;
+        if ((stat = fs::close(f)) != Status::OK) return stat;
     }
 
-    if (out_to_file) return fs::close(fo);
-    return status::ok;
+    if (hasWrittenToFile) return fs::close(fres);
+    return Status::OK;
 };
 
 }  // namespace stm_sd

@@ -47,6 +47,6 @@ namespace stm_sd
 /***************************************************************
  * Function Declarations
  ***************************************************************/
-void hal_init_all();
+void HALInit();
 
 }  // namespace stm_sd

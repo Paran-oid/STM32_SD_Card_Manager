@@ -46,4 +46,6 @@ inline constexpr uint8_t RECURSIVE = (1 << 2);
 
 using string = etl::string<SSIZE>;
 
+#define CLEAR_CMD "\033[2J\033[H\r\n"
+
 }  // namespace stm_sd
