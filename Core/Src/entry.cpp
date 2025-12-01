@@ -20,19 +20,14 @@ extern "C"
 
 #define TESTING_ 0
 
-using stm_sd::string, stm_sd::Status, stm_sd::HALInit, stm_sd::die;
+using stm_sd::string, stm_sd::Status, stm_sd::die;
 
 namespace fs = stm_sd::filesystem;
 
-// uart input buf
-string s;
-
 void setup()
 {
-    HALInit();
-
 #if TESTING_
-    run_tests();  // to configure tests modify run_tests in tests.cpp inside Tests folder
+    runTests();  // to configure tests modify runTests in tests.cpp inside Tests folder
 #endif
 
     if (fs::mount() != Status::OK) die("couldn't mount SD Card");
@@ -43,6 +38,7 @@ void setup()
 
 void loop()
 {
+    string s;
     uart2.scan(s);
     s = stm_sd::unescape(s);
     stm_sd::handleCommand(s);

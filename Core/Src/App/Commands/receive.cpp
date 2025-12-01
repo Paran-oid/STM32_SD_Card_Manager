@@ -51,7 +51,7 @@ CmdExec receiveExec = [](const CmdArgs& args)
     File* f = fs::open(path, FCREATE_NEW | FWRITE);
     if (!f)
     {
-        // TODO: make sure to format
+        // TODO: make sure to format (""path.txt" -> "path.txt"")
         return fail("unexpected error...");
     }
 
@@ -68,6 +68,8 @@ CmdExec receiveExec = [](const CmdArgs& args)
             fs::close(f);
             return fail("didn't receive anything...");
         }
+
+        if (c == '\r' || c == '\n') break;
 
         bytesWritten++;
         f->write((const char*) &c);  // TODO: make this work ffs

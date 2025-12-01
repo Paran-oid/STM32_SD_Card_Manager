@@ -7,7 +7,7 @@ using namespace stm_sd;
 
 namespace fs = stm_sd::filesystem;
 
-TestResult test_sd_read_write(bool display)
+TestResult testReadWriteSD(bool display)
 {
     /*
     ?checks the following:
