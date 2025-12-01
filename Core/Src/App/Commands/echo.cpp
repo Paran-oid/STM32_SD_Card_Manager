@@ -3,12 +3,11 @@
 #include <etl/vector.h>
 
 #include "command_handler.hpp"
-#include "file.hpp"
-#include "filesystem.hpp"
-#include "hal_init.hpp"
+#include "sd_file.hpp"
+#include "sd_filesystem.hpp"
 #include "utils.hpp"
 
-namespace fs = stm_sd::filesystem;
+namespace fs = stm_sd::sd_filesystem;
 
 namespace stm_sd
 {
@@ -71,7 +70,7 @@ CmdExec echoExec = [](const CmdArgs& args)
 
         string outputFilePath = args[static_cast<size_t>(symbIdx + 1)];
         if (!isFilename(outputFilePath)) return Status::INVALID_NAME;
-        File* file = fs::open(outputFilePath, openMode);
+        SDFile* file = fs::open(outputFilePath, openMode);
         if (!file) return Status::ERR;
 
         if (writeSymb != args.end()) file->truncate();  // set to start of file

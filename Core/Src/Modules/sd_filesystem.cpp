@@ -1,27 +1,27 @@
-#include "filesystem.hpp"
+#include "sd_filesystem.hpp"
 
+#include <etl/array.h>
 #include <etl/memory.h>
 
 #include "ffconf.h"
-#include "file.hpp"
-#include "hal_init.hpp"
 #include "printf.h"
+#include "sd_file.hpp"
 
 namespace stm_sd
 {
 
-namespace filesystem
+namespace sd_filesystem
 {
 
 // --------------------------------------------------
 // Internal static state
 // --------------------------------------------------
 
-using file_ptr = etl::unique_ptr<File>;
+using SDFilePtr = etl::unique_ptr<SDFile>;
 
-static FATFS                                  m_fs;
-static SPI_HandleTypeDef                      m_hspi;
-static etl::array<file_ptr, MAX_FILE_HANDLES> m_fileHandles;
+static FATFS                                   m_fs;
+static SPI_HandleTypeDef                       m_hspi;
+static etl::array<SDFilePtr, MAX_FILE_HANDLES> m_fileHandles;
 
 void init(SPI_HandleTypeDef& hspi)
 {
@@ -43,14 +43,14 @@ Status unmount()
     return mapFRESULT(f_mount(nullptr, "", 1));
 }
 
-File* open(const string& path, uint8_t mode)
+SDFile* open(const string& path, uint8_t mode)
 {
     FRESULT fres;
     for (auto& handle : m_fileHandles)
     {
         if (handle) continue;
 
-        handle = etl::unique_ptr<File>(new File(path));
+        handle = etl::unique_ptr<SDFile>(new SDFile(path));
         if ((fres = f_open(handle->fil(), path.c_str(), mode)) == FR_OK) return handle.get();
 
         printf_("%s\r\n", statusMessageMap(mapFRESULT(fres)));
@@ -60,7 +60,7 @@ File* open(const string& path, uint8_t mode)
     return nullptr;
 }
 
-Status close(File* f)
+Status close(SDFile* f)
 {
     if (!f) return Status::ERR;
 
@@ -103,7 +103,7 @@ Status copy(const string& src, const string& dst, uint8_t modes)
 
         string cdst = dst;  // copy from dst
 
-        File* fsrc = open(src, FOPEN_EXISTING | FREAD);
+        SDFile* fsrc = open(src, FOPEN_EXISTING | FREAD);
         if (!fsrc) return Status::ERR;
 
         if (!exists(pdst.folder)) mkdir(pdst.folder);
@@ -113,7 +113,7 @@ Status copy(const string& src, const string& dst, uint8_t modes)
             cdst.resize(cdst.size() - 1);
         }
 
-        File* fdst;
+        SDFile* fdst;
         if (isDirectory(cdst))
         {
             // we are adding src file to a directory
@@ -354,6 +354,6 @@ Status chdir(const string& p)
     return mapFRESULT(f_chdir(p.c_str()));
 }
 
-}  // namespace filesystem
+}  // namespace sd_filesystem
 
 }  // namespace stm_sd

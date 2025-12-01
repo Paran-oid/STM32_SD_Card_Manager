@@ -48,8 +48,6 @@ enum class CommandType : uint8_t
     MV,           // move (and/or rename) a file
     FREE_SPACE,   // remaining free space of the sd card
     TOTAL_SPACE,  // total space inside the sd card
-    SEND,         // send files from pc to sd card and vice versa
-    RECEIVE,      // receive files from pc to sd card and vice versa
     NONE,         // undefined
     COUNT         // returns number of command types including none
 };
@@ -58,11 +56,6 @@ using CmdArgs = etl::vector<string, CMD_HANDLER_ARGS_CAPACITY>;
 using CmdExec = Status (*)(const CmdArgs&);
 using CmdExecMap =
     etl::unordered_map<CommandType, CmdExec, static_cast<size_t>(CommandType::COUNT)>;
-
-/***************************************************************
- * Exported Objects
- ***************************************************************/
-extern CmdExecMap cmdTable;  // defined in command_handler.cpp
 
 /***************************************************************
  * Function Declarations

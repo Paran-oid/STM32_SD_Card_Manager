@@ -2,17 +2,14 @@
 #include <etl/vector.h>
 
 #include "command_handler.hpp"
-#include "file.hpp"
-#include "filesystem.hpp"
-#include "hal_init.hpp"
+#include "sd_file.hpp"
+#include "sd_filesystem.hpp"
 #include "utils.hpp"
 
-namespace fs = stm_sd::filesystem;
+namespace fs = stm_sd::sd_filesystem;
 
 namespace stm_sd
 {
-
-extern CmdExec rmExec;
 
 CmdExec cpExec = [](const CmdArgs& args)
 {

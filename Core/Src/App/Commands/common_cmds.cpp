@@ -2,12 +2,11 @@
 #include <etl/vector.h>
 
 #include "command_handler.hpp"
-#include "filesystem.hpp"
-#include "hal_init.hpp"
 #include "printf.h"
+#include "sd_filesystem.hpp"
 #include "utils.hpp"
 
-namespace fs = stm_sd::filesystem;
+namespace fs = stm_sd::sd_filesystem;
 
 namespace stm_sd
 {

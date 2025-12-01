@@ -7,17 +7,11 @@ extern "C"
 {
 #include "main.h"
 }
+#include <etl/string.h>
 
 /***************************************************************
  * Forward Declarations
  ***************************************************************/
-namespace etl
-{
-
-template <size_t N>
-class string;
-
-}
 
 namespace stm_sd
 {
@@ -43,6 +37,9 @@ inline constexpr uint64_t BYTES_PER_GB = 1024.0 * 1024.0 * 1024.0;
 
 inline constexpr uint8_t OVERWRITE = (1 << 1);
 inline constexpr uint8_t RECURSIVE = (1 << 2);
+
+inline constexpr uint8_t DEFAULT_TIMEOUT = 100;
+inline constexpr uint8_t BACKSPACE       = 0x7F;
 
 using string = etl::string<SSIZE>;
 

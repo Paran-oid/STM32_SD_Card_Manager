@@ -21,6 +21,7 @@
 
 #include "fatfs.h"
 
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -58,7 +59,6 @@ static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_TIM2_Init(void);
-
 /* USER CODE BEGIN PFP */
 /* USER CODE END PFP */
 
@@ -76,6 +76,7 @@ int main(void)
     /* USER CODE END 1 */
 
     /* MCU Configuration--------------------------------------------------------*/
+
     /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
     HAL_Init();
 

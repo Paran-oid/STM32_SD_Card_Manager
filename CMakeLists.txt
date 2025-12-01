@@ -60,8 +60,7 @@ target_sources(
           ${CMAKE_SOURCE_DIR}/Core/Src/entry.cpp
           ${CMAKE_SOURCE_DIR}/Core/Src/utils.cpp
           ${CMAKE_SOURCE_DIR}/Core/Src/Modules/sd_file.cpp
-          ${CMAKE_SOURCE_DIR}/Core/Src/Modules/filesystem.cpp
-          ${CMAKE_SOURCE_DIR}/Core/Src/App/hal_init.cpp
+          ${CMAKE_SOURCE_DIR}/Core/Src/Modules/sd_filesystem.cpp
           ${CMAKE_SOURCE_DIR}/Core/Src/App/command_handler.cpp
           ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/echo.cpp
           ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/rm.cpp
@@ -73,8 +72,7 @@ target_sources(
           ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/dir_cmds.cpp
           ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/touch.cpp
           ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/mv.cpp
-          ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/send.cpp
-          ${CMAKE_SOURCE_DIR}/Core/Src/App/Commands/receive.cpp
+          ${CMAKE_SOURCE_DIR}/Core/Src/Peripherals/uart_io.cpp
           #
           # Test-related
           #
@@ -94,6 +92,7 @@ target_include_directories(
           ${CMAKE_SOURCE_DIR}/Core/Inc
           ${CMAKE_SOURCE_DIR}/Core/Inc/Modules
           ${CMAKE_SOURCE_DIR}/Core/Inc/App
+          ${CMAKE_SOURCE_DIR}/Core/Inc/Peripherals
           #
           # Test-related
           #
@@ -103,10 +102,6 @@ target_include_directories(
 target_compile_definitions(
   ${CMAKE_PROJECT_NAME} PUBLIC # Add user defined symbols
 )
-
-target_compile_definitions(
-  scal PUBLIC # Add user defined symbols for cpp abstraction library
-              SCA_GPIO SCA_SPI SCA_PTIMER SCA_UART)
 
 # Add flags
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Wall -Wextra
@@ -133,4 +128,4 @@ list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
 # Add linked libraries
 target_link_libraries(
   ${CMAKE_PROJECT_NAME} stm32cubemx etl::etl # Add user defined libraries
-  scal printf)
+  printf)

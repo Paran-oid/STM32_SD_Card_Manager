@@ -21,26 +21,21 @@ extern CmdExec mkdirExec;
 extern CmdExec rmdirExec;
 extern CmdExec touchExec;
 extern CmdExec mvExec;
-extern CmdExec sendExec;
-extern CmdExec receiveExec;
-CmdExecMap     cmdTable = {{CommandType::CAT, catExec},     {CommandType::ECHO, echoExec},
-                           {CommandType::LS, lsExec},       {CommandType::RM, rmExec},
-                           {CommandType::CP, cpExec},       {CommandType::CD, cdExec},
-                           {CommandType::CLEAR, clearExec}, {CommandType::PWD, pwdExec},
-                           {CommandType::MKDIR, mkdirExec}, {CommandType::RMDIR, rmdirExec},
-                           {CommandType::TOUCH, touchExec}, {CommandType::MV, mvExec},
-                           {CommandType::SEND, sendExec},   {CommandType::RECEIVE, receiveExec}};
+
+static CmdExecMap cmdTable = {{CommandType::CAT, catExec},     {CommandType::ECHO, echoExec},
+                              {CommandType::LS, lsExec},       {CommandType::RM, rmExec},
+                              {CommandType::CP, cpExec},       {CommandType::CD, cdExec},
+                              {CommandType::CLEAR, clearExec}, {CommandType::PWD, pwdExec},
+                              {CommandType::MKDIR, mkdirExec}, {CommandType::RMDIR, rmdirExec},
+                              {CommandType::TOUCH, touchExec}, {CommandType::MV, mvExec}};
 
 static CommandType check_command_type(const string& item)
 {
     static const std::unordered_map<std::string, CommandType> commandMap = {
-        {"cat", CommandType::CAT},     {"echo", CommandType::ECHO},
-        {"ls", CommandType::LS},       {"rm", CommandType::RM},
-        {"cp", CommandType::CP},       {"cd", CommandType::CD},
-        {"clear", CommandType::CLEAR}, {"pwd", CommandType::PWD},
-        {"mkdir", CommandType::MKDIR}, {"rmdir", CommandType::RMDIR},
-        {"touch", CommandType::TOUCH}, {"mv", CommandType::MV},
-        {"send", CommandType::SEND},   {"receive", CommandType::RECEIVE}};
+        {"cat", CommandType::CAT},     {"echo", CommandType::ECHO},   {"ls", CommandType::LS},
+        {"rm", CommandType::RM},       {"cp", CommandType::CP},       {"cd", CommandType::CD},
+        {"clear", CommandType::CLEAR}, {"pwd", CommandType::PWD},     {"mkdir", CommandType::MKDIR},
+        {"rmdir", CommandType::RMDIR}, {"touch", CommandType::TOUCH}, {"mv", CommandType::MV}};
 
     auto it = commandMap.find(item.c_str());
     if (it != commandMap.end())

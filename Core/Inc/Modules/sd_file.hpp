@@ -14,7 +14,7 @@ extern "C"
 #include <etl/string.h>
 
 #include "defs.hpp"
-#include "filesystem.hpp"
+#include "sd_filesystem.hpp"
 #include "status.hpp"
 #include "utils.hpp"
 
@@ -52,9 +52,9 @@ enum FileMode : uint8_t
 };
 
 /***************************************************************
- * File Class for file-related Operations
+ * SDFile Class for file-related Operations
  ***************************************************************/
-class File
+class SDFile
 {
     /***********************************************************
      * Private Members
@@ -66,16 +66,16 @@ class File
     /***********************************************************
      * Constructors / Destructor
      ***********************************************************/
-    File() = delete;
-    File(const string& path) : m_path {path}
+    SDFile() = delete;
+    SDFile(const string& path) : m_path {path}
     {
     }
-    File(File&& f) noexcept : m_path {etl::move(f.m_path)}, m_fil {f.m_fil}
+    SDFile(SDFile&& f) noexcept : m_path {etl::move(f.m_path)}, m_fil {f.m_fil}
     {
         f.m_fil.obj.fs = nullptr;
     };
-    File(const File& f) = delete;
-    File& operator=(File&& f) noexcept
+    SDFile(const SDFile& f) = delete;
+    SDFile& operator=(SDFile&& f) noexcept
     {
         if (this != &f)
         {
@@ -86,8 +86,8 @@ class File
         }
         return *this;
     }
-    File& operator=(const File& f) = delete;
-    ~File()
+    SDFile& operator=(const SDFile& f) = delete;
+    ~SDFile()
     {
         if (m_fil.obj.fs) f_close(&m_fil);
     }
@@ -137,7 +137,7 @@ class File
  * Template/Inline Functions/Methods Declarations
  ***********************************************************/
 template <size_t N>
-Status File::write(const etl::string<N>& s)
+Status SDFile::write(const etl::string<N>& s)
 {
     unsigned int bytesWritten = 0;
     FRESULT      res          = f_write(&m_fil, s.data(), s.length(), &bytesWritten);
@@ -147,13 +147,13 @@ Status File::write(const etl::string<N>& s)
 }
 
 template <size_t N>
-Status File::write(const etl::array<uint8_t, N>& arr)
+Status SDFile::write(const etl::array<uint8_t, N>& arr)
 {
     return f_write(&m_fil, arr.data(), arr.size(), NULL) == FR_OK ? Status::OK : Status::ERR;
 }
 
 template <size_t N>
-uint32_t File::read(etl::array<uint8_t, N>& arr)
+uint32_t SDFile::read(etl::array<uint8_t, N>& arr)
 {
     char         buf[N];  // must be char[] because f_read works that way
     unsigned int bytesRead;
@@ -170,7 +170,7 @@ uint32_t File::read(etl::array<uint8_t, N>& arr)
 }
 
 template <size_t N>
-uint32_t File::read(etl::string<N>& s)
+uint32_t SDFile::read(etl::string<N>& s)
 {
     // for string overload we will null terminate
     char         buf[N - 1];  // must be char[] because f_read works that way

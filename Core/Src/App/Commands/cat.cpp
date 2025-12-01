@@ -2,12 +2,11 @@
 #include <etl/vector.h>
 
 #include "command_handler.hpp"
-#include "file.hpp"
-#include "filesystem.hpp"
-#include "hal_init.hpp"
+#include "sd_file.hpp"
+#include "sd_filesystem.hpp"
 #include "utils.hpp"
 
-namespace fs = stm_sd::filesystem;
+namespace fs = stm_sd::sd_filesystem;
 
 namespace stm_sd
 {
@@ -22,7 +21,7 @@ CmdExec catExec = [](const CmdArgs& args)
     auto appendSymb = etl::find(args.begin(), args.end(), ">>");
 
     bool    hasWrittenToFile = false;  // checks if we will output to a file or stdout (uart)
-    File*   fres;
+    SDFile* fres;
     uint8_t nbFilesToWrite = 0;
     if (writeSymb != args.end() && appendSymb != args.end())
         return fail(">> and > together are not allowed");
@@ -69,7 +68,7 @@ CmdExec catExec = [](const CmdArgs& args)
             if (hasWrittenToFile) fs::close(fres);
             return Status::NO_FILE;
         }
-        File* f = fs::open(path, FREAD);
+        SDFile* f = fs::open(path, FREAD);
         if (!f) return Status::ERR;
 
         //* in reality we read BLOCK_SIZE - 1 chars at a time

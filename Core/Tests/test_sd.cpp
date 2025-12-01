@@ -1,11 +1,12 @@
-#include "filesystem.hpp"
-#include "hal_init.hpp"
+
 #include "printf.h"
+#include "sd_file.hpp"
+#include "sd_filesystem.hpp"
 #include "tests.hpp"
 
 using namespace stm_sd;
 
-namespace fs = stm_sd::filesystem;
+namespace fs = stm_sd::sd_filesystem;
 
 TestResult testReadWriteSD(bool display)
 {
@@ -21,7 +22,7 @@ TestResult testReadWriteSD(bool display)
 
     string path = "test.txt";
 
-    File* file = fs::open(path, FREAD | FWRITE);
+    SDFile* file = fs::open(path, FREAD | FWRITE);
     if (!file) return {false, "couldn't create file"};
 
     string s = {};

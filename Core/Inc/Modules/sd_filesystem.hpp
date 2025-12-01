@@ -14,7 +14,6 @@ extern "C"
 #include <etl/string.h>
 
 #include "defs.hpp"
-#include "file.hpp"
 #include "status.hpp"
 #include "utils.hpp"
 
@@ -24,7 +23,7 @@ namespace stm_sd
 /***************************************************************
  * Forward Declarations
  ***************************************************************/
-class File;
+class SDFile;
 
 // SD file system
 enum class SDFS : uint8_t
@@ -47,7 +46,7 @@ enum class SDType : uint8_t
 /***********************************************************
  * filesystem namespace for managing the filesystem itself
  ***********************************************************/
-namespace filesystem
+namespace sd_filesystem
 {
 
 /***********************************************************
@@ -58,16 +57,16 @@ Status mount();
 bool   isMounted();
 Status unmount();
 
-File*  open(const string&, uint8_t);  // returns a file handle
-Status close(File*);                  // close file
-Status copy(const string&, const string&, uint8_t);
-Status remove(const string&, bool = false);
-Status rename(const string&, const string&);
+SDFile* open(const string&, uint8_t);  // returns a file handle
+Status  close(SDFile*);                // close file
+Status  copy(const string&, const string&, uint8_t);
+Status  remove(const string&, bool = false);
+Status  rename(const string&, const string&);
 
 Status format(SDFS);
 
-File*  open(const string&, uint8_t);
-Status close(File*);
+SDFile* open(const string&, uint8_t);
+Status  close(SDFile*);
 
 bool   exists(const string&);
 Status mkdir(const string&);
@@ -89,6 +88,6 @@ Status setLabel(const string&);
 string cwd();
 Status chdir(const string&);
 
-}  // namespace filesystem
+}  // namespace sd_filesystem
 
 }  // namespace stm_sd
