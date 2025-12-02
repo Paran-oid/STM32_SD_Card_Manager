@@ -16,14 +16,26 @@ extern "C"
 #include "uart_io.hpp"
 #include "utils.hpp"
 
+/***********************************************************
+ * Flags
+ ***********************************************************/
 #define TESTING_ 0
+
+/***********************************************************
+ * Typedefs
+ ***********************************************************/
 using stm_sd::string, stm_sd::Status, stm_sd::die;
 namespace fs = stm_sd::sd_filesystem;
 
+/***********************************************************
+ * Extern Variables
+ ***********************************************************/
 extern SPI_HandleTypeDef  hspi1;
-extern TIM_HandleTypeDef  htim2;
 extern UART_HandleTypeDef huart2;
 
+/***********************************************************
+ * setup() and loop() implementations
+ ***********************************************************/
 void setup()
 {
 #if TESTING_
@@ -36,9 +48,11 @@ void setup()
 
 void loop()
 {
-    string s;
-    s = stm_sd::UART_Scan(&huart2);
+    string s = stm_sd::UART2_Scan();
 
-    // s = stm_sd::unescape(s);
-    // stm_sd::handleCommand(s);
+    if (!s.empty())
+    {
+        s = stm_sd::unescape(s);
+        stm_sd::handleCommand(s);
+    }
 }

@@ -52,6 +52,16 @@ enum class CommandType : uint8_t
     COUNT         // returns number of command types including none
 };
 
+/**
+ *  @brief For the CmdArgs type we expect that the user will be entering max CMD_HANDLER_ARGS_CAPACITY arguments.
+    That is we can't do something like this:
+    
+    case CMD_HANDLER_ARGS_CAPACITY = 4 
+    cmd -r -f -c smth.c -o smth.o
+    
+    !!!IMPOSSIBLE!!! Either increase CMD_HANDLER_ARGS_CAPACITY in defs or the command will not be accepted
+ * 
+ */
 using CmdArgs = etl::vector<string, CMD_HANDLER_ARGS_CAPACITY>;
 using CmdExec = Status (*)(const CmdArgs&);
 using CmdExecMap =

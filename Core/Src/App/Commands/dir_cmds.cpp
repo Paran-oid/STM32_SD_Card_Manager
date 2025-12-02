@@ -14,6 +14,9 @@ namespace stm_sd
 
 CmdExec mkdirExec = [](const CmdArgs& args)
 {
+    /*
+        Create an empty directory
+    */
     if (args.empty()) return fail("args are not allowed to be empty");
 
     Status stat;
@@ -27,6 +30,9 @@ CmdExec mkdirExec = [](const CmdArgs& args)
 
 CmdExec rmdirExec = [](const CmdArgs& args)
 {
+    /*
+        Removes an EMPTY directory
+    */
     if (args.empty()) return fail("args are not allowed to be empty");
 
     Status stat;

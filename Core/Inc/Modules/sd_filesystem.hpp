@@ -1,3 +1,14 @@
+/**
+ * @file sd_filesystem.hpp
+ * @author Aziz Hmidi (azizhmidi125@gmail.com)
+ * @brief
+ * @version 0.1
+ * @date 2025-12-02
+ *
+ * @copyright Copyright (c) 2025
+ *
+ */
+
 #pragma once
 
 /***************************************************************

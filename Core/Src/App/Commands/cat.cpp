@@ -13,14 +13,18 @@ namespace stm_sd
 
 CmdExec catExec = [](const CmdArgs& args)
 {
+    /*
+        More or less exists just for reading the contents of a file as of writing this (02.12.2025)
+    */
+
     if (args.empty()) return fail("args can't be empty");
     Status stat;
 
-    // > and >> are only used for echo just for simplicity's sake
+    // only > and >> symbols are used for echo for now
     auto writeSymb  = etl::find(args.begin(), args.end(), ">");
     auto appendSymb = etl::find(args.begin(), args.end(), ">>");
 
-    bool    hasWrittenToFile = false;  // checks if we will output to a file or stdout (uart)
+    bool    hasWrittenToFile = false;  // checks if we will output to a file or stdout (UART)
     SDFile* fres;
     uint8_t nbFilesToWrite = 0;
     if (writeSymb != args.end() && appendSymb != args.end())
@@ -36,7 +40,7 @@ CmdExec catExec = [](const CmdArgs& args)
         //               [0]   [1]     [2] [3]
         nbFilesToWrite = idxSymb;
 
-        // assign flags for file
+        // assign flags for the file
         uint8_t openMode = 0;
         if (writeSymb != args.end())
             openMode = FOPEN_ALWAYS | FWRITE;

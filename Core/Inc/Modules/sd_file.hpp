@@ -1,3 +1,15 @@
+/**
+ * @file sd_file.hpp
+ * @author Aziz Hmidi (azizhmidi125@gmail.com)
+ * @brief
+        More or less a C++ wrapper for the fatfs API file related functionalities
+ * @version 0.1
+ * @date 2025-12-02
+ *
+ * @copyright Copyright (c) 2025
+ *
+ */
+
 #pragma once
 
 /***************************************************************

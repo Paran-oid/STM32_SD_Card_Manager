@@ -10,6 +10,9 @@ namespace stm_sd
 
 CmdExec touchExec = [](const CmdArgs& args)
 {
+    /*
+        Create an empty file
+    */
     if (args.empty()) return Status::ERR;
 
     for (const auto& arg : args)

@@ -12,6 +12,10 @@ namespace stm_sd
 
 CmdExec lsExec = [](const CmdArgs& args)
 {
+    /*
+        Lists all files in cwd
+    */
+
     string path;
     if (args.empty())
         path = ".";

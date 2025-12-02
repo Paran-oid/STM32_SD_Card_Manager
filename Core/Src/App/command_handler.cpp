@@ -29,7 +29,7 @@ static CmdExecMap cmdTable = {{CommandType::CAT, catExec},     {CommandType::ECH
                               {CommandType::MKDIR, mkdirExec}, {CommandType::RMDIR, rmdirExec},
                               {CommandType::TOUCH, touchExec}, {CommandType::MV, mvExec}};
 
-static CommandType check_command_type(const string& item)
+static CommandType checkCommandType(const string& item)
 {
     static const std::unordered_map<std::string, CommandType> commandMap = {
         {"cat", CommandType::CAT},     {"echo", CommandType::ECHO},   {"ls", CommandType::LS},
@@ -71,7 +71,7 @@ void handleCommand(const string& str)
         cmd = str;
     }
 
-    CommandType cmdType = check_command_type(cmd);
+    CommandType cmdType = checkCommandType(cmd);
     auto        it      = cmdTable.find(cmdType);
     if (it == cmdTable.end())
     {

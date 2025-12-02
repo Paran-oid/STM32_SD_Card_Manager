@@ -13,6 +13,12 @@ namespace stm_sd
 
 CmdExec cpExec = [](const CmdArgs& args)
 {
+    /*
+        - copies a file into a directory
+        - renames a file
+        - copies a directory into a directory
+    */
+
     if (args.size() != 2) return fail("2 arguments must be passed");
 
     bool isRecursive = false;

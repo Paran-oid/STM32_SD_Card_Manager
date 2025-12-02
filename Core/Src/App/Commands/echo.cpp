@@ -14,6 +14,11 @@ namespace stm_sd
 
 CmdExec echoExec = [](const CmdArgs& args)
 {
+
+    /*
+        Echos a message into stdout(UART) OR into a file(through > and >> redirectors)
+    */
+
     if (args.empty())
     {
         printf_("\r\n");

@@ -3,9 +3,18 @@
 #include "defs.hpp"
 #include "status.hpp"
 
-static UART_HandleTypeDef*
-            s_huart_p;  // stores address of last used huart peripheral inside UART_Scan
-static bool hasPendingChar = false;  // signals if UART_Scan can proceed or not
+/***********************************************************
+ * Extern Variables
+ ***********************************************************/
+extern UART_HandleTypeDef huart2;
+
+/***********************************************************
+ * Static Variables
+ ***********************************************************/
+static volatile uint8_t bufRX[stm_sd::SSIZE];
+static volatile uint8_t bufSize                 = 0;
+static volatile bool    isBufReady              = false;
+static volatile bool    hasStartedProcessingBuf = false;
 
 /***********************************************************
  * Interrupt Callbacks
@@ -13,62 +22,78 @@ static bool hasPendingChar = false;  // signals if UART_Scan can proceed or not
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
 {
-    // explicitly stated USART2 to han
-    if (huart == s_huart_p)
+    if (huart->Instance == USART2)
     {
-        hasPendingChar = true;
+        uint8_t c = huart->Instance->RDR;
+
+        switch (c)
+        {
+            case '\r':
+            case '\n':
+                HAL_UART_Transmit(huart, (const uint8_t*) "\r\n", 2, stm_sd::DEFAULT_TIMEOUT);
+                bufRX[bufSize] = '\0';
+                isBufReady     = true;
+                break;
+
+            case stm_sd::BACKSPACE:
+            case '\b':
+                if (bufSize > 0)
+                {
+                    HAL_UART_Transmit(huart, (const uint8_t*) "\b \b", 3, stm_sd::DEFAULT_TIMEOUT);
+                    bufSize -= 1;
+                    bufRX[bufSize] = '\0';
+                }
+                break;
+            default:
+                if (bufSize < stm_sd::SSIZE - 1)
+                {
+                    bufRX[bufSize] = c;
+                    bufSize += 1;
+                    HAL_UART_Transmit(huart, &c, 1, stm_sd::DEFAULT_TIMEOUT);
+                }
+                break;
+        }
+
+        HAL_UART_Receive_IT(huart, &c, 1);
     }
 }
 
 namespace stm_sd
 {
 
-string UART_Scan(UART_HandleTypeDef* huart, bool display)
+string UART2_Scan()
 {
-    s_huart_p = huart;  // assign for interrupt handling
-
-    uint8_t buf[SSIZE] =
-        {};  // user can't enter a command bigger than SSIZE - 1 (last spot reserved for \0)
-    uint16_t size = 0;
-
-    uint8_t c;
-    HAL_UART_Receive_IT(huart, &c, 1);
-    for (;;)
+    if (!hasStartedProcessingBuf)
     {
-        if (!hasPendingChar) continue;
-
-        if (c == '\r' || c == '\n')
-        {
-            HAL_UART_Transmit(huart, (const uint8_t*) "\r\n", 2, DEFAULT_TIMEOUT);
-            buf[size] = '\0';
-            break;
-        }
-
-        if (c == BACKSPACE || c == '\b')
-        {
-            if (size > 0)
-            {
-                HAL_UART_Transmit(huart, (const uint8_t*) "\b \b", 3, DEFAULT_TIMEOUT);
-                buf[--size] = '\0';
-            }
-        }
-        else if (size < SSIZE - 1)
-        {
-            buf[size++] = c;
-            if (display)
-            {
-                HAL_UART_Transmit(huart, &c, 1, DEFAULT_TIMEOUT);
-            }
-        }
-
-        hasPendingChar = false;
-        HAL_UART_Receive_IT(huart, &c, 1);
+        uint8_t dummy;
+        HAL_UART_Receive_IT(&huart2, &dummy, 1);
     }
-    // TODO: fix this
+    if (isBufReady)
+    {
+        /*
+            I would have rather just returned a reinterprted_cast<volatile *>(bufRX) instead of
+           doing all of this but apparently this isn't implemented by the ETL library
+        */
 
-    string out;
-    out.assign((reinterpret_cast<char*>(buf)));
-    return out;
+        // Create a temporary non-volatile buffer to copy the contents
+        char tempBuf[stm_sd::SSIZE];
+
+        // Copy the contents of the volatile buffer to a non-volatile buffer
+        for (size_t i = 0; i < stm_sd::SSIZE; ++i)
+        {
+            tempBuf[i] = static_cast<char>(bufRX[i]);  // Copy each byte to tempBuf
+            if (bufRX[i] == '\0')  // Stop if null-terminated (important for string-like behavior)
+                break;
+        }
+
+        isBufReady              = false;
+        hasStartedProcessingBuf = false;
+        etl::mem_set(bufRX, bufSize, 0);  // TODO: fix this
+
+        // Return a string created from the non-volatile buffer
+        return string(tempBuf);
+    }
+    return "";
 }
 
 }  // namespace stm_sd

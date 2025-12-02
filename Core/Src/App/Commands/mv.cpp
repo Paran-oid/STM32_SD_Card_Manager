@@ -9,6 +9,10 @@ namespace stm_sd
 
 CmdExec mvExec = [](const CmdArgs& args)
 {
+    /*
+        Moves file to other another path
+        !UNCOMPLETE MUST BE DONE
+    */
     if (args.size() != 2) return fail("unallowed to pass more than 2 args");
 
     const string& newName = args.back();

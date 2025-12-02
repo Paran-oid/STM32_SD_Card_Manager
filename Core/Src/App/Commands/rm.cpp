@@ -12,6 +12,9 @@ namespace stm_sd
 
 CmdExec rmExec = [](const CmdArgs& args)
 {
+    /*
+        Deletes a file or a directory(for dirs the -r flag must be bad)
+    */
     if (args.empty()) return Status::ERR;
 
     Status stat;
