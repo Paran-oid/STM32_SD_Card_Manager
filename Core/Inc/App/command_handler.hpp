@@ -34,33 +34,41 @@ enum class CommandType : uint8_t
      *
      */
 
-    CAT = 0,      // read to file
-    ECHO,         // write to a file
-    LS,           // list contents of a directory
-    RM,           // delete a file/dir
-    CP,           // move and/or rename file
-    CD,           // enter a directory
-    CLEAR,        // clears terminal
-    PWD,          // prints current working directory
-    MKDIR,        // creates a new directory(or more)
-    RMDIR,        // deletes a directory(or more)
+    CAT = 0,  // read to file
+    ECHO,     // write to a file
+    LS,       // list contents of a directory
+    RM,       // delete a file/dir
+    CP,       // move and/or rename file
+    CD,       // enter a directory
+    CLEAR,    // clears terminal
+    PWD,      // prints current working directory
+
+    MKDIR,  // creates a new directory(or more)
+    RMDIR,  // deletes a directory(or more)
+
     TOUCH,        // create empty file(s)(have to make it update timestamp too at some point)
     MV,           // move (and/or rename) a file
     FREE_SPACE,   // remaining free space of the sd card
     TOTAL_SPACE,  // total space inside the sd card
-    NONE,         // undefined
-    COUNT         // returns number of command types including none
+
+    TIMER_START,    // start custom 1 second timer
+    TIMER_ELAPSED,  // time elapsed from the start time
+    TIMER_RESET,    // restarts timer
+
+    NONE,  // undefined
+    COUNT  // returns number of command types including none(NOT COMMAND)
 };
 
 /**
- *  @brief For the CmdArgs type we expect that the user will be entering max CMD_HANDLER_ARGS_CAPACITY arguments.
-    That is we can't do something like this:
-    
-    case CMD_HANDLER_ARGS_CAPACITY = 4 
+ *  @brief For the CmdArgs type we expect that the user will be entering max
+ CMD_HANDLER_ARGS_CAPACITY arguments. That is we can't do something like this:
+
+    case CMD_HANDLER_ARGS_CAPACITY = 4
     cmd -r -f -c smth.c -o smth.o
-    
-    !!!IMPOSSIBLE!!! Either increase CMD_HANDLER_ARGS_CAPACITY in defs or the command will not be accepted
- * 
+
+    !!!IMPOSSIBLE!!! Either increase CMD_HANDLER_ARGS_CAPACITY in defs or the command will not be
+ accepted
+ *
  */
 using CmdArgs = etl::vector<string, CMD_HANDLER_ARGS_CAPACITY>;
 using CmdExec = Status (*)(const CmdArgs&);

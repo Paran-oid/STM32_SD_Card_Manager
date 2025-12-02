@@ -21,6 +21,7 @@ Status fail(const string& msg)
 
 size_t findOutsideQuotes(const string& s, char c, size_t start, size_t length)
 {
+    
     size_t end = length == string::npos ? s.size() : length - start;
 
     bool isInQuotes = false;

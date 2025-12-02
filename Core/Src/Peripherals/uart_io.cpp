@@ -12,8 +12,8 @@ extern UART_HandleTypeDef huart2;
  * Static Variables
  ***********************************************************/
 static volatile uint8_t bufRX[stm_sd::SSIZE];
-static volatile uint8_t bufSize                 = 0;
-static volatile bool    isBufReady              = false;
+static volatile uint8_t bufRXSize               = 0;
+static volatile bool    isBufReady              = false;  // if true then
 static volatile bool    hasStartedProcessingBuf = false;
 
 /***********************************************************
@@ -31,24 +31,24 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
             case '\r':
             case '\n':
                 HAL_UART_Transmit(huart, (const uint8_t*) "\r\n", 2, stm_sd::DEFAULT_TIMEOUT);
-                bufRX[bufSize] = '\0';
-                isBufReady     = true;
+                bufRX[bufRXSize] = '\0';
+                isBufReady       = true;
                 break;
 
             case stm_sd::BACKSPACE:
             case '\b':
-                if (bufSize > 0)
+                if (bufRXSize > 0)
                 {
                     HAL_UART_Transmit(huart, (const uint8_t*) "\b \b", 3, stm_sd::DEFAULT_TIMEOUT);
-                    bufSize -= 1;
-                    bufRX[bufSize] = '\0';
+                    bufRXSize -= 1;
+                    bufRX[bufRXSize] = '\0';
                 }
                 break;
             default:
-                if (bufSize < stm_sd::SSIZE - 1)
+                if (bufRXSize < stm_sd::SSIZE - 1)
                 {
-                    bufRX[bufSize] = c;
-                    bufSize += 1;
+                    bufRX[bufRXSize] = c;
+                    bufRXSize += 1;
                     HAL_UART_Transmit(huart, &c, 1, stm_sd::DEFAULT_TIMEOUT);
                 }
                 break;
@@ -67,12 +67,17 @@ string UART2_Scan()
     {
         uint8_t dummy;
         HAL_UART_Receive_IT(&huart2, &dummy, 1);
+        hasStartedProcessingBuf = true;
     }
     if (isBufReady)
     {
         /*
-            I would have rather just returned a reinterprted_cast<volatile *>(bufRX) instead of
-           doing all of this but apparently this isn't implemented by the ETL library
+        ?  SIDE NOTE:
+                I would have rather just returned a reinterprted_cast<volatile *>(bufRX) instead of
+                doing all of this but apparently this isn't implemented by the ETL library
+
+                same thing for std::memset, in ETL there is no version for memsetting volatile so I
+                have no choice but to set each item in bufRX to 0
         */
 
         // Create a temporary non-volatile buffer to copy the contents
@@ -82,13 +87,18 @@ string UART2_Scan()
         for (size_t i = 0; i < stm_sd::SSIZE; ++i)
         {
             tempBuf[i] = static_cast<char>(bufRX[i]);  // Copy each byte to tempBuf
-            if (bufRX[i] == '\0')  // Stop if null-terminated (important for string-like behavior)
-                break;
+        }
+
+        tempBuf[bufRXSize] = '\0';
+
+        for (size_t i = 0; i < bufRXSize; i++)
+        {
+            bufRX[i] = 0;  // equivalent to std::memset(bufRX, 0, bufSize);
         }
 
         isBufReady              = false;
         hasStartedProcessingBuf = false;
-        etl::mem_set(bufRX, bufSize, 0);  // TODO: fix this
+        bufRXSize               = 0;
 
         // Return a string created from the non-volatile buffer
         return string(tempBuf);

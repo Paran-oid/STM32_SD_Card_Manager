@@ -34,11 +34,11 @@ struct PathData
 void   die(const string&);
 Status fail(const string&);
 
-size_t findOutsideQuotes(
-    const string&, char, size_t = 0,
-    size_t length = string::npos);  // find function but works only outside quotes
-string formatStr(const string&);    //  ""foo""" -> "foo"
-string unescape(const string&);     // test\\n -> test\n
+size_t findOutsideQuotes(const string&, char, size_t = 0,
+                         size_t length = string::npos);  // find function but works only outside
+                                                         // quotes(that is not inside "string")
+string formatStr(const string&);                         //  ""foo""" -> "foo"
+string unescape(const string&);                          // test\\n -> test\n
 
 PathData extractPath(const string&);
 

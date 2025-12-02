@@ -9,6 +9,7 @@ namespace stm_sd
 
 // each of these is defined in their respective .cpp file (some may be shared inside
 // common_cmds.cpp)
+
 extern CmdExec catExec;
 extern CmdExec echoExec;
 extern CmdExec lsExec;
@@ -29,14 +30,14 @@ static CmdExecMap cmdTable = {{CommandType::CAT, catExec},     {CommandType::ECH
                               {CommandType::MKDIR, mkdirExec}, {CommandType::RMDIR, rmdirExec},
                               {CommandType::TOUCH, touchExec}, {CommandType::MV, mvExec}};
 
+static const std::unordered_map<std::string, CommandType> commandMap = {
+    {"cat", CommandType::CAT},     {"echo", CommandType::ECHO},   {"ls", CommandType::LS},
+    {"rm", CommandType::RM},       {"cp", CommandType::CP},       {"cd", CommandType::CD},
+    {"clear", CommandType::CLEAR}, {"pwd", CommandType::PWD},     {"mkdir", CommandType::MKDIR},
+    {"rmdir", CommandType::RMDIR}, {"touch", CommandType::TOUCH}, {"mv", CommandType::MV}};
+
 static CommandType checkCommandType(const string& item)
 {
-    static const std::unordered_map<std::string, CommandType> commandMap = {
-        {"cat", CommandType::CAT},     {"echo", CommandType::ECHO},   {"ls", CommandType::LS},
-        {"rm", CommandType::RM},       {"cp", CommandType::CP},       {"cd", CommandType::CD},
-        {"clear", CommandType::CLEAR}, {"pwd", CommandType::PWD},     {"mkdir", CommandType::MKDIR},
-        {"rmdir", CommandType::RMDIR}, {"touch", CommandType::TOUCH}, {"mv", CommandType::MV}};
-
     auto it = commandMap.find(item.c_str());
     if (it != commandMap.end())
     {

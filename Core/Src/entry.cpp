@@ -48,11 +48,13 @@ void setup()
 
 void loop()
 {
-    string s = stm_sd::UART2_Scan();
+    string s = stm_sd::UART2_Scan();  // not blocking since it uses interrupts
 
     if (!s.empty())
     {
         s = stm_sd::unescape(s);
         stm_sd::handleCommand(s);
     }
+
+    HAL_Delay(100);
 }
