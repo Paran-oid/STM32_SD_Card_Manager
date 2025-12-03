@@ -1,6 +1,6 @@
 # STM32 SD Card Manager
 
-![20251122_121709](https://github.com/user-attachments/assets/85854316-90f4-4cb0-ab3a-22b434524184)
+![STM_SD](https://github.com/user-attachments/assets/13ecec31-3906-4e83-9bdc-bccfb3afa40e)
 
 
 STM32 SD Card Manager is a program written in C++ for turning an STM32L476RG into a bridge for writing data from a PC to an SD Card through UART.
