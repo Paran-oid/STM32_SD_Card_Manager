@@ -56,5 +56,10 @@ void loop()
         stm_sd::handleCommand(s);
     }
 
-    HAL_Delay(100);
+    // Enter sleep mode
+    HAL_SuspendTick();
+    HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+    HAL_ResumeTick();
+
+    HAL_Delay(50);
 }
