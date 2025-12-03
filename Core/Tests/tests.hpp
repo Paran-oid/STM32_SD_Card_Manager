@@ -12,6 +12,6 @@ struct TestResult
     stm_sd::string msg;
 };
 
-void run_tests();
+void runTests();
 
-TestResult test_sd_read_write(bool display = false);
+TestResult testReadWriteSD(bool display = false);

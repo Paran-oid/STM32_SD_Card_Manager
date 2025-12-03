@@ -1,26 +1,30 @@
 #include "command_handler.hpp"
-#include "filesystem.hpp"
+#include "sd_filesystem.hpp"
 #include "utils.hpp"
 
-namespace fs = stm_sd::filesystem;
+namespace fs = stm_sd::sd_filesystem;
 
 namespace stm_sd
 {
 
-cmd_exec mv_exec = [](const cmd_args& args)
+CmdExec mvExec = [](const CmdArgs& args)
 {
+    /*
+        Moves file to other another path
+        !UNCOMPLETE MUST BE DONE
+    */
     if (args.size() != 2) return fail("unallowed to pass more than 2 args");
 
-    const string& new_name = args.back();
-    const string& old_name = args.front();
+    const string& newName = args.back();
+    const string& oldName = args.front();
 
-    if (fs::is_directory(new_name) || fs::is_directory(old_name))
+    if (fs::isDirectory(newName) || fs::isDirectory(oldName))
         return fail("unallowed to enter two directories");
 
-    const path_data p = extract_path(new_name);
+    const PathData p = extractPath(newName);
     if (!p.folder.empty() && !fs::exists(p.folder)) fs::mkdir(p.folder);
 
-    return fs::rename(old_name, new_name);
+    return fs::rename(oldName, newName);
 };
 
 }  // namespace stm_sd

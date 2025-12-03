@@ -3,11 +3,11 @@
 #include "printf.h"
 #include "utils.hpp"
 
-void run_tests()
+void runTests()
 {
     TestResult res;
 
-    res = test_sd_read_write();
+    res = testReadWriteSD();
     if (!res.passed) stm_sd::die(res.msg);
 
     printf_("all tests ran with success!\r\n");

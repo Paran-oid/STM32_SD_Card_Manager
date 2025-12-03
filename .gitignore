@@ -2,6 +2,3 @@ build
 mx.scratch
 !.settings
 .fake
-
-SW/build
-SW/.cache

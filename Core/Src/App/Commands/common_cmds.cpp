@@ -2,41 +2,53 @@
 #include <etl/vector.h>
 
 #include "command_handler.hpp"
-#include "filesystem.hpp"
-#include "hal_init.hpp"
 #include "printf.h"
+#include "sd_filesystem.hpp"
 #include "utils.hpp"
 
-namespace fs = stm_sd::filesystem;
+namespace fs = stm_sd::sd_filesystem;
 
 namespace stm_sd
 {
-cmd_exec clear_exec = [](const cmd_args& args)
+CmdExec clearExec = [](const CmdArgs& args)
 {
+    /*
+        Clears content of the console
+    */
+
     (void) args;
-    printf_("\033[2J\033[H\r\n");
-    return status::ok;
+    printf_("\033[2J\033[H\r\n");  // clear escape sequence for "cleaning" the stdout
+    return Status::OK;
 };
 
-cmd_exec pwd_exec = [](const cmd_args& args)
+CmdExec pwdExec = [](const CmdArgs& args)
 {
+    /*
+        Prints the current working directory
+    */
     (void) args;
     printf_("%s\r\n", fs::cwd().c_str());
-    return status::ok;
+    return Status::OK;
 };
 
-cmd_exec free_space_exec = [](const cmd_args& args)
+CmdExec freeSpaceExec = [](const CmdArgs& args)
 {
+    /*
+        Displays the free space left
+    */
     (void) args;
-    printf_("%.2fGB\r\n", static_cast<double>(fs::free_space()) / BYTES_PER_GB);
-    return status::ok;
+    printf_("%.2fGB\r\n", static_cast<double>(fs::freeSpace()) / BYTES_PER_GB);
+    return Status::OK;
 };
 
-cmd_exec total_space_exec = [](const cmd_args& args)
+CmdExec totalSpaceExec = [](const CmdArgs& args)
 {
+    /*
+        Displays the total space
+    */
     (void) args;
-    printf_("%.2fGB\r\n", static_cast<double>(fs::free_space()) / BYTES_PER_GB);
-    return status::ok;
+    printf_("%.2fGB\r\n", static_cast<double>(fs::freeSpace()) / BYTES_PER_GB);
+    return Status::OK;
 };
 
 }  // namespace stm_sd

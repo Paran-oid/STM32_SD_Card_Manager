@@ -2,17 +2,20 @@
 #include <etl/vector.h>
 
 #include "command_handler.hpp"
-#include "filesystem.hpp"
-#include "hal_init.hpp"
+#include "sd_filesystem.hpp"
 #include "utils.hpp"
 
-namespace fs = stm_sd::filesystem;
+namespace fs = stm_sd::sd_filesystem;
 
 namespace stm_sd
 {
 
-cmd_exec ls_exec = [](const cmd_args& args)
+CmdExec lsExec = [](const CmdArgs& args)
 {
+    /*
+        Lists all files in cwd
+    */
+
     string path;
     if (args.empty())
         path = ".";
@@ -29,14 +32,14 @@ cmd_exec ls_exec = [](const cmd_args& args)
     {
         for (uint8_t i = 0; i < res; i++)
         {
-            FILINFO& item   = arr[i];
-            bool     is_dir = (item.fattrib & AM_DIR) != 0;
-            printf_("%s%s\r\n", item.fname, is_dir ? "/" : "");
+            FILINFO& item  = arr[i];
+            bool     isDir = (item.fattrib & AM_DIR) != 0;
+            printf_("%s%s\r\n", item.fname, isDir ? "/" : "");
         }
         page++;
     }
 
-    return status::ok;
+    return Status::OK;
 };
 
 }  // namespace stm_sd

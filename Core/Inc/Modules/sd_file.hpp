@@ -1,3 +1,15 @@
+/**
+ * @file sd_file.hpp
+ * @author Aziz Hmidi (azizhmidi125@gmail.com)
+ * @brief
+        More or less a C++ wrapper for the fatfs API file related functionalities
+ * @version 0.1
+ * @date 2025-12-02
+ *
+ * @copyright Copyright (c) 2025
+ *
+ */
+
 #pragma once
 
 /***************************************************************
@@ -14,7 +26,7 @@ extern "C"
 #include <etl/string.h>
 
 #include "defs.hpp"
-#include "filesystem.hpp"
+#include "sd_filesystem.hpp"
 #include "status.hpp"
 #include "utils.hpp"
 
@@ -25,22 +37,36 @@ namespace stm_sd
  * Public Typedefs / Structs
  ***************************************************************/
 
-enum file_mode : uint8_t
+enum FileMode : uint8_t
 {
-    read  = FA_READ,
-    write = FA_WRITE,
+    // Specifies read access to the file. Data can be read from the file.
+    FREAD = FA_READ,
 
-    open_existing = FA_OPEN_EXISTING,
-    create_new    = FA_CREATE_NEW,
-    create_always = FA_CREATE_ALWAYS,
-    open_always   = FA_OPEN_ALWAYS,
-    open_append   = FA_OPEN_APPEND
+    // Specifies write access to the file. Data can be written to the file. Combine with FA_READ for
+    // read-write access.
+    FWRITE = FA_WRITE,
+
+    // Opens the file. The function fails if the file does not exist. (Default behavior)
+    FOPEN_EXISTING = FA_OPEN_EXISTING,
+
+    // Creates a new file. If the file exists, it is truncated and overwritten.
+    FCREATE_ALWAYS = FA_CREATE_ALWAYS,
+
+    // Creates a new file. The function fails if the file already exists.
+    FCREATE_NEW = FA_CREATE_NEW,
+
+    // Opens the file. If it does not exist, a new file is created.
+    FOPEN_ALWAYS = FA_OPEN_ALWAYS,
+
+    // Same as OPEN_ALWAYS, except the read/write pointer is set at the end of the file (append
+    // mode).
+    FOPEN_APPEND = FA_OPEN_APPEND
 };
 
 /***************************************************************
- * File Class for file-related Operations
+ * SDFile Class for file-related Operations
  ***************************************************************/
-class file
+class SDFile
 {
     /***********************************************************
      * Private Members
@@ -52,16 +78,16 @@ class file
     /***********************************************************
      * Constructors / Destructor
      ***********************************************************/
-    file() = delete;
-    file(const string& path) : m_path {path}
+    SDFile() = delete;
+    SDFile(const string& path) : m_path {path}
     {
     }
-    file(file&& f) noexcept : m_path {etl::move(f.m_path)}, m_fil {f.m_fil}
+    SDFile(SDFile&& f) noexcept : m_path {etl::move(f.m_path)}, m_fil {f.m_fil}
     {
         f.m_fil.obj.fs = nullptr;
     };
-    file(const file& f) = delete;
-    file& operator=(file&& f) noexcept
+    SDFile(const SDFile& f) = delete;
+    SDFile& operator=(SDFile&& f) noexcept
     {
         if (this != &f)
         {
@@ -72,8 +98,8 @@ class file
         }
         return *this;
     }
-    file& operator=(const file& f) = delete;
-    ~file()
+    SDFile& operator=(const SDFile& f) = delete;
+    ~SDFile()
     {
         if (m_fil.obj.fs) f_close(&m_fil);
     }
@@ -82,20 +108,20 @@ class file
      * Public Methods
      ***********************************************************/
     template <size_t N>
-    status write(const etl::string<N>&);
+    Status write(const etl::string<N>&);
     template <size_t N>
-    status write(const etl::array<uint8_t, N>&);
-    status write(const char*);
+    Status write(const etl::array<uint8_t, N>&);
+    Status write(const char*);
 
     template <size_t N>
     uint32_t read(etl::string<N>&);
     template <size_t N>
     uint32_t read(etl::array<uint8_t, N>&);
 
-    status seek(uint32_t);
-    status truncate();
+    Status seek(uint32_t);
+    Status truncate();
 
-    status rename(const string&, const string&);
+    Status rename(const string&, const string&);
 
     bool is_open();
 
@@ -123,51 +149,51 @@ class file
  * Template/Inline Functions/Methods Declarations
  ***********************************************************/
 template <size_t N>
-status file::write(const etl::string<N>& s)
+Status SDFile::write(const etl::string<N>& s)
 {
-    unsigned int bytes_written = 0;
-    FRESULT      res           = f_write(&m_fil, s.data(), s.length(), &bytes_written);
-    if (res != FR_OK || bytes_written != s.length()) return map_fresult(res);
+    unsigned int bytesWritten = 0;
+    FRESULT      res          = f_write(&m_fil, s.data(), s.length(), &bytesWritten);
+    if (res != FR_OK || bytesWritten != s.length()) return mapFRESULT(res);
 
-    return status::ok;
+    return Status::OK;
 }
 
 template <size_t N>
-status file::write(const etl::array<uint8_t, N>& arr)
+Status SDFile::write(const etl::array<uint8_t, N>& arr)
 {
-    return f_write(&m_fil, arr.data(), arr.size(), NULL) == FR_OK ? status::ok : status::err;
+    return f_write(&m_fil, arr.data(), arr.size(), NULL) == FR_OK ? Status::OK : Status::ERR;
 }
 
 template <size_t N>
-uint32_t file::read(etl::array<uint8_t, N>& arr)
+uint32_t SDFile::read(etl::array<uint8_t, N>& arr)
 {
     char         buf[N];  // must be char[] because f_read works that way
-    unsigned int bytes_read;
+    unsigned int bytesRead;
 
-    FRESULT fres = f_read(&m_fil, buf, N - 1, &bytes_read);
+    FRESULT fres = f_read(&m_fil, buf, N - 1, &bytesRead);
     if (fres != FR_OK) return 0;
 
-    for (uint32_t i = 0; i < bytes_read; i++)
+    for (uint32_t i = 0; i < bytesRead; i++)
     {
         arr[i] = static_cast<uint8_t>(buf[i]);
     }
 
-    return bytes_read;
+    return bytesRead;
 }
 
 template <size_t N>
-uint32_t file::read(etl::string<N>& s)
+uint32_t SDFile::read(etl::string<N>& s)
 {
     // for string overload we will null terminate
     char         buf[N - 1];  // must be char[] because f_read works that way
-    unsigned int bytes_read = 0;
+    unsigned int bytesRead = 0;
 
-    FRESULT fres = f_read(&m_fil, buf, N - 1, &bytes_read);
+    FRESULT fres = f_read(&m_fil, buf, N - 1, &bytesRead);
     if (fres != FR_OK) return 0;
 
-    s.assign(buf, bytes_read);
-    s[bytes_read] = '\0';
-    return bytes_read;
+    s.assign(buf, bytesRead);
+    s[bytesRead] = '\0';
+    return bytesRead;
 }
 
 }  // namespace stm_sd

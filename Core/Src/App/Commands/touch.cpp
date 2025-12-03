@@ -1,24 +1,28 @@
 #include "command_handler.hpp"
-#include "filesystem.hpp"
+#include "sd_file.hpp"
+#include "sd_filesystem.hpp"
 #include "status.hpp"
 
-namespace fs = stm_sd::filesystem;
+namespace fs = stm_sd::sd_filesystem;
 
 namespace stm_sd
 {
 
-cmd_exec touch_exec = [](const cmd_args& args)
+CmdExec touchExec = [](const CmdArgs& args)
 {
-    if (args.empty()) return status::err;
+    /*
+        Create an empty file
+    */
+    if (args.empty()) return Status::ERR;
 
     for (const auto& arg : args)
     {
-        if (!is_filename(arg)) return status::invalid_name;
-        file* f = fs::open(arg, FA_CREATE_NEW);
+        if (!isFilename(arg)) return Status::INVALID_NAME;
+        SDFile* f = fs::open(arg, FCREATE_NEW);
         if (f) fs::close(f);
     }
 
-    return status::ok;
+    return Status::OK;
 };
 
 }  // namespace stm_sd
